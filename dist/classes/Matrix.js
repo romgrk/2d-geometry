@@ -64,15 +64,16 @@ export class Matrix {
         return new Matrix(this.a * other_matrix.a + this.c * other_matrix.b, this.b * other_matrix.a + this.d * other_matrix.b, this.a * other_matrix.c + this.c * other_matrix.d, this.b * other_matrix.c + this.d * other_matrix.d, this.a * other_matrix.tx + this.c * other_matrix.ty + this.tx, this.b * other_matrix.tx + this.d * other_matrix.ty + this.ty);
     }
     ;
-    translate(...args) {
-        let tx, ty;
-        if (args.length == 1 && !isNaN(args[0].x) && !isNaN(args[0].y)) {
-            tx = args[0].x;
-            ty = args[0].y;
+    translate(a, b) {
+        let tx;
+        let ty;
+        if (a && typeof a === 'object' && !isNaN(a.x) && !isNaN(a.y)) {
+            tx = a.x;
+            ty = a.y;
         }
-        else if (args.length === 2 && typeof (args[0]) == "number" && typeof (args[1]) == "number") {
-            tx = args[0];
-            ty = args[1];
+        else if (typeof a == 'number' && typeof b == 'number') {
+            tx = a;
+            ty = b;
         }
         else {
             throw Errors.ILLEGAL_PARAMETERS;

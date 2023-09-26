@@ -87,14 +87,15 @@ export class Matrix {
      */
     translate(v: Vector): Matrix;
     translate(x: number, y: number): Matrix;
-    translate(...args) {
-        let tx, ty;
-        if (args.length == 1 &&  !isNaN(args[0].x) && !isNaN(args[0].y)) {
-            tx = args[0].x;
-            ty = args[0].y;
-        } else if (args.length === 2 && typeof (args[0]) == "number" && typeof (args[1]) == "number") {
-            tx = args[0];
-            ty = args[1];
+    translate(a: unknown, b?: unknown) {
+        let tx: number
+        let ty: number
+        if (a && typeof a === 'object' && !isNaN((a as any).x) && !isNaN((a as any).y)) {
+            tx = (a as Vector).x;
+            ty = (a as Vector).y;
+        } else if (typeof a == 'number' && typeof b == 'number') {
+            tx = a;
+            ty = b;
         } else {
             throw Errors.ILLEGAL_PARAMETERS;
         }
