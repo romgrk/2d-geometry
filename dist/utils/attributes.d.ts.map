@@ -1,0 +1,1 @@
+{"version":3,"file":"attributes.d.ts","sourceRoot":"","sources":["../../src/utils/attributes.ts"],"names":[],"mappings":"AAIA,cAAM,aAAa;IACf,MAAM,EAAE,MAAM,CAAA;gBAEF,IAAI;;KAAoB;IAOpC,kBAAkB;IAOlB,YAAY,CAAC,GAAG,KAAA,EAAE,KAAK,KAAA;IAKvB,uBAAuB,CAAC,GAAG,KAAA;CAM9B;AAED,wBAAgB,eAAe,CAAC,KAAK,KAAA,UAEpC;AAED,eAAe,aAAa,CAAA"}
