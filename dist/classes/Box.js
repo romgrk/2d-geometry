@@ -103,7 +103,7 @@ export class Box extends Shape {
      * @param {Box} other_box - other box
      * @returns {boolean} - true if this box less than other box, false otherwise
      */
-    less_than(other_box) {
+    lessThan(other_box) {
         if (this.low.lessThan(other_box.low))
             return true;
         if (this.low.equalTo(other_box.low) && this.high.lessThan(other_box.high))
@@ -115,17 +115,17 @@ export class Box extends Shape {
      * @param {Box} other_box - query box
      * @returns {boolean}
      */
-    equal_to(other_box) {
+    equalTo(other_box) {
         return (this.low.equalTo(other_box.low) && this.high.equalTo(other_box.high));
     }
     output() {
         return this.clone();
     }
-    static comparable_max(box1, box2) {
+    static comparableMax(box1, box2) {
         // return pt1.lessThan(pt2) ? pt2.clone() : pt1.clone();
         return box1.merge(box2);
     }
-    static comparable_less_than(pt1, pt2) {
+    static comparableLessThan(pt1, pt2) {
         return pt1.lessThan(pt2);
     }
     /**

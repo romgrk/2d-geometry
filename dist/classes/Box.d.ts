@@ -78,16 +78,16 @@ export declare class Box extends Shape<Box> {
      * @param {Box} other_box - other box
      * @returns {boolean} - true if this box less than other box, false otherwise
      */
-    less_than(other_box: any): boolean;
+    lessThan(other_box: any): boolean;
     /**
      * Returns true if this box is equal to other box, false otherwise
      * @param {Box} other_box - query box
      * @returns {boolean}
      */
-    equal_to(other_box: any): boolean;
+    equalTo(other_box: any): boolean;
     output(): Box;
-    static comparable_max(box1: any, box2: any): any;
-    static comparable_less_than(pt1: any, pt2: any): any;
+    static comparableMax(box1: any, box2: any): any;
+    static comparableLessThan(pt1: any, pt2: any): any;
     /**
      * Set new values to the box object
      * @param {number} xmin - mininal x coordinate

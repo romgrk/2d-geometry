@@ -28,13 +28,13 @@ declare namespace Flatten {
 
         clone(): Interval;
         less_than(other_interval: Interval) : boolean;
-        equal_to(other_interval: Interval) : boolean;
+        equalTo(other_interval: Interval) : boolean;
         intersect(other_interval: Interval) : boolean;
         notIntersect(other_interval: Interval) : boolean;
         output() : any;
 
-        comparable_max(arg1: Comparable, arg2: Comparable) : Comparable;
-        comparable_less_than(arg1: Comparable, arg2: Comparable ) : boolean;
+        comparableMax(arg1: Comparable, arg2: Comparable) : Comparable;
+        comparableLessThan(arg1: Comparable, arg2: Comparable ) : boolean;
     }
 
     class LinkedListElement {
@@ -185,7 +185,7 @@ declare namespace Flatten {
         intersect(box: Box): boolean;
         merge(box: Box): Box;
         less_than(box: Box): boolean;
-        equal_to(box: Box): boolean;
+        equalTo(box: Box): boolean;
         set(xmin: number, ymin: number, xmax: number, ymax: number): void;
         toPoints() : Array<Point>;
         toSegments() : Array<Segment>;
@@ -197,8 +197,8 @@ declare namespace Flatten {
         output(): Box;         // required by base type Interval
         svg(attrs?: SVGAttributes): string;
 
-        comparable_max(arg1: Comparable, arg2: Comparable) : Comparable;
-        comparable_less_than(arg1: Comparable, arg2: Comparable ) : boolean;
+        comparableMax(arg1: Comparable, arg2: Comparable) : Comparable;
+        comparableLessThan(arg1: Comparable, arg2: Comparable ) : boolean;
     }
 
     class Circle extends Shape {
