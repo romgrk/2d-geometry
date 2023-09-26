@@ -2,10 +2,10 @@ Fork of https://github.com/alexbol99/flatten-js
 
 # Javascript library for 2d geometry
 
-**flatten-js** is a javascript library for manipulating abstract geometrical shapes like point, vector, line, ray, segment,
+**2d-geometry** is a javascript library for manipulating abstract geometrical shapes like point, vector, line, ray, segment,
 circle, arc and polygon. Shapes may be organized into Planar Set - searchable container which support spatial queries.
 
-**flatten-js** provides a lot of useful methods and algorithms like finding intersections, checking inclusion, calculating distance, applying
+**2d-geometry** provides a lot of useful methods and algorithms like finding intersections, checking inclusion, calculating distance, applying
 affine transformations, performing boolean operations and more.
 
 Packages are distributed in 3 formats: commonjs, umd and es6 modules. Package.json file
@@ -13,38 +13,34 @@ provides various entry points suitable for different targets.
 
 TypeScript users may take advantage of static type checking with typescript definition file index.d.ts included into the package.
 
-**flatten-js** does not concern too much about visualization.
+**2d-geometry** does not concern too much about visualization.
 Anyway, all classes implement svg() method, that returns a string which may be inserted into SVG container. 
 It works pretty well together with  [d3js](https://d3js.org/) library, but it is definitely possible to create bridges to other graphic libraries.
 
 The best way to start working with FlattenJS is to use awesome [Observable](https://beta.observablehq.com/) javascript interactive notebooks.
-Check out collection of [Tutorials](https://observablehq.com/collection/@alexbol99/flatten-js-tutorials) published in Observable Notebooks.
+Check out collection of [Tutorials](https://observablehq.com/collection/@alexbol99/2d-geometry-tutorials) published in Observable Notebooks.
 
-Full documentation may be found here: [https://alexbol99.github.io/flatten-js/index.html](https://alexbol99.github.io/flatten-js/index.html)
-
-## Contacts
-
-Follow me on Twitter [@alex_bol_](https://twitter.com/alex_bol_)
+Full documentation may be found here: [https://alexbol99.github.io/2d-geometry/index.html](https://alexbol99.github.io/2d-geometry/index.html)
 
 ## Installation
 
-    npm install --save @flatten-js/core
+    npm install --save 2d-geometry
 
 ## Usage
 
 ```javascript
-import {Point, Vector, Circle, Line, Ray, Segment, Arc, Box, Polygon, Matrix, PlanarSet} from '@flatten-js/core';
+import {Point, Vector, Circle, Line, Ray, Segment, Arc, Box, Polygon, Matrix, PlanarSet} from '2d-geometry';
 ```
 
 It is possible to import Flatten namespace as default import, and then destruct all classes from it. 
 ```javascript
-import Flatten from '@flatten-js/core'
+import Flatten from '2d-geometry'
 const {Point, Vector, Circle, Line, Ray, Segment, Arc, Box, Polygon, Matrix, PlanarSet} = Flatten;
 ```
 
 Some classes have shortcuts to avoid annoying *new* constructor:
 ```javascript
-import {point, vector, circle, line, ray, segment, arc, polygon, matrix} from '@flatten-js/core';
+import {point, vector, circle, line, ray, segment, arc, polygon, matrix} from '2d-geometry';
 ```
 
 ## Example
@@ -52,7 +48,7 @@ import {point, vector, circle, line, ray, segment, arc, polygon, matrix} from '@
 After module imported, it is possible to create some construction:
 ```javascript
     // extract object creators
-    import {point, circle, segment} from '@flatten-js/core';
+    import {point, circle, segment} from '2d-geometry';
 
     // make some construction
     let s1 = segment(10,10,200,200);
@@ -61,7 +57,7 @@ After module imported, it is possible to create some construction:
     let ip = s1.intersect(s2);
 ```
 
-You may test the code above also in [NPM RunKit](https://npm.runkit.com/@flatten-js/core)
+You may test the code above also in [NPM RunKit](https://npm.runkit.com/2d-geometry)
 
 You may also check out examples section in the code which illustrate different use cases:
 * in nodejs
@@ -71,19 +67,19 @@ You may also check out examples section in the code which illustrate different u
 ## Content of the library
 
 ### Basic shapes
-**flatten-js** library implements following basic shapes:
-* [Point](https://alexbol99.github.io/flatten-js/Point.html)
-* [Vector](https://alexbol99.github.io/flatten-js/Vector.html)
-* [Line](https://alexbol99.github.io/flatten-js/Line.html)
-* [Ray](https://alexbol99.github.io/flatten-js/Ray.html)
-* [Segment](https://alexbol99.github.io/flatten-js/Segment.html)
-* [Arc (circular)](https://alexbol99.github.io/flatten-js/Arc.html)
-* [Circle](https://alexbol99.github.io/flatten-js/Circle.html)
-* [Box (may be used as rectangle)](https://alexbol99.github.io/flatten-js/Box.html)
+**2d-geometry** library implements following basic shapes:
+* [Point](https://alexbol99.github.io/2d-geometry/Point.html)
+* [Vector](https://alexbol99.github.io/2d-geometry/Vector.html)
+* [Line](https://alexbol99.github.io/2d-geometry/Line.html)
+* [Ray](https://alexbol99.github.io/2d-geometry/Ray.html)
+* [Segment](https://alexbol99.github.io/2d-geometry/Segment.html)
+* [Arc (circular)](https://alexbol99.github.io/2d-geometry/Arc.html)
+* [Circle](https://alexbol99.github.io/2d-geometry/Circle.html)
+* [Box (may be used as rectangle)](https://alexbol99.github.io/2d-geometry/Box.html)
 
 ### Polygon
 
-[Polygon](https://alexbol99.github.io/flatten-js/Polygon.html) in **flatten-js** library is actually a multi-polygon.
+[Polygon](https://alexbol99.github.io/2d-geometry/Polygon.html) in **2d-geometry** library is actually a multi-polygon.
 Polygon is a collection of faces - 
 closed oriented chains of edges, which may be of type Segment or Arc. The most external face
 called island, a face included into it is called hole. Holes in turn may have inner islands,
@@ -264,7 +260,7 @@ described in the article [Hidden Surface Removal Using Polygon Area Sorting](htt
 
 ### Serialization
 
-All **flatten-js** shape objects may be serialized using `JSON.stringify()` method.
+All **2d-geometry** shape objects may be serialized using `JSON.stringify()` method.
 `JSON.stringify` transforms object to string using `.toJSON()` formatter implemented in the class. 
 `JSON.parse` restore object from a string, and then constructor can use this object to create Flatten object.
  
@@ -287,7 +283,7 @@ in a very straightforward way:
 <body>
     <svg id="stage" width="500" height="500"></svg>
 <script>
-    const Flatten = window["@flatten-js/core"];
+    const Flatten = window["2d-geometry"];
     const {point, circle, segment} = Flatten;
 
     // make some construction
@@ -306,17 +302,3 @@ several basic attributes of svg element:
  `stroke`, `strokeWidth`, `fill`, `fillRule`, `fillOpacity`, `id` and `className`.
  If attributes not provided, method `svg()` use default values.
  
-
-### Other packages
-
-Other packages, published under scope **@flatten-js/**:
-
-| Name                                                                                    |                                  Description                                  |
-|-----------------------------------------------------------------------------------------|:-----------------------------------------------------------------------------:|
-| [@flatten-js/interval-tree](https://www.npmjs.com/package/@flatten-js/interval-tree)    |                          Interval binary search tree                          |
-| [@flatten-js/boolean-op](https://www.npmjs.com/package/@flatten-js/boolean-op)          | Boolean operations (deprecated, use this functionality from the core package) |
-|  [@flatten-js/polygon-offset](https://www.npmjs.com/package/@flatten-js/polygon-offset) |                                Polygon offset                                 |
-
-## Support
-
-<a href="https://www.buymeacoffee.com/alexbol99" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
