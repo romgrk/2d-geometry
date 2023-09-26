@@ -47,15 +47,7 @@ class Segment extends Shape_1.Shape {
      */
     constructor(...args) {
         super();
-        /**
-         * Start point
-         * @type {Point}
-         */
         this.ps = new geom.Point();
-        /**
-         * End Point
-         * @type {Point}
-         */
         this.pe = new geom.Point();
         if (args.length === 0) {
             return;
@@ -96,17 +88,11 @@ class Segment extends Shape_1.Shape {
     clone() {
         return new geom.Segment(this.start, this.end);
     }
-    /**
-     * Start point
-     * @returns {Point}
-     */
+    /** Start point */
     get start() {
         return this.ps;
     }
-    /**
-     * End point
-     * @returns {Point}
-     */
+    /** End point */
     get end() {
         return this.pe;
     }

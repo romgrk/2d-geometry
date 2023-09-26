@@ -5,7 +5,9 @@ import { Shape } from "./Shape";
  * @type {Point}
  */
 export declare class Point extends Shape<Point> {
+    /** x-coordinate (float number) */
     x: number;
+    /** y-coordinate (float number) */
     y: number;
     /**
      * Point may be constructed by two numbers, or by array of two numbers

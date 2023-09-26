@@ -5,13 +5,15 @@ import { Shape } from "./Shape";
  * @type {Vector}
  */
 export declare class Vector extends Shape<Vector> {
+    /** x-coordinate of a vector (float number) */
     x: number;
+    /** y-coordinate of a vector (float number) */
     y: number;
     /**
      * Vector may be constructed by two points, or by two float numbers,
      * or by array of two numbers
-     * @param {Point} ps - start point
-     * @param {Point} pe - end point
+     * @param {Point} start - start point
+     * @param {Point} end - end point
      */
     constructor(...args: any[]);
     /**

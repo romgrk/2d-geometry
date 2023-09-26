@@ -20,15 +20,9 @@ export declare class Segment extends Shape<Segment> {
      * @returns {Segment}
      */
     clone(): geom.Segment;
-    /**
-     * Start point
-     * @returns {Point}
-     */
+    /** Start point */
     get start(): geom.Point;
-    /**
-     * End point
-     * @returns {Point}
-     */
+    /** End point */
     get end(): geom.Point;
     /**
      * Returns array of start and end point

@@ -10,7 +10,9 @@ import {Shape} from "./Shape";
  * @type {Point}
  */
 export class Point extends Shape<Point> {
+    /** x-coordinate (float number) */
     x: number
+    /** y-coordinate (float number) */
     y: number
 
     /**
@@ -20,15 +22,7 @@ export class Point extends Shape<Point> {
      */
     constructor(...args) {
         super()
-        /**
-         * x-coordinate (float number)
-         * @type {number}
-         */
         this.x = 0;
-        /**
-         * y-coordinate (float number)
-         * @type {number}
-         */
         this.y = 0;
 
         if (args.length === 0) {

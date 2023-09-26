@@ -45,15 +45,7 @@ class Point extends Shape_1.Shape {
      */
     constructor(...args) {
         super();
-        /**
-         * x-coordinate (float number)
-         * @type {number}
-         */
         this.x = 0;
-        /**
-         * y-coordinate (float number)
-         * @type {number}
-         */
         this.y = 0;
         if (args.length === 0) {
             return;
