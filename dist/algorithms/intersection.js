@@ -1,5 +1,5 @@
 import * as Utils from '../utils/utils';
-import * as geom from '../classes';
+import { Circle, Point, Line, Segment, Arc, Vector, } from '../classes';
 export function intersectLine2Line(line1, line2) {
     let ip = [];
     let [A1, B1, C1] = line1.standard;
@@ -30,7 +30,7 @@ export function intersectLine2Line(line1, line2) {
             x = detX / det;
             y = detY / det;
         }
-        ip.push(new geom.Point(x, y));
+        ip.push(new Point(x, y));
     }
     return ip;
 }
@@ -70,7 +70,7 @@ export function intersectLine2Arc(line, arc) {
     if (intersectLine2Box(line, arc.box).length === 0) {
         return ip;
     }
-    let circle = new geom.Circle(arc.pc, arc.r);
+    let circle = new Circle(arc.pc, arc.r);
     let ip_tmp = intersectLine2Circle(line, circle);
     for (let pt of ip_tmp) {
         if (pt.on(arc)) {
@@ -103,13 +103,13 @@ export function intersectSegment2Line(seg, line) {
         return ip;
     }
     // Calculate intersection between lines
-    let line1 = new geom.Line(seg.ps, seg.pe);
+    let line1 = new Line(seg.ps, seg.pe);
     return intersectLine2Line(line1, line);
 }
 export function intersectSegment2Segment(seg1, seg2) {
     let ip = [];
     // quick reject
-    if (seg1.box.not_intersect(seg2.box)) {
+    if (seg1.box.notIntersect(seg2.box)) {
         return ip;
     }
     // Special case of seg1 zero length
@@ -127,8 +127,8 @@ export function intersectSegment2Segment(seg1, seg2) {
         return ip;
     }
     // Neither seg1 nor seg2 is zero length
-    let line1 = new geom.Line(seg1.ps, seg1.pe);
-    let line2 = new geom.Line(seg2.ps, seg2.pe);
+    let line1 = new Line(seg1.ps, seg1.pe);
+    let line2 = new Line(seg2.ps, seg2.pe);
     // Check overlapping between segments in case of incidence
     // If segments touching, add one point. If overlapping, add two points
     if (line1.incidentTo(line2)) {
@@ -163,7 +163,7 @@ function isPointInSegmentBox(point, segment) {
 }
 export function intersectSegment2Circle(segment, circle) {
     let ips = [];
-    if (segment.box.not_intersect(circle.box)) {
+    if (segment.box.notIntersect(circle.box)) {
         return ips;
     }
     // Special case of zero length segment
@@ -175,7 +175,7 @@ export function intersectSegment2Circle(segment, circle) {
         return ips;
     }
     // Non zero-length segment
-    let line = new geom.Line(segment.ps, segment.pe);
+    let line = new Line(segment.ps, segment.pe);
     let ips_tmp = intersectLine2Circle(line, circle);
     for (let ip of ips_tmp) {
         if (ip.on(segment)) {
@@ -186,7 +186,7 @@ export function intersectSegment2Circle(segment, circle) {
 }
 export function intersectSegment2Arc(segment, arc) {
     let ip = [];
-    if (segment.box.not_intersect(arc.box)) {
+    if (segment.box.notIntersect(arc.box)) {
         return ip;
     }
     // Special case of zero-length segment
@@ -197,8 +197,8 @@ export function intersectSegment2Arc(segment, arc) {
         return ip;
     }
     // Non-zero length segment
-    let line = new geom.Line(segment.ps, segment.pe);
-    let circle = new geom.Circle(arc.pc, arc.r);
+    let line = new Line(segment.ps, segment.pe);
+    let circle = new Circle(arc.pc, arc.r);
     let ip_tmp = intersectLine2Circle(line, circle);
     for (let pt of ip_tmp) {
         if (pt.on(segment) && pt.on(arc)) {
@@ -219,10 +219,10 @@ export function intersectSegment2Box(segment, box) {
 }
 export function intersectCircle2Circle(circle1, circle2) {
     let ip = [];
-    if (circle1.box.not_intersect(circle2.box)) {
+    if (circle1.box.notIntersect(circle2.box)) {
         return ip;
     }
-    let vec = new geom.Vector(circle1.pc, circle2.pc);
+    let vec = new Vector(circle1.pc, circle2.pc);
     let r1 = circle1.r;
     let r2 = circle2.r;
     // Degenerated circle
@@ -277,7 +277,7 @@ export function intersectCircle2Box(circle, box) {
 }
 export function intersectArc2Arc(arc1, arc2) {
     let ip = [];
-    if (arc1.box.not_intersect(arc2.box)) {
+    if (arc1.box.notIntersect(arc2.box)) {
         return ip;
     }
     // Special case: overlapping arcs
@@ -299,8 +299,8 @@ export function intersectArc2Arc(arc1, arc2) {
         return ip;
     }
     // Common case
-    let circle1 = new geom.Circle(arc1.pc, arc1.r);
-    let circle2 = new geom.Circle(arc2.pc, arc2.r);
+    let circle1 = new Circle(arc1.pc, arc1.r);
+    let circle2 = new Circle(arc2.pc, arc2.r);
     let ip_tmp = circle1.intersect(circle2);
     for (let pt of ip_tmp) {
         if (pt.on(arc1) && pt.on(arc2)) {
@@ -311,7 +311,7 @@ export function intersectArc2Arc(arc1, arc2) {
 }
 export function intersectArc2Circle(arc, circle) {
     let ip = [];
-    if (arc.box.not_intersect(circle.box)) {
+    if (arc.box.notIntersect(circle.box)) {
         return ip;
     }
     // Case when arc center incident to circle center
@@ -323,7 +323,7 @@ export function intersectArc2Circle(arc, circle) {
     }
     // Common case
     let circle1 = circle;
-    let circle2 = new geom.Circle(arc.pc, arc.r);
+    let circle2 = new Circle(arc.pc, arc.r);
     let ip_tmp = intersectCircle2Circle(circle1, circle2);
     for (let pt of ip_tmp) {
         if (pt.on(arc)) {
@@ -407,7 +407,7 @@ export function intersectEdge2Edge(edge1, edge2) {
 }
 export function intersectEdge2Polygon(edge, polygon) {
     let ip = [];
-    if (polygon.isEmpty() || edge.shape.box.not_intersect(polygon.box)) {
+    if (polygon.isEmpty() || edge.shape.box.notIntersect(polygon.box)) {
         return ip;
     }
     let resp_edges = polygon.edges.search(edge.shape.box);
@@ -435,7 +435,7 @@ export function intersectPolygon2Polygon(polygon1, polygon2) {
     if (polygon1.isEmpty() || polygon2.isEmpty()) {
         return ip;
     }
-    if (polygon1.box.not_intersect(polygon2.box)) {
+    if (polygon1.box.notIntersect(polygon2.box)) {
         return ip;
     }
     for (let edge1 of polygon1.edges) {
@@ -457,13 +457,13 @@ export function intersectBox2Box(box1, box2) {
     return ip;
 }
 export function intersectShape2Polygon(shape, polygon) {
-    if (shape instanceof geom.Line) {
+    if (shape instanceof Line) {
         return intersectLine2Polygon(shape, polygon);
     }
-    else if (shape instanceof geom.Segment) {
+    else if (shape instanceof Segment) {
         return intersectSegment2Polygon(shape, polygon);
     }
-    else if (shape instanceof geom.Arc) {
+    else if (shape instanceof Arc) {
         return intersectArc2Polygon(shape, polygon);
     }
     else {
@@ -474,7 +474,7 @@ function ptInIntPoints(new_pt, ip) {
     return ip.some(pt => pt.equalTo(new_pt));
 }
 function createLineFromRay(ray) {
-    return new geom.Line(ray.start, ray.norm);
+    return new Line(ray.start, ray.norm);
 }
 export function intersectRay2Segment(ray, segment) {
     return intersectSegment2Line(segment, createLineFromRay(ray))

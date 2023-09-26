@@ -10,14 +10,7 @@ import { Shape } from './Shape';
  * @type {Box}
  */
 export class Box extends Shape {
-    /**
-     *
-     * @param xmin - minimal x coordinate
-     * @param ymin - minimal y coordinate
-     * @param xmax - maximal x coordinate
-     * @param ymax - maximal y coordinate
-     */
-    constructor(xmin = undefined, ymin = undefined, xmax = undefined, ymax = undefined) {
+    constructor(xmin, ymin, xmax, ymax) {
         super();
         this.xmin = xmin;
         this.ymin = ymin;
@@ -83,7 +76,7 @@ export class Box extends Shape {
      * @param {Box} other_box - other box to test
      * @returns {boolean}
      */
-    not_intersect(other_box) {
+    notIntersect(other_box) {
         return (this.xmax < other_box.xmin ||
             this.xmin > other_box.xmax ||
             this.ymax < other_box.ymin ||
@@ -95,7 +88,7 @@ export class Box extends Shape {
      * @returns {boolean}
      */
     intersect(other_box) {
-        return !this.not_intersect(other_box);
+        return !this.notIntersect(other_box);
     }
     /**
      * Returns new box merged with other box
@@ -210,7 +203,5 @@ export class Box extends Shape {
 }
 /**
  * Shortcut to create new box
- * @param args
- * @returns {Box}
  */
-export const box = (...args) => new Box(...args);
+export const box = (xmin, ymin, xmax, ymax) => new Box(xmin, ymin, xmax, ymax);

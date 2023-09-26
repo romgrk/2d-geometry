@@ -1,8 +1,8 @@
 import Errors from '../utils/errors'
-import * as geom from './index'
 import { Matrix } from './Matrix'
 import type { Box } from './Box'
 import type { Point } from './Point'
+import type { Vector } from './Vector'
 
 export type AnyShape = Shape<unknown>
 
@@ -26,12 +26,11 @@ export class Shape<T> {
     /**
      * Returns new shape translated by given vector.
      * Translation vector may be also defined by a pair of numbers.
-     * @param vector - Translation vector or
-     * @param tx - Translation by x-axis
-     * @param ty - Translation by y-axis
      */
-    translate(...args): T {
-        return this.transform(new Matrix().translate(...args))
+    translate(v: Vector): T;
+    translate(x: number, y: number): T;
+    translate(a: unknown, b?: unknown): T {
+        return this.transform(new Matrix().translate(a as any, b as any))
     }
 
     /**
@@ -42,7 +41,7 @@ export class Shape<T> {
      * @param angle - angle in radians
      * @param [center=(0,0)] center
      */
-    rotate(angle: number, center: Point = ({} as Point) /* fixed in _setupShape */): T {
+    rotate(angle: number, center: Point = ({} as Point /* fixed in _setupShape */)): T {
         return this.transform(new Matrix().rotate(angle, center.x, center.y));
     }
 
@@ -73,6 +72,11 @@ export class Shape<T> {
     }
 }
 
+/**
+ * There is a circular dependency between Shape & Point, so we inject point later
+ * when everything is properly defined.
+ * @private
+ */
 export function _setupShape(point: Function) {
     Shape.prototype.rotate = function rotate(angle: number, center: Point = point()): any {
         return this.transform(new Matrix().rotate(angle, center.x, center.y));

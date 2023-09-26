@@ -102,7 +102,7 @@ export declare class Arc extends Shape<Arc> {
      * @param {Shape} shape Shape of the one of supported types <br/>
      * @returns {Point[]}
      */
-    intersect(shape: any): any[];
+    intersect(shape: any): geom.Point[];
     /**
      * Calculate distance and shortest segment from arc to shape and return array [distance, shortest segment]
      * @param {Shape} shape Shape of the one of supported types Point, Line, Circle, Segment, Arc, Polygon or Planar Set

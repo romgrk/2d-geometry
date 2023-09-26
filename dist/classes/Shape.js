@@ -14,15 +14,8 @@ export class Shape {
     clone() {
         throw (Errors.CANNOT_INVOKE_ABSTRACT_METHOD);
     }
-    /**
-     * Returns new shape translated by given vector.
-     * Translation vector may be also defined by a pair of numbers.
-     * @param vector - Translation vector or
-     * @param tx - Translation by x-axis
-     * @param ty - Translation by y-axis
-     */
-    translate(...args) {
-        return this.transform(new Matrix().translate(...args));
+    translate(a, b) {
+        return this.transform(new Matrix().translate(a, b));
     }
     /**
      * Returns new shape rotated by given angle around given center point.
@@ -58,6 +51,11 @@ export class Shape {
         throw (Errors.CANNOT_INVOKE_ABSTRACT_METHOD);
     }
 }
+/**
+ * There is a circular dependency between Shape & Point, so we inject point later
+ * when everything is properly defined.
+ * @private
+ */
 export function _setupShape(point) {
     Shape.prototype.rotate = function rotate(angle, center = point()) {
         return this.transform(new Matrix().rotate(angle, center.x, center.y));

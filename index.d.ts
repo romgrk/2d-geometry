@@ -30,7 +30,7 @@ declare namespace Flatten {
         less_than(other_interval: Interval) : boolean;
         equal_to(other_interval: Interval) : boolean;
         intersect(other_interval: Interval) : boolean;
-        not_intersect(other_interval: Interval) : boolean;
+        notIntersect(other_interval: Interval) : boolean;
         output() : any;
 
         comparable_max(arg1: Comparable, arg2: Comparable) : Comparable;
@@ -181,7 +181,7 @@ declare namespace Flatten {
 
         // public methods
         clone(): Box;
-        not_intersect(box: Box): boolean;
+        notIntersect(box: Box): boolean;
         intersect(box: Box): boolean;
         merge(box: Box): Box;
         less_than(box: Box): boolean;

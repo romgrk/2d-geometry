@@ -64,14 +64,6 @@ export class Matrix {
         return new Matrix(this.a * other_matrix.a + this.c * other_matrix.b, this.b * other_matrix.a + this.d * other_matrix.b, this.a * other_matrix.c + this.c * other_matrix.d, this.b * other_matrix.c + this.d * other_matrix.d, this.a * other_matrix.tx + this.c * other_matrix.ty + this.tx, this.b * other_matrix.tx + this.d * other_matrix.ty + this.ty);
     }
     ;
-    /**
-     * Return new matrix as a result of multiplication of the current matrix
-     * by the matrix(1,0,0,1,tx,ty)
-     * @param {Vector} vector - Translation by vector or
-     * @param {number} tx - translation by x-axis
-     * @param {number} ty - translation by y-axis
-     * @returns {Matrix}
-     */
     translate(...args) {
         let tx, ty;
         if (args.length == 1 && !isNaN(args[0].x) && !isNaN(args[0].y)) {

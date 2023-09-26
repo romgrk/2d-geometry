@@ -61,7 +61,7 @@ export declare class Segment extends Shape<Segment> {
      * @param {Shape} shape - Shape of the one of supported types <br/>
      * @returns {Point[]}
      */
-    intersect(shape: any): any[];
+    intersect(shape: any): geom.Point[];
     /**
      * Calculate distance and shortest segment from segment to shape and return as array [distance, shortest segment]
      * @param {Shape} shape Shape of the one of supported types Point, Line, Circle, Segment, Arc, Polygon or Planar Set

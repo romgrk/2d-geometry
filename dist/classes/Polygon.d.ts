@@ -158,7 +158,7 @@ export declare class Polygon {
      * @param shape Shape of the one of supported types <br/>
      * @returns {Point[]}
      */
-    intersect(shape: any): any;
+    intersect(shape: any): geom.Point[];
     /**
      * Returns new polygon translated by vector vec
      * @param {Vector} vec

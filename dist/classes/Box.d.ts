@@ -16,14 +16,7 @@ export declare class Box extends Shape<Box> {
     xmax: number;
     /** Maximal y coordinate */
     ymax: number;
-    /**
-     *
-     * @param xmin - minimal x coordinate
-     * @param ymin - minimal y coordinate
-     * @param xmax - maximal x coordinate
-     * @param ymax - maximal y coordinate
-     */
-    constructor(xmin?: any, ymin?: any, xmax?: any, ymax?: any);
+    constructor(xmin?: number, ymin?: number, xmax?: number, ymax?: number);
     /**
      * Return new cloned instance of box
      */
@@ -67,7 +60,7 @@ export declare class Box extends Shape<Box> {
      * @param {Box} other_box - other box to test
      * @returns {boolean}
      */
-    not_intersect(other_box: any): boolean;
+    notIntersect(other_box: any): boolean;
     /**
      * Returns true if intersected with other box
      * @param {Box} other_box - Query box
@@ -137,8 +130,6 @@ export declare class Box extends Shape<Box> {
 }
 /**
  * Shortcut to create new box
- * @param args
- * @returns {Box}
  */
-export declare const box: (...args: any[]) => Box;
+export declare const box: (xmin?: number, ymin?: number, xmax?: number, ymax?: number) => Box;
 //# sourceMappingURL=Box.d.ts.map

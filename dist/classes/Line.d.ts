@@ -83,7 +83,7 @@ export declare class Line extends Shape<Line> {
      * @param {Shape} shape - shape to intersect with
      * @returns {Point[]}
      */
-    intersect(shape: any): any;
+    intersect(shape: any): geom.Point[];
     /**
      * Calculate distance and shortest segment from line to shape and returns array [distance, shortest_segment]
      * @param {Shape} shape Shape of the one of the types Point, Circle, Segment, Arc, Polygon

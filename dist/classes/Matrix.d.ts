@@ -1,3 +1,4 @@
+import type { Vector } from './Vector';
 /**
  * Class representing an affine transformation 3x3 matrix:
  * <pre>
@@ -52,12 +53,9 @@ export declare class Matrix {
     /**
      * Return new matrix as a result of multiplication of the current matrix
      * by the matrix(1,0,0,1,tx,ty)
-     * @param {Vector} vector - Translation by vector or
-     * @param {number} tx - translation by x-axis
-     * @param {number} ty - translation by y-axis
-     * @returns {Matrix}
      */
-    translate(...args: any[]): Matrix;
+    translate(v: Vector): Matrix;
+    translate(x: number, y: number): Matrix;
     /**
      * Return new matrix as a result of multiplication of the current matrix
      * by the matrix that defines rotation by given angle (in radians) around

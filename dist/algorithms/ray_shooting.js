@@ -10,14 +10,14 @@ import * as geom from '../classes';
 export function ray_shoot(polygon, point) {
     let contains = undefined;
     // 1. Quick reject
-    // if (polygon.box.not_intersect(point.box)) {
+    // if (polygon.box.notIntersect(point.box)) {
     //     return geom.OUTSIDE;
     // }
     let ray = new geom.Ray(point);
     let line = new geom.Line(ray.pt, ray.norm);
     // 2. Locate relevant edges of the polygon
     const searchBox = new geom.Box(ray.box.xmin - Utils.getTolerance(), ray.box.ymin - Utils.getTolerance(), ray.box.xmax, ray.box.ymax + Utils.getTolerance());
-    if (polygon.box.not_intersect(searchBox)) {
+    if (polygon.box.notIntersect(searchBox)) {
         return k.OUTSIDE;
     }
     let resp_edges = polygon.edges.search(searchBox);

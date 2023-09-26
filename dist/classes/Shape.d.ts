@@ -1,5 +1,6 @@
 import type { Box } from './Box';
 import type { Point } from './Point';
+import type { Vector } from './Vector';
 export type AnyShape = Shape<unknown>;
 /**
  * Base class representing shape
@@ -12,11 +13,9 @@ export declare class Shape<T> {
     /**
      * Returns new shape translated by given vector.
      * Translation vector may be also defined by a pair of numbers.
-     * @param vector - Translation vector or
-     * @param tx - Translation by x-axis
-     * @param ty - Translation by y-axis
      */
-    translate(...args: any[]): T;
+    translate(v: Vector): T;
+    translate(x: number, y: number): T;
     /**
      * Returns new shape rotated by given angle around given center point.
      * If center point is omitted, rotates around zero point (0,0).
@@ -43,5 +42,10 @@ export declare class Shape<T> {
     };
     svg(attrs?: {}): void;
 }
+/**
+ * There is a circular dependency between Shape & Point, so we inject point later
+ * when everything is properly defined.
+ * @private
+ */
 export declare function _setupShape(point: Function): void;
 //# sourceMappingURL=Shape.d.ts.map
