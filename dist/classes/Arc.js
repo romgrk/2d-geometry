@@ -1,42 +1,16 @@
-"use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.arc = exports.Arc = void 0;
-const constants_1 = require("../utils/constants");
-const distance_1 = require("../algorithms/distance");
-const planar_set_1 = require("../data_structures/planar_set");
-const Utils = __importStar(require("../utils/utils"));
-const Intersection = __importStar(require("../algorithms/intersection"));
-const attributes_1 = require("../utils/attributes");
-const geom = __importStar(require("./index"));
-const Shape_1 = require("./Shape");
+import { PIx2, CCW } from '../utils/constants';
+import { Distance } from '../algorithms/distance';
+import { PlanarSet } from '../data_structures/planar_set';
+import * as Utils from '../utils/utils';
+import * as Intersection from '../algorithms/intersection';
+import { convertToString } from "../utils/attributes";
+import * as geom from './index';
+import { Shape } from "./Shape";
 /**
  * Class representing a circular arc
  * @type {Arc}
  */
-class Arc extends Shape_1.Shape {
+export class Arc extends Shape {
     /**
      * @param {Point} pc - arc center
      * @param {number} r - arc radius
@@ -70,7 +44,7 @@ class Arc extends Shape_1.Shape {
          * Arc orientation
          * @type {boolean}
          */
-        this.counterClockwise = constants_1.CCW;
+        this.counterClockwise = CCW;
         if (args.length === 0)
             return;
         if (args.length === 1 && args[0] instanceof Object && args[0].name === "arc") {
@@ -110,23 +84,23 @@ class Arc extends Shape_1.Shape {
     get sweep() {
         if (Utils.EQ(this.startAngle, this.endAngle))
             return 0.0;
-        if (Utils.EQ(Math.abs(this.startAngle - this.endAngle), constants_1.PIx2)) {
-            return constants_1.PIx2;
+        if (Utils.EQ(Math.abs(this.startAngle - this.endAngle), PIx2)) {
+            return PIx2;
         }
         let sweep;
         if (this.counterClockwise) {
             sweep = Utils.GT(this.endAngle, this.startAngle) ?
-                this.endAngle - this.startAngle : this.endAngle - this.startAngle + constants_1.PIx2;
+                this.endAngle - this.startAngle : this.endAngle - this.startAngle + PIx2;
         }
         else {
             sweep = Utils.GT(this.startAngle, this.endAngle) ?
-                this.startAngle - this.endAngle : this.startAngle - this.endAngle + constants_1.PIx2;
+                this.startAngle - this.endAngle : this.startAngle - this.endAngle + PIx2;
         }
-        if (Utils.GT(sweep, constants_1.PIx2)) {
-            sweep -= constants_1.PIx2;
+        if (Utils.GT(sweep, PIx2)) {
+            sweep -= PIx2;
         }
         if (Utils.LT(sweep, 0)) {
-            sweep += constants_1.PIx2;
+            sweep += PIx2;
         }
         return sweep;
     }
@@ -278,33 +252,33 @@ class Arc extends Shape_1.Shape {
      */
     distanceTo(shape) {
         if (shape instanceof geom.Point) {
-            let [dist, shortest_segment] = distance_1.Distance.point2arc(shape, this);
+            let [dist, shortest_segment] = Distance.point2arc(shape, this);
             shortest_segment = shortest_segment.reverse();
             return [dist, shortest_segment];
         }
         if (shape instanceof geom.Circle) {
-            let [dist, shortest_segment] = distance_1.Distance.arc2circle(this, shape);
+            let [dist, shortest_segment] = Distance.arc2circle(this, shape);
             return [dist, shortest_segment];
         }
         if (shape instanceof geom.Line) {
-            let [dist, shortest_segment] = distance_1.Distance.arc2line(this, shape);
+            let [dist, shortest_segment] = Distance.arc2line(this, shape);
             return [dist, shortest_segment];
         }
         if (shape instanceof geom.Segment) {
-            let [dist, shortest_segment] = distance_1.Distance.segment2arc(shape, this);
+            let [dist, shortest_segment] = Distance.segment2arc(shape, this);
             shortest_segment = shortest_segment.reverse();
             return [dist, shortest_segment];
         }
         if (shape instanceof geom.Arc) {
-            let [dist, shortest_segment] = distance_1.Distance.arc2arc(this, shape);
+            let [dist, shortest_segment] = Distance.arc2arc(this, shape);
             return [dist, shortest_segment];
         }
         if (shape instanceof geom.Polygon) {
-            let [dist, shortest_segment] = distance_1.Distance.shape2polygon(this, shape);
+            let [dist, shortest_segment] = Distance.shape2polygon(this, shape);
             return [dist, shortest_segment];
         }
-        if (shape instanceof planar_set_1.PlanarSet) {
-            let [dist, shortest_segment] = distance_1.Distance.shape2planarSet(this, shape);
+        if (shape instanceof PlanarSet) {
+            let [dist, shortest_segment] = Distance.shape2planarSet(this, shape);
             return [dist, shortest_segment];
         }
     }
@@ -467,14 +441,12 @@ class Arc extends Shape_1.Shape {
         else {
             return `\n<path d="M${this.start.x},${this.start.y}
                              A${this.r},${this.r} 0 ${largeArcFlag},${sweepFlag} ${this.end.x},${this.end.y}"
-                    ${(0, attributes_1.convertToString)({ fill: "none", ...attrs })} />`;
+                    ${convertToString({ fill: "none", ...attrs })} />`;
         }
     }
 }
-exports.Arc = Arc;
 /**
  * Function to create arc equivalent to "new" constructor
  * @param args
  */
-const arc = (...args) => new geom.Arc(...args);
-exports.arc = arc;
+export const arc = (...args) => new geom.Arc(...args);

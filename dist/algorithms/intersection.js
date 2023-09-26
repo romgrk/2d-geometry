@@ -1,32 +1,6 @@
-"use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.intersectRay2Polygon = exports.intersectRay2Ray = exports.intersectRay2Line = exports.intersectRay2Box = exports.intersectRay2Circle = exports.intersectRay2Arc = exports.intersectRay2Segment = exports.intersectShape2Polygon = exports.intersectBox2Box = exports.intersectPolygon2Polygon = exports.intersectMultiline2Polygon = exports.intersectEdge2Polygon = exports.intersectEdge2Edge = exports.intersectCircle2Polygon = exports.intersectLine2Polygon = exports.intersectArc2Polygon = exports.intersectSegment2Polygon = exports.intersectEdge2Circle = exports.intersectEdge2Line = exports.intersectEdge2Arc = exports.intersectEdge2Segment = exports.intersectArc2Box = exports.intersectArc2Circle = exports.intersectArc2Arc = exports.intersectCircle2Box = exports.intersectCircle2Circle = exports.intersectSegment2Box = exports.intersectSegment2Arc = exports.intersectSegment2Circle = exports.intersectSegment2Segment = exports.intersectSegment2Line = exports.intersectLine2Arc = exports.intersectLine2Box = exports.intersectLine2Circle = exports.intersectLine2Line = void 0;
-const Utils = __importStar(require("../utils/utils"));
-const geom = __importStar(require("../classes"));
-function intersectLine2Line(line1, line2) {
+import * as Utils from '../utils/utils';
+import * as geom from '../classes';
+export function intersectLine2Line(line1, line2) {
     let ip = [];
     let [A1, B1, C1] = line1.standard;
     let [A2, B2, C2] = line2.standard;
@@ -60,8 +34,7 @@ function intersectLine2Line(line1, line2) {
     }
     return ip;
 }
-exports.intersectLine2Line = intersectLine2Line;
-function intersectLine2Circle(line, circle) {
+export function intersectLine2Circle(line, circle) {
     let ip = [];
     let prj = circle.pc.projectionOn(line); // projection of circle center on a line
     let dist = circle.pc.distanceTo(prj)[0]; // distance from circle center to projection
@@ -80,8 +53,7 @@ function intersectLine2Circle(line, circle) {
     }
     return ip;
 }
-exports.intersectLine2Circle = intersectLine2Circle;
-function intersectLine2Box(line, box) {
+export function intersectLine2Box(line, box) {
     let ips = [];
     for (let seg of box.toSegments()) {
         let ips_tmp = intersectSegment2Line(seg, line);
@@ -93,8 +65,7 @@ function intersectLine2Box(line, box) {
     }
     return ips;
 }
-exports.intersectLine2Box = intersectLine2Box;
-function intersectLine2Arc(line, arc) {
+export function intersectLine2Arc(line, arc) {
     let ip = [];
     if (intersectLine2Box(line, arc.box).length === 0) {
         return ip;
@@ -108,8 +79,7 @@ function intersectLine2Arc(line, arc) {
     }
     return ip;
 }
-exports.intersectLine2Arc = intersectLine2Arc;
-function intersectSegment2Line(seg, line) {
+export function intersectSegment2Line(seg, line) {
     let ip = [];
     // Boundary cases
     if (seg.ps.on(line)) {
@@ -136,8 +106,7 @@ function intersectSegment2Line(seg, line) {
     let line1 = new geom.Line(seg.ps, seg.pe);
     return intersectLine2Line(line1, line);
 }
-exports.intersectSegment2Line = intersectSegment2Line;
-function intersectSegment2Segment(seg1, seg2) {
+export function intersectSegment2Segment(seg1, seg2) {
     let ip = [];
     // quick reject
     if (seg1.box.not_intersect(seg2.box)) {
@@ -187,13 +156,12 @@ function intersectSegment2Segment(seg1, seg2) {
     }
     return ip;
 }
-exports.intersectSegment2Segment = intersectSegment2Segment;
 function isPointInSegmentBox(point, segment) {
     const box = segment.box;
     return Utils.LE(point.x, box.xmax) && Utils.GE(point.x, box.xmin) &&
         Utils.LE(point.y, box.ymax) && Utils.GE(point.y, box.ymin);
 }
-function intersectSegment2Circle(segment, circle) {
+export function intersectSegment2Circle(segment, circle) {
     let ips = [];
     if (segment.box.not_intersect(circle.box)) {
         return ips;
@@ -216,8 +184,7 @@ function intersectSegment2Circle(segment, circle) {
     }
     return ips;
 }
-exports.intersectSegment2Circle = intersectSegment2Circle;
-function intersectSegment2Arc(segment, arc) {
+export function intersectSegment2Arc(segment, arc) {
     let ip = [];
     if (segment.box.not_intersect(arc.box)) {
         return ip;
@@ -240,8 +207,7 @@ function intersectSegment2Arc(segment, arc) {
     }
     return ip;
 }
-exports.intersectSegment2Arc = intersectSegment2Arc;
-function intersectSegment2Box(segment, box) {
+export function intersectSegment2Box(segment, box) {
     let ips = [];
     for (let seg of box.toSegments()) {
         let ips_tmp = intersectSegment2Segment(seg, segment);
@@ -251,8 +217,7 @@ function intersectSegment2Box(segment, box) {
     }
     return ips;
 }
-exports.intersectSegment2Box = intersectSegment2Box;
-function intersectCircle2Circle(circle1, circle2) {
+export function intersectCircle2Circle(circle1, circle2) {
     let ip = [];
     if (circle1.box.not_intersect(circle2.box)) {
         return ip;
@@ -300,8 +265,7 @@ function intersectCircle2Circle(circle1, circle2) {
     ip.push(pt);
     return ip;
 }
-exports.intersectCircle2Circle = intersectCircle2Circle;
-function intersectCircle2Box(circle, box) {
+export function intersectCircle2Box(circle, box) {
     let ips = [];
     for (let seg of box.toSegments()) {
         let ips_tmp = intersectSegment2Circle(seg, circle);
@@ -311,8 +275,7 @@ function intersectCircle2Box(circle, box) {
     }
     return ips;
 }
-exports.intersectCircle2Box = intersectCircle2Box;
-function intersectArc2Arc(arc1, arc2) {
+export function intersectArc2Arc(arc1, arc2) {
     let ip = [];
     if (arc1.box.not_intersect(arc2.box)) {
         return ip;
@@ -346,8 +309,7 @@ function intersectArc2Arc(arc1, arc2) {
     }
     return ip;
 }
-exports.intersectArc2Arc = intersectArc2Arc;
-function intersectArc2Circle(arc, circle) {
+export function intersectArc2Circle(arc, circle) {
     let ip = [];
     if (arc.box.not_intersect(circle.box)) {
         return ip;
@@ -370,8 +332,7 @@ function intersectArc2Circle(arc, circle) {
     }
     return ip;
 }
-exports.intersectArc2Circle = intersectArc2Circle;
-function intersectArc2Box(arc, box) {
+export function intersectArc2Box(arc, box) {
     let ips = [];
     for (let seg of box.toSegments()) {
         let ips_tmp = intersectSegment2Arc(seg, arc);
@@ -381,24 +342,19 @@ function intersectArc2Box(arc, box) {
     }
     return ips;
 }
-exports.intersectArc2Box = intersectArc2Box;
-function intersectEdge2Segment(edge, segment) {
+export function intersectEdge2Segment(edge, segment) {
     return edge.isSegment() ? intersectSegment2Segment(edge.shape, segment) : intersectSegment2Arc(segment, edge.shape);
 }
-exports.intersectEdge2Segment = intersectEdge2Segment;
-function intersectEdge2Arc(edge, arc) {
+export function intersectEdge2Arc(edge, arc) {
     return edge.isSegment() ? intersectSegment2Arc(edge.shape, arc) : intersectArc2Arc(edge.shape, arc);
 }
-exports.intersectEdge2Arc = intersectEdge2Arc;
-function intersectEdge2Line(edge, line) {
+export function intersectEdge2Line(edge, line) {
     return edge.isSegment() ? intersectSegment2Line(edge.shape, line) : intersectLine2Arc(line, edge.shape);
 }
-exports.intersectEdge2Line = intersectEdge2Line;
-function intersectEdge2Circle(edge, circle) {
+export function intersectEdge2Circle(edge, circle) {
     return edge.isSegment() ? intersectSegment2Circle(edge.shape, circle) : intersectArc2Circle(edge.shape, circle);
 }
-exports.intersectEdge2Circle = intersectEdge2Circle;
-function intersectSegment2Polygon(segment, polygon) {
+export function intersectSegment2Polygon(segment, polygon) {
     let ip = [];
     for (let edge of polygon.edges) {
         for (let pt of intersectEdge2Segment(edge, segment)) {
@@ -407,8 +363,7 @@ function intersectSegment2Polygon(segment, polygon) {
     }
     return ip;
 }
-exports.intersectSegment2Polygon = intersectSegment2Polygon;
-function intersectArc2Polygon(arc, polygon) {
+export function intersectArc2Polygon(arc, polygon) {
     let ip = [];
     for (let edge of polygon.edges) {
         for (let pt of intersectEdge2Arc(edge, arc)) {
@@ -417,8 +372,7 @@ function intersectArc2Polygon(arc, polygon) {
     }
     return ip;
 }
-exports.intersectArc2Polygon = intersectArc2Polygon;
-function intersectLine2Polygon(line, polygon) {
+export function intersectLine2Polygon(line, polygon) {
     let ip = [];
     if (polygon.isEmpty()) {
         return ip;
@@ -432,8 +386,7 @@ function intersectLine2Polygon(line, polygon) {
     }
     return line.sortPoints(ip);
 }
-exports.intersectLine2Polygon = intersectLine2Polygon;
-function intersectCircle2Polygon(circle, polygon) {
+export function intersectCircle2Polygon(circle, polygon) {
     let ip = [];
     if (polygon.isEmpty()) {
         return ip;
@@ -445,16 +398,14 @@ function intersectCircle2Polygon(circle, polygon) {
     }
     return ip;
 }
-exports.intersectCircle2Polygon = intersectCircle2Polygon;
-function intersectEdge2Edge(edge1, edge2) {
+export function intersectEdge2Edge(edge1, edge2) {
     const shape1 = edge1.shape;
     const shape2 = edge2.shape;
     return edge1.isSegment() ?
         (edge2.isSegment() ? intersectSegment2Segment(shape1, shape2) : intersectSegment2Arc(shape1, shape2)) :
         (edge2.isSegment() ? intersectSegment2Arc(shape2, shape1) : intersectArc2Arc(shape1, shape2));
 }
-exports.intersectEdge2Edge = intersectEdge2Edge;
-function intersectEdge2Polygon(edge, polygon) {
+export function intersectEdge2Polygon(edge, polygon) {
     let ip = [];
     if (polygon.isEmpty() || edge.shape.box.not_intersect(polygon.box)) {
         return ip;
@@ -467,8 +418,7 @@ function intersectEdge2Polygon(edge, polygon) {
     }
     return ip;
 }
-exports.intersectEdge2Polygon = intersectEdge2Polygon;
-function intersectMultiline2Polygon(multiline, polygon) {
+export function intersectMultiline2Polygon(multiline, polygon) {
     let ip = [];
     if (polygon.isEmpty() || multiline.size === 0) {
         return ip;
@@ -480,8 +430,7 @@ function intersectMultiline2Polygon(multiline, polygon) {
     }
     return ip;
 }
-exports.intersectMultiline2Polygon = intersectMultiline2Polygon;
-function intersectPolygon2Polygon(polygon1, polygon2) {
+export function intersectPolygon2Polygon(polygon1, polygon2) {
     let ip = [];
     if (polygon1.isEmpty() || polygon2.isEmpty()) {
         return ip;
@@ -496,8 +445,7 @@ function intersectPolygon2Polygon(polygon1, polygon2) {
     }
     return ip;
 }
-exports.intersectPolygon2Polygon = intersectPolygon2Polygon;
-function intersectBox2Box(box1, box2) {
+export function intersectBox2Box(box1, box2) {
     let ip = [];
     for (let segment1 of box1.toSegments()) {
         for (let segment2 of box2.toSegments()) {
@@ -508,8 +456,7 @@ function intersectBox2Box(box1, box2) {
     }
     return ip;
 }
-exports.intersectBox2Box = intersectBox2Box;
-function intersectShape2Polygon(shape, polygon) {
+export function intersectShape2Polygon(shape, polygon) {
     if (shape instanceof geom.Line) {
         return intersectLine2Polygon(shape, polygon);
     }
@@ -523,46 +470,38 @@ function intersectShape2Polygon(shape, polygon) {
         return [];
     }
 }
-exports.intersectShape2Polygon = intersectShape2Polygon;
 function ptInIntPoints(new_pt, ip) {
     return ip.some(pt => pt.equalTo(new_pt));
 }
 function createLineFromRay(ray) {
     return new geom.Line(ray.start, ray.norm);
 }
-function intersectRay2Segment(ray, segment) {
+export function intersectRay2Segment(ray, segment) {
     return intersectSegment2Line(segment, createLineFromRay(ray))
         .filter(pt => ray.contains(pt));
 }
-exports.intersectRay2Segment = intersectRay2Segment;
-function intersectRay2Arc(ray, arc) {
+export function intersectRay2Arc(ray, arc) {
     return intersectLine2Arc(createLineFromRay(ray), arc)
         .filter(pt => ray.contains(pt));
 }
-exports.intersectRay2Arc = intersectRay2Arc;
-function intersectRay2Circle(ray, circle) {
+export function intersectRay2Circle(ray, circle) {
     return intersectLine2Circle(createLineFromRay(ray), circle)
         .filter(pt => ray.contains(pt));
 }
-exports.intersectRay2Circle = intersectRay2Circle;
-function intersectRay2Box(ray, box) {
+export function intersectRay2Box(ray, box) {
     return intersectLine2Box(createLineFromRay(ray), box)
         .filter(pt => ray.contains(pt));
 }
-exports.intersectRay2Box = intersectRay2Box;
-function intersectRay2Line(ray, line) {
+export function intersectRay2Line(ray, line) {
     return intersectLine2Line(createLineFromRay(ray), line)
         .filter(pt => ray.contains(pt));
 }
-exports.intersectRay2Line = intersectRay2Line;
-function intersectRay2Ray(ray1, ray2) {
+export function intersectRay2Ray(ray1, ray2) {
     return intersectLine2Line(createLineFromRay(ray1), createLineFromRay(ray2))
         .filter(pt => ray1.contains(pt))
         .filter(pt => ray2.contains(pt));
 }
-exports.intersectRay2Ray = intersectRay2Ray;
-function intersectRay2Polygon(ray, polygon) {
+export function intersectRay2Polygon(ray, polygon) {
     return intersectLine2Polygon(createLineFromRay(ray), polygon)
         .filter(pt => ray.contains(pt));
 }
-exports.intersectRay2Polygon = intersectRay2Polygon;

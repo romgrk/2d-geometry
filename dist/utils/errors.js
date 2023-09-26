@@ -1,9 +1,7 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * Class of system errors
  */
-class Errors {
+export default class Errors {
     /**
      * Throw error ILLEGAL_PARAMETERS when cannot instantiate from given parameter
      * @returns {ReferenceError}
@@ -40,4 +38,3 @@ class Errors {
         return new Error('Operation is not supported');
     }
 }
-exports.default = Errors;

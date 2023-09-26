@@ -1,15 +1,13 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.convertToString = void 0;
 const defaultAttributes = {
     stroke: "black"
 };
 class SVGAttributes {
     constructor(args = defaultAttributes) {
+        var _a;
         for (const property in args) {
             this[property] = args[property];
         }
-        this.stroke = args.stroke ?? defaultAttributes.stroke;
+        this.stroke = (_a = args.stroke) !== null && _a !== void 0 ? _a : defaultAttributes.stroke;
     }
     toAttributesString() {
         return Object.keys(this)
@@ -26,8 +24,7 @@ class SVGAttributes {
             .toLowerCase();
     }
 }
-function convertToString(attrs) {
+export function convertToString(attrs) {
     return new SVGAttributes(attrs).toAttributesString();
 }
-exports.convertToString = convertToString;
-exports.default = SVGAttributes;
+export default SVGAttributes;

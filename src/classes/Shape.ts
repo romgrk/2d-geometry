@@ -1,7 +1,8 @@
 import Errors from '../utils/errors'
-import {Matrix} from "./Matrix";
-import { Point } from './Point';
+import * as geom from './index'
+import { Matrix } from './Matrix'
 import type { Box } from './Box'
+import type { Point } from './Point'
 
 export type AnyShape = Shape<unknown>
 
@@ -41,7 +42,7 @@ export class Shape<T> {
      * @param angle - angle in radians
      * @param [center=(0,0)] center
      */
-    rotate(angle: number, center: Point = new Point()): T {
+    rotate(angle: number, center: Point = ({} as Point) /* fixed in _setupShape */): T {
         return this.transform(new Matrix().rotate(angle, center.x, center.y));
     }
 
@@ -69,5 +70,11 @@ export class Shape<T> {
 
     svg(attrs = {}) {
         throw(Errors.CANNOT_INVOKE_ABSTRACT_METHOD);
+    }
+}
+
+export function _setupShape(point: Function) {
+    Shape.prototype.rotate = function rotate(angle: number, center: Point = point()): any {
+        return this.transform(new Matrix().rotate(angle, center.x, center.y));
     }
 }

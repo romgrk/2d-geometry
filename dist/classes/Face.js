@@ -1,36 +1,7 @@
-"use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.Face = void 0;
-const circular_linked_list_1 = __importDefault(require("../data_structures/circular_linked_list"));
-const Utils = __importStar(require("../utils/utils"));
-const constants_1 = require("../utils/constants");
-const geom = __importStar(require("./index"));
+import CircularLinkedList from '../data_structures/circular_linked_list';
+import * as Utils from '../utils/utils';
+import { CCW, ORIENTATION } from '../utils/constants';
+import * as geom from './index';
 /**
  * Class representing a face (closed loop) in a [polygon]{@link geom.Polygon} object.
  * Face is a circular bidirectional linked list of [edges]{@link geom.Edge}.
@@ -53,7 +24,7 @@ const geom = __importStar(require("./index"));
  *   edge = edge.next;
  * } while (edge != face.first)
  */
-class Face extends circular_linked_list_1.default {
+export class Face extends CircularLinkedList {
     constructor(polygon, ...args) {
         super(); // construct empty list of edges
         /**
@@ -125,7 +96,7 @@ class Face extends circular_linked_list_1.default {
             }
             /* Instantiate face from a circle in CCW orientation */
             else if (args[0] instanceof geom.Circle) {
-                this.shapes2face(polygon.edges, [args[0].toArc(constants_1.CCW)]);
+                this.shapes2face(polygon.edges, [args[0].toArc(CCW)]);
             }
             /* Instantiate face from a box in CCW orientation */
             else if (args[0] instanceof geom.Box) {
@@ -372,13 +343,13 @@ class Face extends circular_linked_list_1.default {
         if (this._orientation === undefined) {
             let area = this.signedArea();
             if (Utils.EQ_0(area)) {
-                this._orientation = constants_1.ORIENTATION.NOT_ORIENTABLE;
+                this._orientation = ORIENTATION.NOT_ORIENTABLE;
             }
             else if (Utils.LT(area, 0)) {
-                this._orientation = constants_1.ORIENTATION.CCW;
+                this._orientation = ORIENTATION.CCW;
             }
             else {
-                this._orientation = constants_1.ORIENTATION.CW;
+                this._orientation = ORIENTATION.CW;
             }
         }
         return this._orientation;
@@ -472,4 +443,3 @@ class Face extends circular_linked_list_1.default {
         return svgStr;
     }
 }
-exports.Face = Face;

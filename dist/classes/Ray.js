@@ -1,41 +1,12 @@
-"use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.ray = exports.Ray = void 0;
-const errors_1 = __importDefault(require("../utils/errors"));
-const Utils = __importStar(require("../utils/utils"));
-const Intersection = __importStar(require("../algorithms/intersection"));
-const geom = __importStar(require("./index"));
-const Shape_1 = require("./Shape");
+import Errors from '../utils/errors';
+import * as Utils from '../utils/utils';
+import * as Intersection from "../algorithms/intersection";
+import * as geom from "./index";
+import { Shape } from "./Shape";
 /**
  * Class representing a ray (a half-infinite line).
  */
-class Ray extends Shape_1.Shape {
+export class Ray extends Shape {
     /**
      * Ray may be constructed by setting an <b>origin</b> point and a <b>normal</b> vector, so that any point <b>x</b>
      * on a ray fit an equation: <br />
@@ -63,7 +34,7 @@ class Ray extends Shape_1.Shape {
             this.norm = args[1].clone();
             return;
         }
-        throw errors_1.default.ILLEGAL_PARAMETERS;
+        throw Errors.ILLEGAL_PARAMETERS;
     }
     /**
      * Return new cloned instance of ray
@@ -200,6 +171,4 @@ class Ray extends Shape_1.Shape {
         return segment.svg(attrs);
     }
 }
-exports.Ray = Ray;
-const ray = (...args) => new geom.Ray(...args);
-exports.ray = ray;
+export const ray = (...args) => new geom.Ray(...args);

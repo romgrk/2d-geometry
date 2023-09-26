@@ -1,39 +1,10 @@
-"use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.relate = exports.cover = exports.contain = exports.covered = exports.inside = exports.disjoint = exports.touch = exports.intersect = exports.equal = void 0;
-const de9im_1 = __importDefault(require("../data_structures/de9im"));
-const k = __importStar(require("../utils/constants"));
-const intersection_1 = require("./intersection");
-const ray_shooting_1 = require("./ray_shooting");
-const BooleanOperations = __importStar(require("./boolean_op"));
-const Multiline_1 = require("../classes/Multiline");
-const geom = __importStar(require("../classes"));
+import DE9IM from "../data_structures/de9im";
+import * as k from '../utils/constants';
+import { intersectLine2Box, intersectLine2Circle, intersectLine2Line, intersectLine2Polygon, intersectShape2Polygon } from "./intersection";
+import { ray_shoot } from "./ray_shooting";
+import * as BooleanOperations from "./boolean_op";
+import { Multiline } from "../classes/Multiline";
+import * as geom from '../classes';
 /**
  * Returns true if shapes are topologically equal:  their interiors intersect and
  * no part of the interior or boundary of one geometry intersects the exterior of the other
@@ -41,60 +12,54 @@ const geom = __importStar(require("../classes"));
  * @param shape2
  * @returns {boolean}
  */
-function equal(shape1, shape2) {
+export function equal(shape1, shape2) {
     return relate(shape1, shape2).equal();
 }
-exports.equal = equal;
 /**
  * Returns true if shapes have at least one point in common, same as "not disjoint"
  * @param shape1
  * @param shape2
  * @returns {boolean}
  */
-function intersect(shape1, shape2) {
+export function intersect(shape1, shape2) {
     return relate(shape1, shape2).intersect();
 }
-exports.intersect = intersect;
 /**
  * Returns true if shapes have at least one point in common, but their interiors do not intersect
  * @param shape1
  * @param shape2
  * @returns {boolean}
  */
-function touch(shape1, shape2) {
+export function touch(shape1, shape2) {
     return relate(shape1, shape2).touch();
 }
-exports.touch = touch;
 /**
  * Returns true if shapes have no points in common neither in interior nor in boundary
  * @param shape1
  * @param shape2
  * @returns {boolean}
  */
-function disjoint(shape1, shape2) {
+export function disjoint(shape1, shape2) {
     return !intersect(shape1, shape2);
 }
-exports.disjoint = disjoint;
 /**
  * Returns true shape1 lies in the interior of shape2
  * @param shape1
  * @param shape2
  * @returns {boolean}
  */
-function inside(shape1, shape2) {
+export function inside(shape1, shape2) {
     return relate(shape1, shape2).inside();
 }
-exports.inside = inside;
 /**
  * Returns true if every point in shape1 lies in the interior or on the boundary of shape2
  * @param shape1
  * @param shape2
  * @returns {boolean}
  */
-function covered(shape1, shape2) {
+export function covered(shape1, shape2) {
     return relate(shape1, shape2).covered();
 }
-exports.covered = covered;
 /**
  * Returns true shape1's interior contains shape2 <br/>
  * Same as inside(shape2, shape1)
@@ -102,20 +67,18 @@ exports.covered = covered;
  * @param shape2
  * @returns {boolean}
  */
-function contain(shape1, shape2) {
+export function contain(shape1, shape2) {
     return inside(shape2, shape1);
 }
-exports.contain = contain;
 /**
  * Returns true shape1's cover shape2, same as shape2 covered by shape1
  * @param shape1
  * @param shape2
  * @returns {boolean}
  */
-function cover(shape1, shape2) {
+export function cover(shape1, shape2) {
     return covered(shape2, shape1);
 }
-exports.cover = cover;
 /**
  * Returns relation between two shapes as intersection 3x3 matrix, where each
  * element contains relevant intersection as array of shapes.
@@ -126,7 +89,7 @@ exports.cover = cover;
  * @param shape2
  * @returns {DE9IM}
  */
-function relate(shape1, shape2) {
+export function relate(shape1, shape2) {
     if (shape1 instanceof geom.Line && shape2 instanceof geom.Line) {
         return relateLine2Line(shape1, shape2);
     }
@@ -160,10 +123,9 @@ function relate(shape1, shape2) {
         return relatePolygon2Polygon(shape1, new geom.Polygon(shape2));
     }
 }
-exports.relate = relate;
 function relateLine2Line(line1, line2) {
-    let denim = new de9im_1.default();
-    let ip = (0, intersection_1.intersectLine2Line)(line1, line2);
+    let denim = new DE9IM();
+    let ip = intersectLine2Line(line1, line2);
     if (ip.length === 0) { // parallel or equal ?
         if (line1.contains(line2.pt) && line2.contains(line1.pt)) {
             denim.I2I = [line1]; // equal  'T.F...F..'  - no boundary
@@ -184,8 +146,8 @@ function relateLine2Line(line1, line2) {
     return denim;
 }
 function relateLine2Circle(line, circle) {
-    let denim = new de9im_1.default();
-    let ip = (0, intersection_1.intersectLine2Circle)(line, circle);
+    let denim = new DE9IM();
+    let ip = intersectLine2Circle(line, circle);
     if (ip.length === 0) {
         denim.I2I = [];
         denim.I2B = [];
@@ -199,7 +161,7 @@ function relateLine2Circle(line, circle) {
         denim.E2I = [circle];
     }
     else { // ip.length == 2
-        let multiline = new Multiline_1.Multiline([line]);
+        let multiline = new Multiline([line]);
         let ip_sorted = line.sortPoints(ip);
         multiline.split(ip_sorted);
         let splitShapes = multiline.toShapes();
@@ -211,8 +173,8 @@ function relateLine2Circle(line, circle) {
     return denim;
 }
 function relateLine2Box(line, box) {
-    let denim = new de9im_1.default();
-    let ip = (0, intersection_1.intersectLine2Box)(line, box);
+    let denim = new DE9IM();
+    let ip = intersectLine2Box(line, box);
     if (ip.length === 0) {
         denim.I2I = [];
         denim.I2B = [];
@@ -226,7 +188,7 @@ function relateLine2Box(line, box) {
         denim.E2I = [box];
     }
     else { // ip.length == 2
-        let multiline = new Multiline_1.Multiline([line]);
+        let multiline = new Multiline([line]);
         let ip_sorted = line.sortPoints(ip);
         multiline.split(ip_sorted);
         let splitShapes = multiline.toShapes();
@@ -247,9 +209,9 @@ function relateLine2Box(line, box) {
     return denim;
 }
 function relateLine2Polygon(line, polygon) {
-    let denim = new de9im_1.default();
-    let ip = (0, intersection_1.intersectLine2Polygon)(line, polygon);
-    let multiline = new Multiline_1.Multiline([line]);
+    let denim = new DE9IM();
+    let ip = intersectLine2Polygon(line, polygon);
+    let multiline = new Multiline([line]);
     let ip_sorted = ip.length > 0 ? ip.slice() : line.sortPoints(ip);
     multiline.split(ip_sorted);
     [...multiline].forEach(edge => edge.setInclusion(polygon));
@@ -260,10 +222,10 @@ function relateLine2Polygon(line, polygon) {
     return denim;
 }
 function relateShape2Polygon(shape, polygon) {
-    let denim = new de9im_1.default();
-    let ip = (0, intersection_1.intersectShape2Polygon)(shape, polygon);
+    let denim = new DE9IM();
+    let ip = intersectShape2Polygon(shape, polygon);
     let ip_sorted = ip.length > 0 ? ip.slice() : shape.sortPoints(ip);
-    let multiline = new Multiline_1.Multiline([shape]);
+    let multiline = new Multiline([shape]);
     multiline.split(ip_sorted);
     [...multiline].forEach(edge => edge.setInclusion(polygon));
     denim.I2I = [...multiline].filter(edge => edge.bv === k.INSIDE).map(edge => edge.shape);
@@ -273,7 +235,7 @@ function relateShape2Polygon(shape, polygon) {
     denim.B2B = [];
     denim.B2E = [];
     for (let pt of [shape.start, shape.end]) {
-        switch ((0, ray_shooting_1.ray_shoot)(polygon, pt)) {
+        switch (ray_shoot(polygon, pt)) {
             case k.INSIDE:
                 denim.B2I.push(pt);
                 break;
@@ -291,7 +253,7 @@ function relateShape2Polygon(shape, polygon) {
     return denim;
 }
 function relatePolygon2Polygon(polygon1, polygon2) {
-    let denim = new de9im_1.default();
+    let denim = new DE9IM();
     let [ip_sorted1, ip_sorted2] = BooleanOperations.calculateIntersections(polygon1, polygon2);
     let boolean_intersection = BooleanOperations.intersect(polygon1, polygon2);
     let boolean_difference1 = BooleanOperations.subtract(polygon1, polygon2);

@@ -1,38 +1,9 @@
-"use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.Distance = void 0;
-const interval_tree_1 = __importDefault(require("@flatten-js/interval-tree"));
-const Utils = __importStar(require("../utils/utils"));
-const Intersection = __importStar(require("../algorithms/intersection"));
-const geom = __importStar(require("../classes"));
-const planar_set_1 = require("../data_structures/planar_set");
-class Distance {
+import IntervalTree from '@flatten-js/interval-tree';
+import * as Utils from '../utils/utils';
+import * as Intersection from '../algorithms/intersection';
+import * as geom from '../classes';
+import { PlanarSet } from '../data_structures/planar_set';
+export class Distance {
     /**
      * Calculate distance and shortest segment between points
      * @param pt1
@@ -480,7 +451,7 @@ class Distance {
      * @param set
      */
     static minmax_tree(shape, set, min_stop) {
-        let tree = new interval_tree_1.default();
+        let tree = new IntervalTree();
         let level = [set.index.root];
         let squared_min_stop = min_stop < Number.POSITIVE_INFINITY ? min_stop * min_stop : Number.POSITIVE_INFINITY;
         squared_min_stop = Distance.minmax_tree_process_level(shape, level, squared_min_stop, tree);
@@ -515,7 +486,7 @@ class Distance {
     static shape2planarSet(shape, set, min_stop = Number.POSITIVE_INFINITY) {
         let min_dist_and_segment = [min_stop, new geom.Segment()];
         let stop = false;
-        if (set instanceof planar_set_1.PlanarSet) {
+        if (set instanceof PlanarSet) {
             let tree = Distance.minmax_tree(shape, set, min_stop);
             [min_dist_and_segment, stop] = Distance.minmax_tree_calc_distance(shape, tree.root, min_dist_and_segment);
         }
@@ -536,4 +507,3 @@ class Distance {
         return shape1.distanceTo(shape2);
     }
 }
-exports.Distance = Distance;

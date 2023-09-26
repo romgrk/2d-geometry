@@ -1,5 +1,5 @@
-import { Point } from './Point';
 import type { Box } from './Box';
+import type { Point } from './Point';
 export type AnyShape = Shape<unknown>;
 /**
  * Base class representing shape
@@ -43,4 +43,5 @@ export declare class Shape<T> {
     };
     svg(attrs?: {}): void;
 }
+export declare function _setupShape(point: Function): void;
 //# sourceMappingURL=Shape.d.ts.map

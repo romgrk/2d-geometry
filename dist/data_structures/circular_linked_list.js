@@ -1,14 +1,9 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const linked_list_1 = __importDefault(require("./linked_list"));
+import LinkedList from './linked_list';
 /**
  * Class implements circular bidirectional linked list <br/>
  * LinkedListElement - object of any type that has properties next and prev.
  */
-class CircularLinkedList extends linked_list_1.default {
+class CircularLinkedList extends LinkedList {
     constructor(first, last) {
         super(first, last);
         this.setCircularLinks();
@@ -63,4 +58,4 @@ class CircularLinkedList extends linked_list_1.default {
         return this;
     }
 }
-exports.default = CircularLinkedList;
+export default CircularLinkedList;

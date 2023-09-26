@@ -1,42 +1,13 @@
-"use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.restoreFaces = exports.removeOldFaces = exports.removeNotRelevantChains = exports.calculateIntersections = exports.outerClip = exports.innerClip = exports.intersect = exports.subtract = exports.unify = exports.BOOLEAN_SUBTRACT = exports.BOOLEAN_INTERSECT = exports.BOOLEAN_UNION = void 0;
-const errors_1 = __importDefault(require("../utils/errors"));
-const Utils = __importStar(require("../utils/utils"));
-const Constants = __importStar(require("../utils/constants"));
-const linked_list_1 = __importDefault(require("../data_structures/linked_list"));
-const smart_intersections_1 = require("../data_structures/smart_intersections");
+import Errors from "../utils/errors";
+import * as Utils from '../utils/utils';
+import * as Constants from '../utils/constants';
+import LinkedList from "../data_structures/linked_list";
+import { addToIntPoints, sortIntersections, filterDuplicatedIntersections, initializeInclusionFlags, calculateInclusionFlags, setOverlappingFlags, intPointsPoolCount, splitByIntersections } from "../data_structures/smart_intersections";
 const { INSIDE, OUTSIDE, BOUNDARY, OVERLAP_SAME, OVERLAP_OPPOSITE } = Constants;
 const { NOT_VERTEX, START_VERTEX, END_VERTEX } = Constants;
-exports.BOOLEAN_UNION = 1;
-exports.BOOLEAN_INTERSECT = 2;
-exports.BOOLEAN_SUBTRACT = 3;
+export const BOOLEAN_UNION = 1;
+export const BOOLEAN_INTERSECT = 2;
+export const BOOLEAN_SUBTRACT = 3;
 /**
  * Unify two polygons polygons and returns new polygon. <br/>
  * Point belongs to the resulted polygon if it belongs to the first OR to the second polygon
@@ -44,11 +15,10 @@ exports.BOOLEAN_SUBTRACT = 3;
  * @param {Polygon} polygon2 - second operand
  * @returns {Polygon}
  */
-function unify(polygon1, polygon2) {
-    let [res_poly, wrk_poly] = booleanOpBinary(polygon1, polygon2, exports.BOOLEAN_UNION, true);
+export function unify(polygon1, polygon2) {
+    let [res_poly, wrk_poly] = booleanOpBinary(polygon1, polygon2, BOOLEAN_UNION, true);
     return res_poly;
 }
-exports.unify = unify;
 /**
  * Subtract second polygon from the first and returns new polygon
  * Point belongs to the resulted polygon if it belongs to the first polygon AND NOT to the second polygon
@@ -56,13 +26,12 @@ exports.unify = unify;
  * @param {Polygon} polygon2 - second operand
  * @returns {Polygon}
  */
-function subtract(polygon1, polygon2) {
+export function subtract(polygon1, polygon2) {
     let polygon2_tmp = polygon2.clone();
     let polygon2_reversed = polygon2_tmp.reverse();
-    let [res_poly, wrk_poly] = booleanOpBinary(polygon1, polygon2_reversed, exports.BOOLEAN_SUBTRACT, true);
+    let [res_poly, wrk_poly] = booleanOpBinary(polygon1, polygon2_reversed, BOOLEAN_SUBTRACT, true);
     return res_poly;
 }
-exports.subtract = subtract;
 /**
  * Intersect two polygons and returns new polygon
  * Point belongs to the resulted polygon is it belongs to the first AND to the second polygon
@@ -70,11 +39,10 @@ exports.subtract = subtract;
  * @param {Polygon} polygon2 - second operand
  * @returns {Polygon}
  */
-function intersect(polygon1, polygon2) {
-    let [res_poly, wrk_poly] = booleanOpBinary(polygon1, polygon2, exports.BOOLEAN_INTERSECT, true);
+export function intersect(polygon1, polygon2) {
+    let [res_poly, wrk_poly] = booleanOpBinary(polygon1, polygon2, BOOLEAN_INTERSECT, true);
     return res_poly;
 }
-exports.intersect = intersect;
 /**
  * Returns boundary of intersection between two polygons as two arrays of shapes (Segments/Arcs) <br/>
  * The first array are shapes from the first polygon, the second array are shapes from the second
@@ -82,8 +50,8 @@ exports.intersect = intersect;
  * @param {Polygon} polygon2 - second operand
  * @returns {Shape[][]}
  */
-function innerClip(polygon1, polygon2) {
-    let [res_poly, wrk_poly] = booleanOpBinary(polygon1, polygon2, exports.BOOLEAN_INTERSECT, false);
+export function innerClip(polygon1, polygon2) {
+    let [res_poly, wrk_poly] = booleanOpBinary(polygon1, polygon2, BOOLEAN_INTERSECT, false);
     let clip_shapes1 = [];
     for (let face of res_poly.faces) {
         clip_shapes1 = [...clip_shapes1, ...[...face.edges].map(edge => edge.shape)];
@@ -94,22 +62,20 @@ function innerClip(polygon1, polygon2) {
     }
     return [clip_shapes1, clip_shapes2];
 }
-exports.innerClip = innerClip;
 /**
  * Returns boundary of subtraction of the second polygon from first polygon as array of shapes
  * @param {Polygon} polygon1 - first operand
  * @param {Polygon} polygon2 - second operand
  * @returns {Shape[]}
  */
-function outerClip(polygon1, polygon2) {
-    let [res_poly, wrk_poly] = booleanOpBinary(polygon1, polygon2, exports.BOOLEAN_SUBTRACT, false);
+export function outerClip(polygon1, polygon2) {
+    let [res_poly, wrk_poly] = booleanOpBinary(polygon1, polygon2, BOOLEAN_SUBTRACT, false);
     let clip_shapes1 = [];
     for (let face of res_poly.faces) {
         clip_shapes1 = [...clip_shapes1, ...[...face.edges].map(edge => edge.shape)];
     }
     return clip_shapes1;
 }
-exports.outerClip = outerClip;
 /**
  * Returns intersection points between boundaries of two polygons as two array of points <br/>
  * Points in the first array belong to first polygon, points from the second - to the second.
@@ -118,25 +84,24 @@ exports.outerClip = outerClip;
  * @param {Polygon} polygon2 - second operand
  * @returns {Point[][]}
  */
-function calculateIntersections(polygon1, polygon2) {
+export function calculateIntersections(polygon1, polygon2) {
     let res_poly = polygon1.clone();
     let wrk_poly = polygon2.clone();
     // get intersection points
     let intersections = getIntersections(res_poly, wrk_poly);
     // sort intersection points
-    (0, smart_intersections_1.sortIntersections)(intersections);
+    sortIntersections(intersections);
     // split by intersection points
-    (0, smart_intersections_1.splitByIntersections)(res_poly, intersections.int_points1_sorted);
-    (0, smart_intersections_1.splitByIntersections)(wrk_poly, intersections.int_points2_sorted);
+    splitByIntersections(res_poly, intersections.int_points1_sorted);
+    splitByIntersections(wrk_poly, intersections.int_points2_sorted);
     // filter duplicated intersection points
-    (0, smart_intersections_1.filterDuplicatedIntersections)(intersections);
+    filterDuplicatedIntersections(intersections);
     // sort intersection points again after filtering
-    (0, smart_intersections_1.sortIntersections)(intersections);
+    sortIntersections(intersections);
     let ip_sorted1 = intersections.int_points1_sorted.map(int_point => int_point.pt);
     let ip_sorted2 = intersections.int_points2_sorted.map(int_point => int_point.pt);
     return [ip_sorted1, ip_sorted2];
 }
-exports.calculateIntersections = calculateIntersections;
 function filterNotRelevantEdges(res_poly, wrk_poly, intersections, op) {
     // keep not intersected faces for further remove and merge
     let notIntersectedFacesRes = getNotIntersectedFaces(res_poly, intersections.int_points1);
@@ -145,17 +110,17 @@ function filterNotRelevantEdges(res_poly, wrk_poly, intersections, op) {
     calcInclusionForNotIntersectedFaces(notIntersectedFacesRes, wrk_poly);
     calcInclusionForNotIntersectedFaces(notIntersectedFacesWrk, res_poly);
     // initialize inclusion flags for edges incident to intersections
-    (0, smart_intersections_1.initializeInclusionFlags)(intersections.int_points1);
-    (0, smart_intersections_1.initializeInclusionFlags)(intersections.int_points2);
+    initializeInclusionFlags(intersections.int_points1);
+    initializeInclusionFlags(intersections.int_points2);
     // calculate inclusion flags only for edges incident to intersections
-    (0, smart_intersections_1.calculateInclusionFlags)(intersections.int_points1, wrk_poly);
-    (0, smart_intersections_1.calculateInclusionFlags)(intersections.int_points2, res_poly);
+    calculateInclusionFlags(intersections.int_points1, wrk_poly);
+    calculateInclusionFlags(intersections.int_points2, res_poly);
     // fix boundary conflicts
     while (fixBoundaryConflicts(res_poly, wrk_poly, intersections.int_points1, intersections.int_points1_sorted, intersections.int_points2, intersections))
         ;
     // while (fixBoundaryConflicts(wrk_poly, res_poly, intersections.int_points2, intersections.int_points2_sorted, intersections.int_points1, intersections));
     // Set overlapping flags for boundary chains: SAME or OPPOSITE
-    (0, smart_intersections_1.setOverlappingFlags)(intersections);
+    setOverlappingFlags(intersections);
     // remove not relevant chains between intersection points
     removeNotRelevantChains(res_poly, op, intersections.int_points1_sorted, true);
     removeNotRelevantChains(wrk_poly, op, intersections.int_points2_sorted, false);
@@ -185,14 +150,14 @@ function booleanOpBinary(polygon1, polygon2, op, restore) {
     // get intersection points
     let intersections = getIntersections(res_poly, wrk_poly);
     // sort intersection points
-    (0, smart_intersections_1.sortIntersections)(intersections);
+    sortIntersections(intersections);
     // split by intersection points
-    (0, smart_intersections_1.splitByIntersections)(res_poly, intersections.int_points1_sorted);
-    (0, smart_intersections_1.splitByIntersections)(wrk_poly, intersections.int_points2_sorted);
+    splitByIntersections(res_poly, intersections.int_points1_sorted);
+    splitByIntersections(wrk_poly, intersections.int_points2_sorted);
     // filter duplicated intersection points
-    (0, smart_intersections_1.filterDuplicatedIntersections)(intersections);
+    filterDuplicatedIntersections(intersections);
     // sort intersection points again after filtering
-    (0, smart_intersections_1.sortIntersections)(intersections);
+    sortIntersections(intersections);
     // calculate inclusion and remove not relevant edges
     filterNotRelevantEdges(res_poly, wrk_poly, intersections, op);
     if (restore) {
@@ -217,8 +182,8 @@ function getIntersections(polygon1, polygon2) {
             let ip = edge1.shape.intersect(edge2.shape);
             // for each intersection point
             for (let pt of ip) {
-                (0, smart_intersections_1.addToIntPoints)(edge1, pt, intersections.int_points1);
-                (0, smart_intersections_1.addToIntPoints)(edge2, pt, intersections.int_points2);
+                addToIntPoints(edge1, pt, intersections.int_points1);
+                addToIntPoints(edge2, pt, intersections.int_points2);
             }
         }
     }
@@ -254,7 +219,7 @@ function fixBoundaryConflicts(poly1, poly2, int_points1, int_points1_sorted, int
         }
         // Skip duplicated points with same <x,y> in "cur_int_point1" pool
         let int_points_cur_pool_start = i;
-        let int_points_cur_pool_num = (0, smart_intersections_1.intPointsPoolCount)(int_points1_sorted, i, cur_face);
+        let int_points_cur_pool_num = intPointsPoolCount(int_points1_sorted, i, cur_face);
         let next_int_point_id;
         if (int_points_cur_pool_start + int_points_cur_pool_num < num_int_points &&
             int_points1_sorted[int_points_cur_pool_start + int_points_cur_pool_num].face === cur_face) {
@@ -265,7 +230,7 @@ function fixBoundaryConflicts(poly1, poly2, int_points1, int_points1_sorted, int
         }
         // From all points with same ,x,y. in 'next_int_point1' pool choose one that
         // has same face both in res_poly and in wrk_poly
-        let int_points_next_pool_num = (0, smart_intersections_1.intPointsPoolCount)(int_points1_sorted, next_int_point_id, cur_face);
+        let int_points_next_pool_num = intPointsPoolCount(int_points1_sorted, next_int_point_id, cur_face);
         next_int_point1 = null;
         for (let j = next_int_point_id; j < next_int_point_id + int_points_next_pool_num; j++) {
             let next_int_point1_tmp = int_points1_sorted[j];
@@ -312,7 +277,7 @@ function fixBoundaryConflicts(poly1, poly2, int_points1, int_points1_sorted, int
                     }
                     else { // another not boundary edge between from and to
                         if (edge_tmp.bv != new_bv) { // and it has different bv - can't resolve conflict
-                            throw errors_1.default.UNRESOLVED_BOUNDARY_CONFLICT;
+                            throw Errors.UNRESOLVED_BOUNDARY_CONFLICT;
                         }
                     }
                 }
@@ -334,7 +299,7 @@ function fixBoundaryConflicts(poly1, poly2, int_points1, int_points1_sorted, int
                     if (dist < 10 * Utils.getTolerance()) { // it should be very close
                         // let pt = edge_tmp.end;
                         // add to the list of intersections of poly1
-                        (0, smart_intersections_1.addToIntPoints)(edge_tmp, segment.ps, int_points1);
+                        addToIntPoints(edge_tmp, segment.ps, int_points1);
                         // split edge_tmp in poly1 if need
                         let int_point1 = int_points1[int_points1.length - 1];
                         if (int_point1.is_vertex & START_VERTEX) { // nothing to split
@@ -362,7 +327,7 @@ function fixBoundaryConflicts(poly1, poly2, int_points1, int_points1_sorted, int
                         }
                         // add to the list of intersections of poly2
                         let edge2 = poly2.findEdgeByPoint(segment.pe);
-                        (0, smart_intersections_1.addToIntPoints)(edge2, segment.pe, int_points2);
+                        addToIntPoints(edge2, segment.pe, int_points2);
                         // split edge2 in poly2 if need
                         let int_point2 = int_points2[int_points2.length - 1];
                         if (int_point2.is_vertex & START_VERTEX) { // nothing to split
@@ -390,7 +355,7 @@ function fixBoundaryConflicts(poly1, poly2, int_points1, int_points1_sorted, int
                             newEdge2.next.bv = undefined;
                             newEdge2.next.setInclusion(poly1);
                         }
-                        (0, smart_intersections_1.sortIntersections)(intersections);
+                        sortIntersections(intersections);
                         iterate_more = true;
                         break;
                     }
@@ -400,12 +365,12 @@ function fixBoundaryConflicts(poly1, poly2, int_points1, int_points1_sorted, int
             // we changed intersections inside loop, have to exit and repair again
             if (iterate_more)
                 break;
-            throw errors_1.default.UNRESOLVED_BOUNDARY_CONFLICT;
+            throw Errors.UNRESOLVED_BOUNDARY_CONFLICT;
         }
     }
     return iterate_more;
 }
-function removeNotRelevantChains(polygon, op, int_points, is_res_polygon) {
+export function removeNotRelevantChains(polygon, op, int_points, is_res_polygon) {
     if (!int_points)
         return;
     let cur_face = undefined;
@@ -423,7 +388,7 @@ function removeNotRelevantChains(polygon, op, int_points, is_res_polygon) {
         // Get next int point from the same face that current
         // Count how many duplicated points with same <x,y> in "points from" pool ?
         let int_points_from_pull_start = i;
-        let int_points_from_pull_num = (0, smart_intersections_1.intPointsPoolCount)(int_points, i, cur_face);
+        let int_points_from_pull_num = intPointsPoolCount(int_points, i, cur_face);
         let next_int_point_num;
         if (int_points_from_pull_start + int_points_from_pull_num < int_points.length &&
             int_points[int_points_from_pull_start + int_points_from_pull_num].face === int_point_current.face) {
@@ -435,13 +400,13 @@ function removeNotRelevantChains(polygon, op, int_points, is_res_polygon) {
         int_point_next = int_points[next_int_point_num];
         /* Count how many duplicated points with same <x,y> in "points to" pull ? */
         let int_points_to_pull_start = next_int_point_num;
-        let int_points_to_pull_num = (0, smart_intersections_1.intPointsPoolCount)(int_points, int_points_to_pull_start, cur_face);
+        let int_points_to_pull_num = intPointsPoolCount(int_points, int_points_to_pull_start, cur_face);
         let edge_from = int_point_current.edge_after;
         let edge_to = int_point_next.edge_before;
-        if ((edge_from.bv === INSIDE && edge_to.bv === INSIDE && op === exports.BOOLEAN_UNION) ||
-            (edge_from.bv === OUTSIDE && edge_to.bv === OUTSIDE && op === exports.BOOLEAN_INTERSECT) ||
-            ((edge_from.bv === OUTSIDE || edge_to.bv === OUTSIDE) && op === exports.BOOLEAN_SUBTRACT && !is_res_polygon) ||
-            ((edge_from.bv === INSIDE || edge_to.bv === INSIDE) && op === exports.BOOLEAN_SUBTRACT && is_res_polygon) ||
+        if ((edge_from.bv === INSIDE && edge_to.bv === INSIDE && op === BOOLEAN_UNION) ||
+            (edge_from.bv === OUTSIDE && edge_to.bv === OUTSIDE && op === BOOLEAN_INTERSECT) ||
+            ((edge_from.bv === OUTSIDE || edge_to.bv === OUTSIDE) && op === BOOLEAN_SUBTRACT && !is_res_polygon) ||
+            ((edge_from.bv === INSIDE || edge_to.bv === INSIDE) && op === BOOLEAN_SUBTRACT && is_res_polygon) ||
             (edge_from.bv === BOUNDARY && edge_to.bv === BOUNDARY && (edge_from.overlap & OVERLAP_SAME) && is_res_polygon) ||
             (edge_from.bv === BOUNDARY && edge_to.bv === BOUNDARY && (edge_from.overlap & OVERLAP_OPPOSITE))) {
             polygon.removeChain(cur_face, edge_from, edge_to);
@@ -458,7 +423,6 @@ function removeNotRelevantChains(polygon, op, int_points, is_res_polygon) {
         i += int_points_from_pull_num - 1;
     }
 }
-exports.removeNotRelevantChains = removeNotRelevantChains;
 ;
 function copyWrkToRes(res_polygon, wrk_polygon, op, int_points) {
     for (let face of wrk_polygon.faces) {
@@ -540,7 +504,7 @@ function swapLinks(res_polygon, wrk_polygon, intersections) {
     }
     // Sanity check that no dead ends left
 }
-function removeOldFaces(polygon, int_points) {
+export function removeOldFaces(polygon, int_points) {
     for (let int_point of int_points) {
         polygon.faces.delete(int_point.face);
         int_point.face = undefined;
@@ -550,8 +514,7 @@ function removeOldFaces(polygon, int_points) {
             int_point.edge_after.face = undefined;
     }
 }
-exports.removeOldFaces = removeOldFaces;
-function restoreFaces(polygon, int_points, other_int_points) {
+export function restoreFaces(polygon, int_points, other_int_points) {
     // For each intersection point - create new face
     for (let int_point of int_points) {
         if (int_point.edge_before === undefined || int_point.edge_after === undefined) // completely deleted
@@ -562,7 +525,7 @@ function restoreFaces(polygon, int_points, other_int_points) {
             continue;
         let first = int_point.edge_after; // face start
         let last = int_point.edge_before; // face end;
-        linked_list_1.default.testInfiniteLoop(first); // check and throw error if infinite loop found
+        LinkedList.testInfiniteLoop(first); // check and throw error if infinite loop found
         let face = polygon.addFace(first, last);
         // Mark intersection points from the newly create face
         // to avoid multiple creation of the same face
@@ -582,14 +545,13 @@ function restoreFaces(polygon, int_points, other_int_points) {
         }
     }
 }
-exports.restoreFaces = restoreFaces;
 function removeNotRelevantNotIntersectedFaces(polygon, notIntersectedFaces, op, is_res_polygon) {
     for (let face of notIntersectedFaces) {
         let rel = face.first.bv;
-        if (op === exports.BOOLEAN_UNION && rel === INSIDE ||
-            op === exports.BOOLEAN_SUBTRACT && rel === INSIDE && is_res_polygon ||
-            op === exports.BOOLEAN_SUBTRACT && rel === OUTSIDE && !is_res_polygon ||
-            op === exports.BOOLEAN_INTERSECT && rel === OUTSIDE) {
+        if (op === BOOLEAN_UNION && rel === INSIDE ||
+            op === BOOLEAN_SUBTRACT && rel === INSIDE && is_res_polygon ||
+            op === BOOLEAN_SUBTRACT && rel === OUTSIDE && !is_res_polygon ||
+            op === BOOLEAN_INTERSECT && rel === OUTSIDE) {
             polygon.deleteFace(face);
         }
     }

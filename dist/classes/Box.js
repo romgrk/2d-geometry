@@ -1,18 +1,15 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.box = exports.Box = void 0;
-const attributes_1 = require("../utils/attributes");
-const errors_1 = __importDefault(require("../utils/errors"));
-const index_1 = require("./index");
+import { convertToString } from "../utils/attributes";
+import Errors from '../utils/errors';
+import { Matrix } from './Matrix';
+import { Point } from './Point';
+import { Segment } from './Segment';
+import { Shape } from './Shape';
 /**
  * Class Box represents bounding box of the shape.
  * It may also represent axis-aligned rectangle
  * @type {Box}
  */
-class Box extends index_1.Shape {
+export class Box extends Shape {
     /**
      *
      * @param xmin - minimal x coordinate
@@ -37,14 +34,14 @@ class Box extends index_1.Shape {
      * Property low need for interval tree interface
      */
     get low() {
-        return new index_1.Point(this.xmin, this.ymin);
+        return new Point(this.xmin, this.ymin);
     }
     /**
      * Property high need for interval tree interface
      * @returns {Point}
      */
     get high() {
-        return new index_1.Point(this.xmax, this.ymax);
+        return new Point(this.xmax, this.ymax);
     }
     /**
      * Property max returns the box itself !
@@ -58,7 +55,7 @@ class Box extends index_1.Shape {
      * @returns {Point}
      */
     get center() {
-        return new index_1.Point((this.xmin + this.xmax) / 2, (this.ymin + this.ymax) / 2);
+        return new Point((this.xmin + this.xmax) / 2, (this.ymin + this.ymax) / 2);
     }
     /**
      * Return the width of the box
@@ -157,10 +154,10 @@ class Box extends index_1.Shape {
      */
     toPoints() {
         return [
-            new index_1.Point(this.xmin, this.ymin),
-            new index_1.Point(this.xmax, this.ymin),
-            new index_1.Point(this.xmax, this.ymax),
-            new index_1.Point(this.xmin, this.ymax)
+            new Point(this.xmin, this.ymin),
+            new Point(this.xmax, this.ymin),
+            new Point(this.xmax, this.ymax),
+            new Point(this.xmin, this.ymax)
         ];
     }
     /**
@@ -170,10 +167,10 @@ class Box extends index_1.Shape {
     toSegments() {
         let pts = this.toPoints();
         return [
-            new index_1.Segment(pts[0], pts[1]),
-            new index_1.Segment(pts[1], pts[2]),
-            new index_1.Segment(pts[2], pts[3]),
-            new index_1.Segment(pts[3], pts[0])
+            new Segment(pts[0], pts[1]),
+            new Segment(pts[1], pts[2]),
+            new Segment(pts[2], pts[3]),
+            new Segment(pts[3], pts[0])
         ];
     }
     /**
@@ -182,8 +179,8 @@ class Box extends index_1.Shape {
      * @param {number} angle - angle in radians
      * @param {Point} [center=(0,0)] center
      */
-    rotate(angle, center = new index_1.Point()) {
-        throw errors_1.default.OPERATION_IS_NOT_SUPPORTED;
+    rotate(angle, center = new Point()) {
+        throw Errors.OPERATION_IS_NOT_SUPPORTED;
     }
     /**
      * Return new box transformed using affine transformation matrix
@@ -191,7 +188,7 @@ class Box extends index_1.Shape {
      * @param {Matrix} m - affine transformation matrix
      * @returns {Box}
      */
-    transform(m = new index_1.Matrix()) {
+    transform(m = new Matrix()) {
         const transformed_points = this.toPoints().map(pt => pt.transform(m));
         return transformed_points.reduce((new_box, pt) => new_box.merge(pt.box), new Box());
     }
@@ -207,15 +204,13 @@ class Box extends index_1.Shape {
         const width = this.xmax - this.xmin;
         const height = this.ymax - this.ymin;
         return `\n<rect x="${this.xmin}" y="${this.ymin}" width=${width} height=${height}
-                ${(0, attributes_1.convertToString)({ fill: "none", ...attrs })} />`;
+                ${convertToString({ fill: "none", ...attrs })} />`;
     }
     ;
 }
-exports.Box = Box;
 /**
  * Shortcut to create new box
  * @param args
  * @returns {Box}
  */
-const box = (...args) => new Box(...args);
-exports.box = box;
+export const box = (...args) => new Box(...args);

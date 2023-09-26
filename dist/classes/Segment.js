@@ -1,45 +1,16 @@
-"use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.segment = exports.Segment = void 0;
-const errors_1 = __importDefault(require("../utils/errors"));
-const Utils = __importStar(require("../utils/utils"));
-const distance_1 = require("../algorithms/distance");
-const Intersection = __importStar(require("../algorithms/intersection"));
-const attributes_1 = require("../utils/attributes");
-const planar_set_1 = require("../data_structures/planar_set");
-const geom = __importStar(require("./index"));
-const Shape_1 = require("./Shape");
+import Errors from '../utils/errors';
+import * as Utils from '../utils/utils';
+import { Distance } from '../algorithms/distance';
+import * as Intersection from '../algorithms/intersection';
+import { convertToString } from "../utils/attributes";
+import { PlanarSet } from '../data_structures/planar_set';
+import * as geom from './index';
+import { Shape } from "./Shape";
 /**
  * Class representing a segment
  * @type {Segment}
  */
-class Segment extends Shape_1.Shape {
+export class Segment extends Shape {
     /**
      *
      * @param {Point} ps - start point
@@ -79,7 +50,7 @@ class Segment extends Shape_1.Shape {
             this.pe = new geom.Point(args[2], args[3]);
             return;
         }
-        throw errors_1.default.ILLEGAL_PARAMETERS;
+        throw Errors.ILLEGAL_PARAMETERS;
     }
     /**
      * Return new cloned instance of segment
@@ -180,32 +151,32 @@ class Segment extends Shape_1.Shape {
      */
     distanceTo(shape) {
         if (shape instanceof geom.Point) {
-            let [dist, shortest_segment] = distance_1.Distance.point2segment(shape, this);
+            let [dist, shortest_segment] = Distance.point2segment(shape, this);
             shortest_segment = shortest_segment.reverse();
             return [dist, shortest_segment];
         }
         if (shape instanceof geom.Circle) {
-            let [dist, shortest_segment] = distance_1.Distance.segment2circle(this, shape);
+            let [dist, shortest_segment] = Distance.segment2circle(this, shape);
             return [dist, shortest_segment];
         }
         if (shape instanceof geom.Line) {
-            let [dist, shortest_segment] = distance_1.Distance.segment2line(this, shape);
+            let [dist, shortest_segment] = Distance.segment2line(this, shape);
             return [dist, shortest_segment];
         }
         if (shape instanceof geom.Segment) {
-            let [dist, shortest_segment] = distance_1.Distance.segment2segment(this, shape);
+            let [dist, shortest_segment] = Distance.segment2segment(this, shape);
             return [dist, shortest_segment];
         }
         if (shape instanceof geom.Arc) {
-            let [dist, shortest_segment] = distance_1.Distance.segment2arc(this, shape);
+            let [dist, shortest_segment] = Distance.segment2arc(this, shape);
             return [dist, shortest_segment];
         }
         if (shape instanceof geom.Polygon) {
-            let [dist, shortest_segment] = distance_1.Distance.shape2polygon(this, shape);
+            let [dist, shortest_segment] = Distance.shape2polygon(this, shape);
             return [dist, shortest_segment];
         }
-        if (shape instanceof planar_set_1.PlanarSet) {
-            let [dist, shortest_segment] = distance_1.Distance.shape2planarSet(this, shape);
+        if (shape instanceof PlanarSet) {
+            let [dist, shortest_segment] = Distance.shape2planarSet(this, shape);
             return [dist, shortest_segment];
         }
     }
@@ -272,7 +243,7 @@ class Segment extends Shape_1.Shape {
         return new geom.Point((this.end.x - this.start.x) * factor + this.start.x, (this.end.y - this.start.y) * factor + this.start.y);
     }
     distanceToPoint(pt) {
-        let [dist, ...rest] = distance_1.Distance.point2segment(pt, this);
+        let [dist, ...rest] = Distance.point2segment(pt, this);
         return dist;
     }
     ;
@@ -317,12 +288,10 @@ class Segment extends Shape_1.Shape {
      * @returns {string}
      */
     svg(attrs = {}) {
-        return `\n<line x1="${this.start.x}" y1="${this.start.y}" x2="${this.end.x}" y2="${this.end.y}" ${(0, attributes_1.convertToString)(attrs)} />`;
+        return `\n<line x1="${this.start.x}" y1="${this.start.y}" x2="${this.end.x}" y2="${this.end.y}" ${convertToString(attrs)} />`;
     }
 }
-exports.Segment = Segment;
 /**
  * Shortcut method to create new segment
  */
-const segment = (...args) => new geom.Segment(...args);
-exports.segment = segment;
+export const segment = (...args) => new geom.Segment(...args);

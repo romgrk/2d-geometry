@@ -1,45 +1,16 @@
-"use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.line = exports.Line = void 0;
-const Intersection = __importStar(require("../algorithms/intersection"));
-const errors_1 = __importDefault(require("../utils/errors"));
-const distance_1 = require("../algorithms/distance");
-const Utils = __importStar(require("../utils/utils"));
-const geom = __importStar(require("./index"));
-const Shape_1 = require("./Shape");
-const Point_1 = require("./Point");
-const Vector_1 = require("./Vector");
+import * as Intersection from '../algorithms/intersection';
+import Errors from '../utils/errors';
+import { Distance } from '../algorithms/distance';
+import * as Utils from '../utils/utils';
+import * as geom from './index';
+import { Shape } from "./Shape";
+import { Point } from './Point';
+import { Vector, vector } from './Vector';
 /**
  * Class representing a line
  * @type {Line}
  */
-class Line extends Shape_1.Shape {
+export class Line extends Shape {
     /**
      * Line may be constructed by point and normal vector or by two points that a line passes through
      * @param {Point} pt - point that a line passes through
@@ -51,60 +22,60 @@ class Line extends Shape_1.Shape {
          * Point a line passes through
          * @type {Point}
          */
-        this.pt = new Point_1.Point();
+        this.pt = new Point();
         /**
          * Normal vector to a line <br/>
          * Vector is normalized (length == 1)<br/>
          * Direction of the vector is chosen to satisfy inequality norm * p >= 0
          * @type {Vector}
          */
-        this.norm = new Vector_1.Vector(0, 1);
+        this.norm = new Vector(0, 1);
         if (args.length === 0) {
             return;
         }
         if (args.length === 1 && args[0] instanceof Object && args[0].name === "line") {
             let { pt, norm } = args[0];
-            this.pt = new Point_1.Point(pt);
-            this.norm = new Vector_1.Vector(norm);
+            this.pt = new Point(pt);
+            this.norm = new Vector(norm);
             return;
         }
         if (args.length === 2) {
             let a1 = args[0];
             let a2 = args[1];
-            if (a1 instanceof Point_1.Point && a2 instanceof Point_1.Point) {
+            if (a1 instanceof Point && a2 instanceof Point) {
                 this.pt = a1;
                 this.norm = Line.points2norm(a1, a2);
-                if (this.norm.dot((0, Vector_1.vector)(this.pt.x, this.pt.y)) >= 0) {
+                if (this.norm.dot(vector(this.pt.x, this.pt.y)) >= 0) {
                     this.norm.invert();
                 }
                 return;
             }
-            if (a1 instanceof Point_1.Point && a2 instanceof Vector_1.Vector) {
+            if (a1 instanceof Point && a2 instanceof Vector) {
                 if (Utils.EQ_0(a2.x) && Utils.EQ_0(a2.y)) {
-                    throw errors_1.default.ILLEGAL_PARAMETERS;
+                    throw Errors.ILLEGAL_PARAMETERS;
                 }
                 this.pt = a1.clone();
                 this.norm = a2.clone();
                 this.norm = this.norm.normalize();
-                if (this.norm.dot((0, Vector_1.vector)(this.pt.x, this.pt.y)) >= 0) {
+                if (this.norm.dot(vector(this.pt.x, this.pt.y)) >= 0) {
                     this.norm.invert();
                 }
                 return;
             }
-            if (a1 instanceof Vector_1.Vector && a2 instanceof Point_1.Point) {
+            if (a1 instanceof Vector && a2 instanceof Point) {
                 if (Utils.EQ_0(a1.x) && Utils.EQ_0(a1.y)) {
-                    throw errors_1.default.ILLEGAL_PARAMETERS;
+                    throw Errors.ILLEGAL_PARAMETERS;
                 }
                 this.pt = a2.clone();
                 this.norm = a1.clone();
                 this.norm = this.norm.normalize();
-                if (this.norm.dot((0, Vector_1.vector)(this.pt.x, this.pt.y)) >= 0) {
+                if (this.norm.dot(vector(this.pt.x, this.pt.y)) >= 0) {
                     this.norm.invert();
                 }
                 return;
             }
         }
-        throw errors_1.default.ILLEGAL_PARAMETERS;
+        throw Errors.ILLEGAL_PARAMETERS;
     }
     /**
      * Return new cloned instance of line
@@ -145,7 +116,7 @@ class Line extends Shape_1.Shape {
      * @returns {number} - slope of the line
      */
     get slope() {
-        let vec = new Vector_1.Vector(this.norm.y, -this.norm.x);
+        let vec = new Vector(this.norm.y, -this.norm.x);
         return vec.slope;
     }
     /**
@@ -156,7 +127,7 @@ class Line extends Shape_1.Shape {
     get standard() {
         let A = this.norm.x;
         let B = this.norm.y;
-        let C = this.norm.dot((0, Vector_1.vector)(this.pt.x, this.pt.y));
+        let C = this.norm.dot(vector(this.pt.x, this.pt.y));
         return [A, B, C];
     }
     /**
@@ -185,7 +156,7 @@ class Line extends Shape_1.Shape {
             return true;
         }
         /* Line contains point if vector to point is orthogonal to the line normal vector */
-        let vec = new Vector_1.Vector(this.pt, pt);
+        let vec = new Vector(this.pt, pt);
         return Utils.EQ_0(this.norm.dot(vec));
     }
     /**
@@ -197,7 +168,7 @@ class Line extends Shape_1.Shape {
      * @returns {number}
      */
     coord(pt) {
-        return (0, Vector_1.vector)(pt.x, pt.y).cross(this.norm);
+        return vector(pt.x, pt.y).cross(this.norm);
     }
     /**
      * Returns array of intersection points
@@ -237,25 +208,25 @@ class Line extends Shape_1.Shape {
      */
     distanceTo(shape) {
         if (shape instanceof geom.Point) {
-            let [distance, shortest_segment] = distance_1.Distance.point2line(shape, this);
+            let [distance, shortest_segment] = Distance.point2line(shape, this);
             shortest_segment = shortest_segment.reverse();
             return [distance, shortest_segment];
         }
         if (shape instanceof geom.Circle) {
-            let [distance, shortest_segment] = distance_1.Distance.circle2line(shape, this);
+            let [distance, shortest_segment] = Distance.circle2line(shape, this);
             shortest_segment = shortest_segment.reverse();
             return [distance, shortest_segment];
         }
         if (shape instanceof geom.Segment) {
-            let [distance, shortest_segment] = distance_1.Distance.segment2line(shape, this);
+            let [distance, shortest_segment] = Distance.segment2line(shape, this);
             return [distance, shortest_segment.reverse()];
         }
         if (shape instanceof geom.Arc) {
-            let [distance, shortest_segment] = distance_1.Distance.arc2line(shape, this);
+            let [distance, shortest_segment] = Distance.arc2line(shape, this);
             return [distance, shortest_segment.reverse()];
         }
         if (shape instanceof geom.Polygon) {
-            let [distance, shortest_segment] = distance_1.Distance.shape2polygon(this, shape);
+            let [distance, shortest_segment] = Distance.shape2polygon(this, shape);
             return [distance, shortest_segment];
         }
     }
@@ -266,7 +237,7 @@ class Line extends Shape_1.Shape {
      * @returns {MultilineShapes}
      */
     split(pt) {
-        if (pt instanceof Point_1.Point) {
+        if (pt instanceof Point) {
             return [new geom.Ray(pt, this.norm.invert()), new geom.Ray(pt, this.norm)];
         }
         else {
@@ -281,7 +252,7 @@ class Line extends Shape_1.Shape {
      * @param {number} angle - angle in radians
      * @param {Point} center - center of rotation
      */
-    rotate(angle, center = new Point_1.Point()) {
+    rotate(angle, center = new Point()) {
         return new Line(this.pt.rotate(angle, center), this.norm.rotate(angle));
     }
     /**
@@ -330,17 +301,15 @@ class Line extends Shape_1.Shape {
     }
     static points2norm(pt1, pt2) {
         if (pt1.equalTo(pt2)) {
-            throw errors_1.default.ILLEGAL_PARAMETERS;
+            throw Errors.ILLEGAL_PARAMETERS;
         }
-        let vec = new Vector_1.Vector(pt1, pt2);
+        let vec = new Vector(pt1, pt2);
         let unit = vec.normalize();
         return unit.rotate90CCW();
     }
 }
-exports.Line = Line;
 /**
  * Function to create line equivalent to "new" constructor
  * @param args
  */
-const line = (...args) => new Line(...args);
-exports.line = line;
+export const line = (...args) => new Line(...args);

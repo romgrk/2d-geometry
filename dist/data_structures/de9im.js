@@ -1,5 +1,3 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 /*
     Dimensionally extended 9-intersected model
     See https://en.wikipedia.org/wiki/DE-9IM for more details
@@ -180,4 +178,4 @@ class DE9IM {
         return COVERED.test(this.toString());
     }
 }
-exports.default = DE9IM;
+export default DE9IM;

@@ -1,17 +1,11 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.PlanarSet = void 0;
-const interval_tree_1 = __importDefault(require("@flatten-js/interval-tree"));
-const Box_1 = require("../classes/Box");
+import IntervalTree from '@flatten-js/interval-tree';
+import { Box } from '../classes/Box';
 /**
  * Class representing a planar set - a generic container with ability to keep and retrieve shapes and
  * perform spatial queries. Planar set is an extension of Set container, so it supports
  * Set properties and methods
  */
-class PlanarSet extends Set {
+export class PlanarSet extends Set {
     /**
      * Create new instance of PlanarSet
      * @param shapes - array or set of geometric objects to store in planar set
@@ -19,7 +13,7 @@ class PlanarSet extends Set {
      */
     constructor(shapes) {
         super(shapes);
-        this.index = new interval_tree_1.default();
+        this.index = new IntervalTree();
         this.forEach(shape => this.index.insert(shape));
     }
     /**
@@ -57,7 +51,7 @@ class PlanarSet extends Set {
      */
     clear() {
         super.clear();
-        this.index = new interval_tree_1.default();
+        this.index = new IntervalTree();
     }
     /**
      * 2d range search in planar set.<br/>
@@ -75,7 +69,7 @@ class PlanarSet extends Set {
      * @returns {Array}
      */
     hit(point) {
-        let box = new Box_1.Box(point.x - 1, point.y - 1, point.x + 1, point.y + 1);
+        let box = new Box(point.x - 1, point.y - 1, point.x + 1, point.y + 1);
         let resp = this.index.search(box);
         return resp.filter((shape) => point.on(shape));
     }
@@ -88,4 +82,3 @@ class PlanarSet extends Set {
         return svgcontent;
     }
 }
-exports.PlanarSet = PlanarSet;

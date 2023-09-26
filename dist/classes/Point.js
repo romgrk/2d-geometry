@@ -1,43 +1,14 @@
-"use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.point = exports.Point = void 0;
-const errors_1 = __importDefault(require("../utils/errors"));
-const attributes_1 = require("../utils/attributes");
-const distance_1 = require("../algorithms/distance");
-const Utils = __importStar(require("../utils/utils"));
-const geom = __importStar(require("./index"));
-const Shape_1 = require("./Shape");
+import Errors from "../utils/errors";
+import { convertToString } from "../utils/attributes";
+import { Distance } from "../algorithms/distance";
+import * as Utils from "../utils/utils";
+import * as geom from './index';
+import { Shape } from "./Shape";
 /**
  * Class representing a point
  * @type {Point}
  */
-class Point extends Shape_1.Shape {
+export class Point extends Shape {
     /**
      * Point may be constructed by two numbers, or by array of two numbers
      * @param {number} x - x-coordinate (float number)
@@ -71,7 +42,7 @@ class Point extends Shape_1.Shape {
                 return;
             }
         }
-        throw errors_1.default.ILLEGAL_PARAMETERS;
+        throw Errors.ILLEGAL_PARAMETERS;
     }
     /**
      * Returns bounding box of a point
@@ -159,19 +130,19 @@ class Point extends Shape_1.Shape {
             return [Math.sqrt(dx * dx + dy * dy), new geom.Segment(this, shape)];
         }
         if (shape instanceof geom.Line) {
-            return distance_1.Distance.point2line(this, shape);
+            return Distance.point2line(this, shape);
         }
         if (shape instanceof geom.Circle) {
-            return distance_1.Distance.point2circle(this, shape);
+            return Distance.point2circle(this, shape);
         }
         if (shape instanceof geom.Segment) {
-            return distance_1.Distance.point2segment(this, shape);
+            return Distance.point2segment(this, shape);
         }
         if (shape instanceof geom.Arc) {
-            return distance_1.Distance.point2arc(this, shape);
+            return Distance.point2arc(this, shape);
         }
         if (shape instanceof geom.Polygon) {
-            return distance_1.Distance.point2polygon(this, shape);
+            return Distance.point2polygon(this, shape);
         }
         // TODO: enable
         // if (shape instanceof PlanarSet) {
@@ -222,11 +193,10 @@ class Point extends Shape_1.Shape {
      * @param attrs - Any valid attributes of svg circle element, like "r", "stroke", "strokeWidth", "fill"
      */
     svg(attrs = {}) {
-        const r = attrs.r ?? 3; // default radius - 3
+        var _a;
+        const r = (_a = attrs.r) !== null && _a !== void 0 ? _a : 3; // default radius - 3
         return `\n<circle cx="${this.x}" cy="${this.y}" r="${r}"
-            ${(0, attributes_1.convertToString)({ fill: "red", ...attrs })} />`;
+            ${convertToString({ fill: "red", ...attrs })} />`;
     }
 }
-exports.Point = Point;
-const point = (...args) => new Point(...args);
-exports.point = point;
+export const point = (...args) => new Point(...args);

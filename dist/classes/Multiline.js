@@ -1,40 +1,11 @@
-"use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.multiline = exports.Multiline = void 0;
-const linked_list_1 = __importDefault(require("../data_structures/linked_list"));
-const attributes_1 = require("../utils/attributes");
-const geom = __importStar(require("./index"));
+import LinkedList from '../data_structures/linked_list';
+import { convertToString } from "../utils/attributes";
+import * as geom from './index';
 /**
  * Class Multiline represent connected path of [edges]{@link geom.Edge}, where each edge may be
  * [segment]{@link geom.Segment}, [arc]{@link geom.Arc}, [line]{@link geom.Line} or [ray]{@link geom.Ray}
  */
-class Multiline extends linked_list_1.default {
+export class Multiline extends LinkedList {
     constructor(input) {
         super();
         if (input instanceof Array) {
@@ -186,7 +157,7 @@ class Multiline extends linked_list_1.default {
      * @returns {string}
      */
     svg(attrs = {}) {
-        let svgStr = `\n<path ${(0, attributes_1.convertToString)({ fill: "none", ...attrs })} d="`;
+        let svgStr = `\n<path ${convertToString({ fill: "none", ...attrs })} d="`;
         svgStr += `\nM${this.first.start.x},${this.first.start.y}`;
         for (let edge of this) {
             svgStr += edge.svg();
@@ -195,10 +166,8 @@ class Multiline extends linked_list_1.default {
         return svgStr;
     }
 }
-exports.Multiline = Multiline;
 /**
  * Shortcut function to create multiline
  * @param args
  */
-const multiline = (...args) => new geom.Multiline(...args);
-exports.multiline = multiline;
+export const multiline = (...args) => new geom.Multiline(...args);

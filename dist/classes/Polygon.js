@@ -1,48 +1,22 @@
-"use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.polygon = exports.Polygon = void 0;
-const ray_shooting_1 = require("../algorithms/ray_shooting");
-const Utils = __importStar(require("../utils/utils"));
-const distance_1 = require("../algorithms/distance");
-const Intersection = __importStar(require("../algorithms/intersection"));
-const Relations = __importStar(require("../algorithms/relation"));
-const smart_intersections_1 = require("../data_structures/smart_intersections");
-const Multiline_1 = require("./Multiline");
-const intersection_1 = require("../algorithms/intersection");
-const constants_1 = require("../utils/constants");
-const attributes_1 = require("../utils/attributes");
-const planar_set_1 = require("../data_structures/planar_set");
-const geom = __importStar(require("../classes"));
+import { ray_shoot } from "../algorithms/ray_shooting";
+import * as Utils from '../utils/utils';
+import { Distance } from "../algorithms/distance";
+import * as Intersection from "../algorithms/intersection";
+import * as Relations from "../algorithms/relation";
+import { addToIntPoints, calculateInclusionFlags, filterDuplicatedIntersections, getSortedArray, getSortedArrayOnLine, initializeInclusionFlags, insertBetweenIntPoints, splitByIntersections } from "../data_structures/smart_intersections";
+import { Multiline } from "./Multiline";
+import { intersectEdge2Line } from "../algorithms/intersection";
+import { INSIDE, BOUNDARY } from "../utils/constants";
+import { convertToString } from "../utils/attributes";
+import { PlanarSet } from '../data_structures/planar_set';
+import * as geom from '../classes';
 /**
  * Class representing a polygon.<br/>
  * Polygon in FlattenJS is a multipolygon comprised from a set of [faces]{@link geom.Face}. <br/>
  * Face, in turn, is a closed loop of [edges]{@link geom.Edge}, where edge may be segment or circular arc<br/>
  * @type {Polygon}
  */
-class Polygon {
+export class Polygon {
     /**
      * Constructor creates new instance of polygon. With no arguments new polygon is empty.<br/>
      * Constructor accepts as argument array that define loop of shapes
@@ -60,12 +34,12 @@ class Polygon {
          * Container of faces (closed loops), may be empty
          * @type {PlanarSet}
          */
-        this.faces = new planar_set_1.PlanarSet();
+        this.faces = new PlanarSet();
         /**
          * Container of edges
          * @type {PlanarSet}
          */
-        this.edges = new planar_set_1.PlanarSet();
+        this.edges = new PlanarSet();
         /* It may be array of something that may represent one loop (face) or
          array of arrays that represent multiple loops
          */
@@ -291,7 +265,7 @@ class Polygon {
     cut(multiline) {
         let cutPolygons = [this.clone()];
         for (let edge of multiline) {
-            if (edge.setInclusion(this) !== constants_1.INSIDE)
+            if (edge.setInclusion(this) !== INSIDE)
                 continue;
             let cut_edge_start = edge.shape.start;
             let cut_edge_end = edge.shape.end;
@@ -354,7 +328,7 @@ class Polygon {
      */
     cutWithLine(line) {
         let newPoly = this.clone();
-        let multiline = new Multiline_1.Multiline([line]);
+        let multiline = new Multiline([line]);
         // smart intersections
         let intersections = {
             int_points1: [],
@@ -365,31 +339,31 @@ class Polygon {
         // intersect line with each edge of the polygon
         // and create smart intersections
         for (let edge of newPoly.edges) {
-            let ip = (0, intersection_1.intersectEdge2Line)(edge, line);
+            let ip = intersectEdge2Line(edge, line);
             // for each intersection point
             for (let pt of ip) {
-                (0, smart_intersections_1.addToIntPoints)(multiline.first, pt, intersections.int_points1);
-                (0, smart_intersections_1.addToIntPoints)(edge, pt, intersections.int_points2);
+                addToIntPoints(multiline.first, pt, intersections.int_points1);
+                addToIntPoints(edge, pt, intersections.int_points2);
             }
         }
         // No intersections - return a copy of the original polygon
         if (intersections.int_points1.length === 0)
             return newPoly;
         // sort smart intersections
-        intersections.int_points1_sorted = (0, smart_intersections_1.getSortedArrayOnLine)(line, intersections.int_points1);
-        intersections.int_points2_sorted = (0, smart_intersections_1.getSortedArray)(intersections.int_points2);
+        intersections.int_points1_sorted = getSortedArrayOnLine(line, intersections.int_points1);
+        intersections.int_points2_sorted = getSortedArray(intersections.int_points2);
         // split by intersection points
-        (0, smart_intersections_1.splitByIntersections)(multiline, intersections.int_points1_sorted);
-        (0, smart_intersections_1.splitByIntersections)(newPoly, intersections.int_points2_sorted);
+        splitByIntersections(multiline, intersections.int_points1_sorted);
+        splitByIntersections(newPoly, intersections.int_points2_sorted);
         // filter duplicated intersection points
-        (0, smart_intersections_1.filterDuplicatedIntersections)(intersections);
+        filterDuplicatedIntersections(intersections);
         // sort intersection points again after filtering
-        intersections.int_points1_sorted = (0, smart_intersections_1.getSortedArrayOnLine)(line, intersections.int_points1);
-        intersections.int_points2_sorted = (0, smart_intersections_1.getSortedArray)(intersections.int_points2);
+        intersections.int_points1_sorted = getSortedArrayOnLine(line, intersections.int_points1);
+        intersections.int_points2_sorted = getSortedArray(intersections.int_points2);
         // initialize inclusion flags for edges of multiline incident to intersections
-        (0, smart_intersections_1.initializeInclusionFlags)(intersections.int_points1);
+        initializeInclusionFlags(intersections.int_points1);
         // calculate inclusion flag for edges of multiline incident to intersections
-        (0, smart_intersections_1.calculateInclusionFlags)(intersections.int_points1, newPoly);
+        calculateInclusionFlags(intersections.int_points1, newPoly);
         // filter intersections between two edges that got same inclusion flag
         for (let int_point1 of intersections.int_points1_sorted) {
             if (int_point1.edge_before.bv === int_point1.edge_after.bv) {
@@ -403,18 +377,18 @@ class Polygon {
         if (intersections.int_points1.length === 0)
             return newPoly;
         // sort intersection points 3d time after filtering
-        intersections.int_points1_sorted = (0, smart_intersections_1.getSortedArrayOnLine)(line, intersections.int_points1);
-        intersections.int_points2_sorted = (0, smart_intersections_1.getSortedArray)(intersections.int_points2);
+        intersections.int_points1_sorted = getSortedArrayOnLine(line, intersections.int_points1);
+        intersections.int_points2_sorted = getSortedArray(intersections.int_points2);
         // Add 2 new inner edges between intersection points
         let int_point1_prev = intersections.int_points1[0];
         let new_edge;
         for (let int_point1_curr of intersections.int_points1_sorted) {
-            if (int_point1_curr.edge_before.bv === constants_1.INSIDE) {
+            if (int_point1_curr.edge_before.bv === INSIDE) {
                 new_edge = new geom.Edge(new geom.Segment(int_point1_prev.pt, int_point1_curr.pt)); // (int_point1_curr.edge_before.shape);
-                (0, smart_intersections_1.insertBetweenIntPoints)(intersections.int_points2[int_point1_prev.id], intersections.int_points2[int_point1_curr.id], new_edge);
+                insertBetweenIntPoints(intersections.int_points2[int_point1_prev.id], intersections.int_points2[int_point1_curr.id], new_edge);
                 newPoly.edges.add(new_edge);
                 new_edge = new geom.Edge(new geom.Segment(int_point1_curr.pt, int_point1_prev.pt)); // (int_point1_curr.edge_before.shape.reverse());
-                (0, smart_intersections_1.insertBetweenIntPoints)(intersections.int_points2[int_point1_curr.id], intersections.int_points2[int_point1_prev.id], new_edge);
+                insertBetweenIntPoints(intersections.int_points2[int_point1_curr.id], intersections.int_points2[int_point1_prev.id], new_edge);
                 newPoly.edges.add(new_edge);
             }
             int_point1_prev = int_point1_curr;
@@ -487,8 +461,8 @@ class Polygon {
      */
     contains(shape) {
         if (shape instanceof geom.Point) {
-            let rel = (0, ray_shooting_1.ray_shoot)(this, shape);
-            return rel === constants_1.INSIDE || rel === constants_1.BOUNDARY;
+            let rel = ray_shoot(this, shape);
+            return rel === INSIDE || rel === BOUNDARY;
         }
         else {
             return Relations.cover(this, shape);
@@ -502,7 +476,7 @@ class Polygon {
     distanceTo(shape) {
         // let {Distance} = Flatten;
         if (shape instanceof geom.Point) {
-            let [dist, shortest_segment] = distance_1.Distance.point2polygon(shape, this);
+            let [dist, shortest_segment] = Distance.point2polygon(shape, this);
             shortest_segment = shortest_segment.reverse();
             return [dist, shortest_segment];
         }
@@ -510,7 +484,7 @@ class Polygon {
             shape instanceof geom.Line ||
             shape instanceof geom.Segment ||
             shape instanceof geom.Arc) {
-            let [dist, shortest_segment] = distance_1.Distance.shape2polygon(shape, this);
+            let [dist, shortest_segment] = Distance.shape2polygon(shape, this);
             shortest_segment = shortest_segment.reverse();
             return [dist, shortest_segment];
         }
@@ -521,7 +495,7 @@ class Polygon {
             for (let edge of this.edges) {
                 // let [dist, shortest_segment] = Distance.shape2polygon(edge.shape, shape);
                 let min_stop = min_dist_and_segment[0];
-                [dist, shortest_segment] = distance_1.Distance.shape2planarSet(edge.shape, shape.edges, min_stop);
+                [dist, shortest_segment] = Distance.shape2planarSet(edge.shape, shape.edges, min_stop);
                 if (Utils.LT(dist, min_stop)) {
                     min_dist_and_segment = [dist, shortest_segment];
                 }
@@ -630,7 +604,7 @@ class Polygon {
      * @returns {string}
      */
     svg(attrs = {}) {
-        let svgStr = `\n<path ${(0, attributes_1.convertToString)({ fillRule: "evenodd", fill: "lightcyan", ...attrs })} d="`;
+        let svgStr = `\n<path ${convertToString({ fillRule: "evenodd", fill: "lightcyan", ...attrs })} d="`;
         for (let face of this.faces) {
             svgStr += face.svg();
         }
@@ -638,9 +612,7 @@ class Polygon {
         return svgStr;
     }
 }
-exports.Polygon = Polygon;
 /**
  * Shortcut method to create new polygon
  */
-const polygon = (...args) => new geom.Polygon(...args);
-exports.polygon = polygon;
+export const polygon = (...args) => new geom.Polygon(...args);

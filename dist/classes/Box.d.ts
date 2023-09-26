@@ -1,4 +1,7 @@
-import { Matrix, Point, Segment, Shape } from "./index";
+import { Matrix } from './Matrix';
+import { Point } from './Point';
+import { Segment } from './Segment';
+import { Shape } from './Shape';
 /**
  * Class Box represents bounding box of the shape.
  * It may also represent axis-aligned rectangle

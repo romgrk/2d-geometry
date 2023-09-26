@@ -1,9 +1,4 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const errors_1 = __importDefault(require("../utils/errors"));
+import Errors from "../utils/errors";
 /**
  * Class implements bidirectional non-circular linked list. <br/>
  * LinkedListElement - object of any type that has properties next and prev.
@@ -151,11 +146,11 @@ class LinkedList {
         let controlEdge = first;
         do {
             if (edge != first && edge === controlEdge) {
-                throw errors_1.default.INFINITE_LOOP; // new Error("Infinite loop")
+                throw Errors.INFINITE_LOOP; // new Error("Infinite loop")
             }
             edge = edge.next;
             controlEdge = controlEdge.next.next;
         } while (edge != first);
     }
 }
-exports.default = LinkedList;
+export default LinkedList;

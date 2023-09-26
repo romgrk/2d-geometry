@@ -1,6 +1,9 @@
 import {convertToString} from "../utils/attributes";
 import Errors from '../utils/errors'
-import {Matrix, Point, Segment, Shape} from "./index";
+import { Matrix } from './Matrix'
+import { Point } from './Point'
+import { Segment } from './Segment'
+import { Shape } from './Shape'
 
 /**
  * Class Box represents bounding box of the shape.

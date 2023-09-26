@@ -5,6 +5,7 @@
   "main": "dist/index.js",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
+  "type": "module",
   "scripts": {
     "test": "cross-env NODE_ENV=test nyc --reporter=text --reporter=html mocha --recursive",
     "generate-docs": "jsdoc -c ./.jsdoc.json --verbose",

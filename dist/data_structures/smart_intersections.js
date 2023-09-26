@@ -1,36 +1,10 @@
-"use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.insertBetweenIntPoints = exports.splitByIntersections = exports.intPointsPoolCount = exports.setOverlappingFlags = exports.calculateInclusionFlags = exports.initializeInclusionFlags = exports.filterDuplicatedIntersections = exports.getSortedArrayOnLine = exports.getSortedArray = exports.sortIntersections = exports.addToIntPoints = void 0;
 /*
     Smart intersections describe intersection points that refers to the edges they intersect
     This function are supposed for internal usage by morphing and relation methods between
  */
-const Utils = __importStar(require("../utils/utils"));
-const Constants = __importStar(require("../utils/constants"));
-function addToIntPoints(edge, pt, int_points) {
+import * as Utils from "../utils/utils";
+import * as Constants from '../utils/constants';
+export function addToIntPoints(edge, pt, int_points) {
     let id = int_points.length;
     let shapes = edge.shape.split(pt);
     // if (shapes.length < 2) return;
@@ -65,8 +39,7 @@ function addToIntPoints(edge, pt, int_points) {
         is_vertex: is_vertex
     });
 }
-exports.addToIntPoints = addToIntPoints;
-function sortIntersections(intersections) {
+export function sortIntersections(intersections) {
     // if (intersections.int_points1.length === 0) return;
     // augment intersections with new sorted arrays
     // intersections.int_points1_sorted = intersections.int_points1.slice().sort(compareFn);
@@ -74,8 +47,7 @@ function sortIntersections(intersections) {
     intersections.int_points1_sorted = getSortedArray(intersections.int_points1);
     intersections.int_points2_sorted = getSortedArray(intersections.int_points2);
 }
-exports.sortIntersections = sortIntersections;
-function getSortedArray(int_points) {
+export function getSortedArray(int_points) {
     let faceMap = new Map;
     let id = 0;
     // Create integer id's for faces
@@ -93,7 +65,6 @@ function getSortedArray(int_points) {
     let int_points_sorted = int_points.slice().sort(compareFn);
     return int_points_sorted;
 }
-exports.getSortedArray = getSortedArray;
 function compareFn(ip1, ip2) {
     // compare face id's
     if (ip1.faceId < ip2.faceId) {
@@ -111,7 +82,7 @@ function compareFn(ip1, ip2) {
     }
     return 0;
 }
-function getSortedArrayOnLine(line, int_points) {
+export function getSortedArrayOnLine(line, int_points) {
     return int_points.slice().sort((int_point1, int_point2) => {
         if (line.coord(int_point1.pt) < line.coord(int_point2.pt)) {
             return -1;
@@ -122,8 +93,7 @@ function getSortedArrayOnLine(line, int_points) {
         return 0;
     });
 }
-exports.getSortedArrayOnLine = getSortedArrayOnLine;
-function filterDuplicatedIntersections(intersections) {
+export function filterDuplicatedIntersections(intersections) {
     if (intersections.int_points1.length < 2)
         return;
     let do_squeeze = false;
@@ -191,8 +161,7 @@ function filterDuplicatedIntersections(intersections) {
         intersections.int_points2.forEach((int_point, index) => int_point.id = index);
     }
 }
-exports.filterDuplicatedIntersections = filterDuplicatedIntersections;
-function initializeInclusionFlags(int_points) {
+export function initializeInclusionFlags(int_points) {
     for (let int_point of int_points) {
         int_point.edge_before.bvStart = undefined;
         int_point.edge_before.bvEnd = undefined;
@@ -208,15 +177,13 @@ function initializeInclusionFlags(int_points) {
         int_point.edge_after.bvStart = Constants.BOUNDARY;
     }
 }
-exports.initializeInclusionFlags = initializeInclusionFlags;
-function calculateInclusionFlags(int_points, polygon) {
+export function calculateInclusionFlags(int_points, polygon) {
     for (let int_point of int_points) {
         int_point.edge_before.setInclusion(polygon);
         int_point.edge_after.setInclusion(polygon);
     }
 }
-exports.calculateInclusionFlags = calculateInclusionFlags;
-function setOverlappingFlags(intersections) {
+export function setOverlappingFlags(intersections) {
     let cur_face = undefined;
     let first_int_point_in_face_id = undefined;
     let next_int_point1 = undefined;
@@ -278,8 +245,7 @@ function setOverlappingFlags(intersections) {
         edge_from1.setOverlap(edge_from2);
     }
 }
-exports.setOverlappingFlags = setOverlappingFlags;
-function intPointsPoolCount(int_points, cur_int_point_num, cur_face) {
+export function intPointsPoolCount(int_points, cur_int_point_num, cur_face) {
     let int_point_current;
     let int_point_next;
     let int_points_pool_num = 1;
@@ -300,8 +266,7 @@ function intPointsPoolCount(int_points, cur_int_point_num, cur_face) {
     }
     return int_points_pool_num;
 }
-exports.intPointsPoolCount = intPointsPoolCount;
-function splitByIntersections(polygon, int_points) {
+export function splitByIntersections(polygon, int_points) {
     if (!int_points)
         return;
     for (let int_point of int_points) {
@@ -329,8 +294,7 @@ function splitByIntersections(polygon, int_points) {
         int_point.edge_after = int_point.edge_before.next;
     }
 }
-exports.splitByIntersections = splitByIntersections;
-function insertBetweenIntPoints(int_point1, int_point2, new_edge) {
+export function insertBetweenIntPoints(int_point1, int_point2, new_edge) {
     let edge_before = int_point1.edge_before;
     let edge_after = int_point2.edge_after;
     edge_before.next = new_edge;
@@ -338,4 +302,3 @@ function insertBetweenIntPoints(int_point1, int_point2, new_edge) {
     new_edge.next = edge_after;
     edge_after.prev = new_edge;
 }
-exports.insertBetweenIntPoints = insertBetweenIntPoints;
