@@ -152,7 +152,7 @@ export declare class Polygon {
      * @param {Shape} shape Shape of one of the types Point, Circle, Line, Segment, Arc or Polygon
      * @returns {Number | Segment}
      */
-    distanceTo(shape: any): any[] | readonly [number, geom.Segment];
+    distanceTo(shape: any): (number | geom.Segment)[] | readonly [number, geom.Segment];
     /**
      * Return array of intersection points between polygon and other shape
      * @param shape Shape of the one of supported types <br/>

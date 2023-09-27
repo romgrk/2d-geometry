@@ -1,6 +1,6 @@
 import { ray_shoot } from "../algorithms/ray_shooting";
 import * as Utils from '../utils/utils';
-import { Distance } from "../algorithms/distance";
+import * as Distance from '../algorithms/distance';
 import * as Intersection from "../algorithms/intersection";
 import * as Relations from "../algorithms/relation";
 import { addToIntPoints, calculateInclusionFlags, filterDuplicatedIntersections, getSortedArray, getSortedArrayOnLine, initializeInclusionFlags, insertBetweenIntPoints, splitByIntersections } from "../data_structures/smart_intersections";
