@@ -1,5 +1,5 @@
 import { PIx2, CCW } from '../utils/constants';
-import { Distance } from '../algorithms/distance';
+import * as Distance from '../algorithms/distance';
 import { PlanarSet } from '../data_structures/planar_set';
 import * as Utils from '../utils/utils';
 import * as Intersection from '../algorithms/intersection';

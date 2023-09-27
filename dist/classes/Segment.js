@@ -1,6 +1,6 @@
 import Errors from '../utils/errors';
 import * as Utils from '../utils/utils';
-import { Distance } from '../algorithms/distance';
+import * as Distance from '../algorithms/distance';
 import * as Intersection from '../algorithms/intersection';
 import { convertToString } from "../utils/attributes";
 import { PlanarSet } from '../data_structures/planar_set';

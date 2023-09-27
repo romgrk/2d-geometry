@@ -1,6 +1,6 @@
 import Errors from "../utils/errors";
 import {convertToString} from "../utils/attributes";
-import { Distance } from "../algorithms/distance";
+import * as Distance from '../algorithms/distance';
 import * as Utils from "../utils/utils";
 import * as geom from './index'
 import {Shape} from "./Shape";

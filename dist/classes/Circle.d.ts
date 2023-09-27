@@ -68,7 +68,7 @@ export declare class Circle extends Shape<Circle> {
      * @returns {Segment} shortest segment between circle and shape (started at circle, ended at shape)
 
      */
-    distanceTo(shape: any): (number | geom.Segment)[];
+    distanceTo(shape: any): any[];
     get name(): string;
     /**
      * Return string to draw circle in svg
