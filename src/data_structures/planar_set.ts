@@ -1,5 +1,5 @@
-import IntervalTree from '@flatten-js/interval-tree';
 import { Box } from '../classes/Box';
+import { IntervalTree } from '../data_structures/interval-tree';
 
 type AnyShape = {
     box: Box

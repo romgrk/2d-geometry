@@ -1,5 +1,5 @@
-import IntervalTree from '@flatten-js/interval-tree';
 import * as geom from '../classes';
+import { IntervalTree } from '../data_structures/interval-tree';
 /**
  * Calculate distance and shortest segment between points
  * @param pt1
@@ -119,7 +119,7 @@ export declare function minmax_tree_process_level(shape: any, level: any, min_st
  * @param shape
  * @param set
  */
-export declare function minmax_tree(shape: any, set: any, min_stop: any): IntervalTree<any>;
+export declare function minmax_tree(shape: any, set: any, min_stop: any): IntervalTree;
 export declare function minmax_tree_calc_distance(shape: any, node: any, min_dist_and_segment: any): any[];
 /**
  * Calculates distance between shape and Planar Set of shapes

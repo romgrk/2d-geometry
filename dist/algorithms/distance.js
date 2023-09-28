@@ -1,8 +1,8 @@
-import IntervalTree from '@flatten-js/interval-tree';
 import * as Utils from '../utils/utils';
 import * as Intersection from '../algorithms/intersection';
 import * as geom from '../classes';
 import { PlanarSet } from '../data_structures/planar_set';
+import { IntervalTree } from '../data_structures/interval-tree';
 /**
  * Calculate distance and shortest segment between points
  * @param pt1

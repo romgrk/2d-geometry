@@ -16,7 +16,7 @@ export declare class Inversion {
     constructor(inversion_circle: any);
     get inversion_circle(): Circle;
     static inversePoint(inversion_circle: any, point: any): any;
-    static inverseCircle(inversion_circle: any, circle: any): Circle | Line;
+    static inverseCircle(inversion_circle: any, circle: any): Line | Circle;
     static inverseLine(inversion_circle: any, line: any): any;
     inverse(shape: any): any;
 }

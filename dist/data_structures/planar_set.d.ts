@@ -1,5 +1,5 @@
-import IntervalTree from '@flatten-js/interval-tree';
 import { Box } from '../classes/Box';
+import { IntervalTree } from '../data_structures/interval-tree';
 type AnyShape = {
     box: Box;
 };
@@ -42,7 +42,7 @@ export declare class PlanarSet extends Set {
      * @param {Box} box - query box
      * @returns {AnyShape[]}
      */
-    search(box: any): import("@flatten-js/interval-tree").SearchOutput<any>;
+    search(box: any): any[];
     /**
      * Point location test. Returns array of shapes which contains given point
      * @param {Point} point - query point

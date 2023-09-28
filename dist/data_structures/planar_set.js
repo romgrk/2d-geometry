@@ -1,5 +1,5 @@
-import IntervalTree from '@flatten-js/interval-tree';
 import { Box } from '../classes/Box';
+import { IntervalTree } from '../data_structures/interval-tree';
 /**
  * Class representing a planar set - a generic container with ability to keep and retrieve shapes and
  * perform spatial queries. Planar set is an extension of Set container, so it supports
