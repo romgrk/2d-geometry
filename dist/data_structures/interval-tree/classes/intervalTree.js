@@ -179,7 +179,7 @@ class IntervalTree {
         else {
             while (current_node != this.nil_node) {
                 parent_node = current_node;
-                if (insert_node.less_than(current_node)) {
+                if (insert_node.lessThan(current_node)) {
                     current_node = current_node.left;
                 }
                 else {
@@ -187,7 +187,7 @@ class IntervalTree {
                 }
             }
             insert_node.parent = parent_node;
-            if (insert_node.less_than(parent_node)) {
+            if (insert_node.lessThan(parent_node)) {
                 parent_node.left = insert_node;
             }
             else {
@@ -363,10 +363,10 @@ class IntervalTree {
     tree_search(node, search_node) {
         if (node == null || node == this.nil_node)
             return undefined;
-        if (search_node.equal_to(node)) {
+        if (search_node.equalTo(node)) {
             return node;
         }
-        if (search_node.less_than(node)) {
+        if (search_node.lessThan(node)) {
             return this.tree_search(node.left, search_node);
         }
         else {
@@ -377,7 +377,7 @@ class IntervalTree {
         let best;
         let curr = node;
         while (curr && curr != this.nil_node) {
-            if (curr.less_than(search_node)) {
+            if (curr.lessThan(search_node)) {
                 if (curr.intersect(search_node)) {
                     best = curr;
                     curr = curr.left;
@@ -387,7 +387,7 @@ class IntervalTree {
                 }
             }
             else {
-                if (!best || curr.less_than(best))
+                if (!best || curr.lessThan(best))
                     best = curr;
                 curr = curr.left;
             }

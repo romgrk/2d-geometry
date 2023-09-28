@@ -34,34 +34,34 @@ class Node {
     }
 
     _value_less_than(other_node) {
-        return this.item.value && other_node.item.value && this.item.value.less_than ?
-            this.item.value.less_than(other_node.item.value) :
+        return this.item.value && other_node.item.value && this.item.value.lessThan ?
+            this.item.value.lessThan(other_node.item.value) :
             this.item.value < other_node.item.value;
     }
 
-    less_than(other_node) {
+    lessThan(other_node) {
         // if tree stores only keys
         if (this.item.value === this.item.key && other_node.item.value === other_node.item.key) {
-            return this.item.key.less_than(other_node.item.key);
+            return this.item.key.lessThan(other_node.item.key);
         }
         else {    // if tree stores keys and values
-            return this.item.key.less_than(other_node.item.key) ||
-                this.item.key.equal_to((other_node.item.key)) && this._value_less_than(other_node)
+            return this.item.key.lessThan(other_node.item.key) ||
+                this.item.key.equalTo((other_node.item.key)) && this._value_less_than(other_node)
         }
     }
 
     _value_equal(other_node) {
-        return this.item.value && other_node.item.value && this.item.value.equal_to ?
-            this.item.value.equal_to(other_node.item.value) :
+        return this.item.value && other_node.item.value && this.item.value.equalTo ?
+            this.item.value.equalTo(other_node.item.value) :
             this.item.value == other_node.item.value;
     }
-    equal_to(other_node) {
+    equalTo(other_node) {
         // if tree stores only keys
         if (this.item.value === this.item.key && other_node.item.value === other_node.item.key) {
-            return this.item.key.equal_to(other_node.item.key);
+            return this.item.key.equalTo(other_node.item.key);
         }
         else {    // if tree stores keys and values
-            return this.item.key.equal_to(other_node.item.key) && this._value_equal(other_node);
+            return this.item.key.equalTo(other_node.item.key) && this._value_equal(other_node);
         }
     }
 
@@ -78,12 +78,12 @@ class Node {
         // use key (Interval) max property instead of key.high
         this.max = this.item.key ? this.item.key.max : undefined;
         if (this.right && this.right.max) {
-            const comparable_max = this.item.key.constructor.comparable_max;  // static method
-            this.max = comparable_max(this.max, this.right.max);
+            const comparableMax = this.item.key.constructor.comparableMax;  // static method
+            this.max = comparableMax(this.max, this.right.max);
         }
         if (this.left && this.left.max) {
-            const comparable_max = this.item.key.constructor.comparable_max;  // static method
-            this.max = comparable_max(this.max, this.left.max);
+            const comparableMax = this.item.key.constructor.comparableMax;  // static method
+            this.max = comparableMax(this.max, this.left.max);
         }
     }
 

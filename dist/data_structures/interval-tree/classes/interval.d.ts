@@ -2,8 +2,8 @@
  * Interval is a pair of numbers or a pair of any comparable objects on which may be defined predicates
  * *equal*, *less* and method *max(p1, p1)* that returns maximum in a pair.
  * When interval is an object rather than pair of numbers, this object should have properties *low*, *high*, *max*
- * and implement methods *less_than(), equal_to(), intersect(), not_intersect(), clone(), output()*.
- * Two static methods *comparable_max(), comparable_less_than()* define how to compare values in pair. <br/>
+ * and implement methods *lessThan(), equalTo(), intersect(), not_intersect(), clone(), output()*.
+ * Two static methods *comparableMax(), comparable_less_than()* define how to compare values in pair. <br/>
  * This interface is described in typescript definition file *index.d.ts*
  *
  * Axis aligned rectangle is an example of such interval.
@@ -37,13 +37,13 @@ export default class Interval {
      * @param other_interval
      * @returns {boolean}
      */
-    less_than(other_interval: any): boolean;
+    lessThan(other_interval: any): boolean;
     /**
      * Predicate returns true is this interval equals to other interval
      * @param other_interval
      * @returns {boolean}
      */
-    equal_to(other_interval: any): boolean;
+    equalTo(other_interval: any): boolean;
     /**
      * Predicate returns true if this interval intersects other interval
      * @param other_interval
@@ -72,7 +72,7 @@ export default class Interval {
      * @param interval2
      * @returns {Interval}
      */
-    static comparable_max(interval1: any, interval2: any): any;
+    static comparableMax(interval1: any, interval2: any): any;
     /**
      * Predicate returns true if first value less than second value
      * @param val1
