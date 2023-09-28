@@ -62,7 +62,7 @@ export declare class Line extends Shape<Line> {
      * @param {Line} other_line - line to check
      * @returns {boolean}
      */
-    incidentTo(other_line: any): any;
+    incidentTo(other_line: any): boolean;
     /**
      * Returns true if point belongs to line
      * @param {Point} pt Query point
@@ -96,7 +96,7 @@ export declare class Line extends Shape<Line> {
      * @param {Point | Point[]} pt
      * @returns {MultilineShapes}
      */
-    split(pt: any): any[];
+    split(pt: any): geom.Ray[] | (geom.Segment | geom.Arc)[];
     /**
      * Return new line rotated by angle
      * @param {number} angle - angle in radians

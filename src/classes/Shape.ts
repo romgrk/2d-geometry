@@ -47,11 +47,11 @@ export class Shape<T> {
 
     /**
      * Return new shape with coordinates multiplied by scaling factor
-     * @param sx - x-axis scaling factor
-     * @param sy - y-axis scaling factor
      */
-    scale(sx: number, sy: number): T {
-        return this.transform(new Matrix().scale(sx, sy));
+    scale(s: number): T;
+    scale(sx: number, sy: number): T;
+    scale(a: unknown, b?: unknown): T {
+        return this.transform(new Matrix().scale(a, b ?? a));
     }
 
     transform(...args): T {

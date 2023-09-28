@@ -27,9 +27,8 @@ export declare class Shape<T> {
     rotate(angle: number, center?: Point): T;
     /**
      * Return new shape with coordinates multiplied by scaling factor
-     * @param sx - x-axis scaling factor
-     * @param sy - y-axis scaling factor
      */
+    scale(s: number): T;
     scale(sx: number, sy: number): T;
     transform(...args: any[]): T;
     /**

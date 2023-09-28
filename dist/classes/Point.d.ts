@@ -60,6 +60,11 @@ export declare class Point extends Shape<Point> {
      */
     leftTo(line: any): boolean;
     /**
+     * Snap the point to a grid.
+     */
+    snapToGrid(grid: number): any;
+    snapToGrid(xGrid: number, yGrid: number): any;
+    /**
      * Calculate distance and shortest segment from point to shape and return as array [distance, shortest segment]
      * @param {Shape} shape Shape of the one of supported types Point, Line, Circle, Segment, Arc, Polygon or Planar Set
      * @returns {number} distance from point to shape
@@ -71,7 +76,7 @@ export declare class Point extends Shape<Point> {
      * @param {Shape} shape Shape of the one of supported types Point, Line, Circle, Segment, Arc, Polygon
      * @returns {boolean}
      */
-    on(shape: any): any;
+    on(shape: any): boolean;
     get name(): string;
     /**
      * Return string to draw point in svg as circle with radius "r" <br/>

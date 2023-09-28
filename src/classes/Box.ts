@@ -44,7 +44,6 @@ export class Box extends Shape<Box> {
 
     /**
      * Property high need for interval tree interface
-     * @returns {Point}
      */
     get high() {
         return new Point(this.xmax, this.ymax);
@@ -52,7 +51,6 @@ export class Box extends Shape<Box> {
 
     /**
      * Property max returns the box itself !
-     * @returns {Box}
      */
     get max() {
         return this.clone();
@@ -60,7 +58,6 @@ export class Box extends Shape<Box> {
     
     /**
      * Return center of the box
-     * @returns {Point}
      */
     get center() {
         return new Point((this.xmin + this.xmax) / 2, (this.ymin + this.ymax) / 2);
@@ -68,7 +65,6 @@ export class Box extends Shape<Box> {
 
     /**
      * Return the width of the box
-     * @returns {number}
      */
     get width() {
         return Math.abs(this.xmax - this.xmin);
@@ -76,7 +72,6 @@ export class Box extends Shape<Box> {
 
     /**
      * Return the height of the box
-     * @returns {number}
      */
     get height() {
         return Math.abs(this.ymax - this.ymin);
@@ -84,7 +79,6 @@ export class Box extends Shape<Box> {
     
     /**
      * Return property box like all other shapes
-     * @returns {Box}
      */
     get box() {
         return this.clone();
@@ -92,61 +86,56 @@ export class Box extends Shape<Box> {
 
     /**
      * Returns true if not intersected with other box
-     * @param {Box} other_box - other box to test
-     * @returns {boolean}
+     * @param otherBox - other box to test
      */
-    notIntersect(other_box) {
+    notIntersect(otherBox: Box) {
         return (
-            this.xmax < other_box.xmin ||
-            this.xmin > other_box.xmax ||
-            this.ymax < other_box.ymin ||
-            this.ymin > other_box.ymax
+            this.xmax < otherBox.xmin ||
+            this.xmin > otherBox.xmax ||
+            this.ymax < otherBox.ymin ||
+            this.ymin > otherBox.ymax
         );
     }
 
     /**
      * Returns true if intersected with other box
-     * @param {Box} other_box - Query box
-     * @returns {boolean}
+     * @param otherBox - Query box
      */
-    intersect(other_box) {
-        return !this.notIntersect(other_box);
+    intersect(otherBox: Box) {
+        return !this.notIntersect(otherBox);
     }
 
     /**
      * Returns new box merged with other box
-     * @param {Box} other_box - Other box to merge with
-     * @returns {Box}
+     * @param otherBox - Other box to merge with
      */
-    merge(other_box) {
+    merge(otherBox: Box) {
         return new Box(
-            this.xmin === undefined ? other_box.xmin : Math.min(this.xmin, other_box.xmin),
-            this.ymin === undefined ? other_box.ymin : Math.min(this.ymin, other_box.ymin),
-            this.xmax === undefined ? other_box.xmax : Math.max(this.xmax, other_box.xmax),
-            this.ymax === undefined ? other_box.ymax : Math.max(this.ymax, other_box.ymax)
+            this.xmin === undefined ? otherBox.xmin : Math.min(this.xmin, otherBox.xmin),
+            this.ymin === undefined ? otherBox.ymin : Math.min(this.ymin, otherBox.ymin),
+            this.xmax === undefined ? otherBox.xmax : Math.max(this.xmax, otherBox.xmax),
+            this.ymax === undefined ? otherBox.ymax : Math.max(this.ymax, otherBox.ymax)
         );
     }
 
     /**
      * Defines predicate "less than" between two boxes. Need for interval index
-     * @param {Box} other_box - other box
-     * @returns {boolean} - true if this box less than other box, false otherwise
+     * @param otherBox - other box
      */
-    lessThan(other_box) {
-        if (this.low.lessThan(other_box.low))
+    lessThan(otherBox: Box) {
+        if (this.low.lessThan(otherBox.low))
             return true;
-        if (this.low.equalTo(other_box.low) && this.high.lessThan(other_box.high))
+        if (this.low.equalTo(otherBox.low) && this.high.lessThan(otherBox.high))
             return true;
         return false;
     }
 
     /**
      * Returns true if this box is equal to other box, false otherwise
-     * @param {Box} other_box - query box
-     * @returns {boolean}
+     * @param otherBox - query box
      */
-    equalTo(other_box) {
-        return (this.low.equalTo(other_box.low) && this.high.equalTo(other_box.high));
+    equalTo(otherBox: Box) {
+        return (this.low.equalTo(otherBox.low) && this.high.equalTo(otherBox.high));
     }
 
     output() {
@@ -164,12 +153,8 @@ export class Box extends Shape<Box> {
 
     /**
      * Set new values to the box object
-     * @param {number} xmin - mininal x coordinate
-     * @param {number} ymin - minimal y coordinate
-     * @param {number} xmax - maximal x coordinate
-     * @param {number} ymax - maximal y coordinate
      */
-    set(xmin, ymin, xmax, ymax) {
+    set(xmin: number, ymin: number, xmax: number, ymax: number) {
         this.xmin = xmin;
         this.ymin = ymin;
         this.xmax = xmax;
@@ -178,7 +163,6 @@ export class Box extends Shape<Box> {
 
     /**
      * Transform box into array of points from low left corner in counterclockwise
-     * @returns {Point[]}
      */
     toPoints() {
         return [

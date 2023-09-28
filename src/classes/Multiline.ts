@@ -3,19 +3,18 @@ import {convertToString} from "../utils/attributes";
 import * as geom from './index'
 import type { Shape } from './Shape';
 
+type EdgeShape = geom.Segment | geom.Arc | geom.Ray | geom.Line
+
 /**
  * Class Multiline represent connected path of [edges]{@link geom.Edge}, where each edge may be
  * [segment]{@link geom.Segment}, [arc]{@link geom.Arc}, [line]{@link geom.Line} or [ray]{@link geom.Ray}
  */
 export class Multiline extends LinkedList<any> {
-    constructor(input?: Shape<geom.Segment | geom.Arc | geom.Ray | geom.Line>[]) {
+    edges: geom.Edge[]
+
+    constructor(shapes?: Shape<EdgeShape>[]) {
         super();
-
-        if (input instanceof Array) {
-            let shapes = input;
-            if (shapes.length == 0)
-                return;
-
+        if (shapes) {
             // TODO: more strict validation:
             // there may be only one line
             // only first and last may be rays
@@ -28,19 +27,10 @@ export class Multiline extends LinkedList<any> {
             if (!validShapes)
                 throw new Error('invalid shapes')
 
-            for (let shape of shapes) {
-                let edge = new geom.Edge(shape as any /* XXX */);
-                this.append(edge);
-            }
+            this.edges = shapes.map(s => new geom.Edge(s as any))
+        } else {
+            this.edges = []
         }
-    }
-
-    /**
-     * (Getter) Return array of edges
-     * @returns {Edge[]}
-     */
-    get edges() {
-        return [...this];
     }
 
     /**

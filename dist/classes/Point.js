@@ -117,6 +117,11 @@ export class Point extends Shape {
         let onLeftSemiPlane = Utils.GT(vec.dot(line.norm), 0);
         return onLeftSemiPlane;
     }
+    snapToGrid(a = 1, b) {
+        const xGrid = a;
+        const yGrid = b === undefined ? a : b;
+        return new Point(Math.round(this.x / xGrid) * xGrid, Math.round(this.y / yGrid) * yGrid);
+    }
     /**
      * Calculate distance and shortest segment from point to shape and return as array [distance, shortest segment]
      * @param {Shape} shape Shape of the one of supported types Point, Line, Circle, Segment, Arc, Polygon or Planar Set

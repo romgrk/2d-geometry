@@ -35,7 +35,7 @@ export declare class Circle extends Shape<Circle> {
      * @param {Shape} shape - test shape
      * @returns {boolean}
      */
-    contains(shape: any): any;
+    contains(shape: any): boolean;
     /**
      * Transform circle to closed arc
      * @param {boolean} counterclockwise
@@ -44,23 +44,17 @@ export declare class Circle extends Shape<Circle> {
     toArc(counterclockwise?: boolean): geom.Arc;
     /**
      * Method scale is supported only for uniform scaling of the circle with (0,0) center
-     * @param {number} sx
-     * @param {number} sy
-     * @returns {Circle}
      */
-    scale(sx: any, sy: any): geom.Circle;
+    scale(s: number): any;
+    scale(sx: number, sy: number): any;
     /**
      * Return new circle transformed using affine transformation matrix
-     * @param {Matrix} matrix - affine transformation matrix
-     * @returns {Circle}
      */
     transform(matrix?: geom.Matrix): geom.Circle;
     /**
      * Returns array of intersection points between circle and other shape
-     * @param {Shape} shape Shape of the one of supported types
-     * @returns {Point[]}
      */
-    intersect(shape: any): any;
+    intersect(shape: geom.Shape<any>): geom.Point[];
     /**
      * Calculate distance and shortest segment from circle to shape and return array [distance, shortest segment]
      * @param {Shape} shape Shape of the one of supported types Point, Line, Circle, Segment, Arc, Polygon or Planar Set

@@ -1,27 +1,24 @@
 import LinkedList from '../data_structures/linked_list';
 import * as geom from './index';
 import type { Shape } from './Shape';
+type EdgeShape = geom.Segment | geom.Arc | geom.Ray | geom.Line;
 /**
  * Class Multiline represent connected path of [edges]{@link geom.Edge}, where each edge may be
  * [segment]{@link geom.Segment}, [arc]{@link geom.Arc}, [line]{@link geom.Line} or [ray]{@link geom.Ray}
  */
 export declare class Multiline extends LinkedList<any> {
-    constructor(input?: Shape<geom.Segment | geom.Arc | geom.Ray | geom.Line>[]);
-    /**
-     * (Getter) Return array of edges
-     * @returns {Edge[]}
-     */
-    get edges(): any[];
+    edges: geom.Edge[];
+    constructor(shapes?: Shape<EdgeShape>[]);
     /**
      * (Getter) Return bounding box of the multiline
      * @returns {Box}
      */
-    get box(): any;
+    get box(): geom.Box;
     /**
      * (Getter) Returns array of vertices
      * @returns {Point[]}
      */
-    get vertices(): any[];
+    get vertices(): geom.Point[];
     /**
      * Return new cloned instance of Multiline
      * @returns {Multiline}
@@ -72,7 +69,7 @@ export declare class Multiline extends LinkedList<any> {
      * Transform multiline into array of shapes
      * @returns {Shape[]}
      */
-    toShapes(): any[];
+    toShapes(): (geom.Segment | geom.Arc)[];
     /**
      * This method returns an object that defines how data will be
      * serialized when called JSON.stringify() method
@@ -92,4 +89,5 @@ export declare class Multiline extends LinkedList<any> {
  * @param args
  */
 export declare const multiline: (...args: any[]) => geom.Multiline;
+export {};
 //# sourceMappingURL=Multiline.d.ts.map

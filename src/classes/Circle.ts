@@ -109,22 +109,19 @@ export class Circle extends Shape<Circle> {
 
     /**
      * Method scale is supported only for uniform scaling of the circle with (0,0) center
-     * @param {number} sx
-     * @param {number} sy
-     * @returns {Circle}
      */
-    scale(sx, sy) {
-        if (sx !== sy)
+    scale(s: number);
+    scale(sx: number, sy: number);
+    scale(a: number, b?: number) {
+        if (a !== b)
             throw Errors.OPERATION_IS_NOT_SUPPORTED
         if (!(this.pc.x === 0.0 && this.pc.y === 0.0))
             throw Errors.OPERATION_IS_NOT_SUPPORTED
-        return new geom.Circle(this.pc, this.r*sx)
+        return new geom.Circle(this.pc, this.r * a)
     }
 
     /**
      * Return new circle transformed using affine transformation matrix
-     * @param {Matrix} matrix - affine transformation matrix
-     * @returns {Circle}
      */
     transform(matrix = new geom.Matrix()) {
         return new geom.Circle(this.pc.transform(matrix), this.r)
@@ -132,10 +129,8 @@ export class Circle extends Shape<Circle> {
 
     /**
      * Returns array of intersection points between circle and other shape
-     * @param {Shape} shape Shape of the one of supported types
-     * @returns {Point[]}
      */
-    intersect(shape) {
+    intersect(shape: geom.Shape<any>): geom.Point[] {
         if (shape instanceof geom.Point) {
             return this.contains(shape) ? [shape] : [];
         }

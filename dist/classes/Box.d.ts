@@ -27,78 +27,62 @@ export declare class Box extends Shape<Box> {
     get low(): Point;
     /**
      * Property high need for interval tree interface
-     * @returns {Point}
      */
     get high(): Point;
     /**
      * Property max returns the box itself !
-     * @returns {Box}
      */
     get max(): Box;
     /**
      * Return center of the box
-     * @returns {Point}
      */
     get center(): Point;
     /**
      * Return the width of the box
-     * @returns {number}
      */
     get width(): number;
     /**
      * Return the height of the box
-     * @returns {number}
      */
     get height(): number;
     /**
      * Return property box like all other shapes
-     * @returns {Box}
      */
     get box(): Box;
     /**
      * Returns true if not intersected with other box
-     * @param {Box} other_box - other box to test
-     * @returns {boolean}
+     * @param otherBox - other box to test
      */
-    notIntersect(other_box: any): boolean;
+    notIntersect(otherBox: Box): boolean;
     /**
      * Returns true if intersected with other box
-     * @param {Box} other_box - Query box
-     * @returns {boolean}
+     * @param otherBox - Query box
      */
-    intersect(other_box: any): boolean;
+    intersect(otherBox: Box): boolean;
     /**
      * Returns new box merged with other box
-     * @param {Box} other_box - Other box to merge with
-     * @returns {Box}
+     * @param otherBox - Other box to merge with
      */
-    merge(other_box: any): Box;
+    merge(otherBox: Box): Box;
     /**
      * Defines predicate "less than" between two boxes. Need for interval index
-     * @param {Box} other_box - other box
-     * @returns {boolean} - true if this box less than other box, false otherwise
+     * @param otherBox - other box
      */
-    lessThan(other_box: any): boolean;
+    lessThan(otherBox: Box): boolean;
     /**
      * Returns true if this box is equal to other box, false otherwise
-     * @param {Box} other_box - query box
-     * @returns {boolean}
+     * @param otherBox - query box
      */
-    equalTo(other_box: any): boolean;
+    equalTo(otherBox: Box): boolean;
     output(): Box;
     static comparableMax(box1: any, box2: any): any;
     static comparableLessThan(pt1: any, pt2: any): any;
     /**
      * Set new values to the box object
-     * @param {number} xmin - mininal x coordinate
-     * @param {number} ymin - minimal y coordinate
-     * @param {number} xmax - maximal x coordinate
-     * @param {number} ymax - maximal y coordinate
      */
-    set(xmin: any, ymin: any, xmax: any, ymax: any): void;
+    set(xmin: number, ymin: number, xmax: number, ymax: number): void;
     /**
      * Transform box into array of points from low left corner in counterclockwise
-     * @returns {Point[]}
      */
     toPoints(): Point[];
     /**

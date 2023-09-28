@@ -6,12 +6,9 @@ import * as geom from './index';
  * [segment]{@link geom.Segment}, [arc]{@link geom.Arc}, [line]{@link geom.Line} or [ray]{@link geom.Ray}
  */
 export class Multiline extends LinkedList {
-    constructor(input) {
+    constructor(shapes) {
         super();
-        if (input instanceof Array) {
-            let shapes = input;
-            if (shapes.length == 0)
-                return;
+        if (shapes) {
             // TODO: more strict validation:
             // there may be only one line
             // only first and last may be rays
@@ -23,18 +20,11 @@ export class Multiline extends LinkedList {
             });
             if (!validShapes)
                 throw new Error('invalid shapes');
-            for (let shape of shapes) {
-                let edge = new geom.Edge(shape /* XXX */);
-                this.append(edge);
-            }
+            this.edges = shapes.map(s => new geom.Edge(s));
         }
-    }
-    /**
-     * (Getter) Return array of edges
-     * @returns {Edge[]}
-     */
-    get edges() {
-        return [...this];
+        else {
+            this.edges = [];
+        }
     }
     /**
      * (Getter) Return bounding box of the multiline

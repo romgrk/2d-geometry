@@ -139,6 +139,20 @@ export class Point extends Shape<Point> {
     }
 
     /**
+     * Snap the point to a grid.
+     */
+    snapToGrid(grid: number);
+    snapToGrid(xGrid: number, yGrid: number);
+    snapToGrid(a: number = 1, b?: unknown) {
+        const xGrid = a
+        const yGrid = b === undefined ? a : b as number
+        return new Point(
+            Math.round(this.x / xGrid) * xGrid,
+            Math.round(this.y / yGrid) * yGrid,
+        )
+    }
+
+    /**
      * Calculate distance and shortest segment from point to shape and return as array [distance, shortest segment]
      * @param {Shape} shape Shape of the one of supported types Point, Line, Circle, Segment, Arc, Polygon or Planar Set
      * @returns {number} distance from point to shape

@@ -28,13 +28,8 @@ export class Shape {
     rotate(angle, center = {} /* fixed in _setupShape */) {
         return this.transform(new Matrix().rotate(angle, center.x, center.y));
     }
-    /**
-     * Return new shape with coordinates multiplied by scaling factor
-     * @param sx - x-axis scaling factor
-     * @param sy - y-axis scaling factor
-     */
-    scale(sx, sy) {
-        return this.transform(new Matrix().scale(sx, sy));
+    scale(a, b) {
+        return this.transform(new Matrix().scale(a, b !== null && b !== void 0 ? b : a));
     }
     transform(...args) {
         throw (Errors.CANNOT_INVOKE_ABSTRACT_METHOD);
