@@ -1,20 +1,21 @@
 import LinkedList from '../data_structures/linked_list';
-import { convertToString } from '../utils/attributes';
+import {convertToString} from "../utils/attributes";
 import * as geom from './index'
 import type { Shape } from './Shape';
-
-type EdgeShape = geom.Segment | geom.Arc | geom.Ray | geom.Line
 
 /**
  * Class Multiline represent connected path of [edges]{@link geom.Edge}, where each edge may be
  * [segment]{@link geom.Segment}, [arc]{@link geom.Arc}, [line]{@link geom.Line} or [ray]{@link geom.Ray}
  */
 export class Multiline extends LinkedList<any> {
-    edges: geom.Edge[]
-
-    constructor(shapes?: Shape<EdgeShape>[]) {
+    constructor(input?: Shape<geom.Segment | geom.Arc | geom.Ray | geom.Line>[]) {
         super();
-        if (shapes) {
+
+        if (input instanceof Array) {
+            let shapes = input;
+            if (shapes.length == 0)
+                return;
+
             // TODO: more strict validation:
             // there may be only one line
             // only first and last may be rays
@@ -27,32 +28,40 @@ export class Multiline extends LinkedList<any> {
             if (!validShapes)
                 throw new Error('invalid shapes')
 
-            this.edges = shapes.map(s => new geom.Edge(s as any))
-        } else {
-            this.edges = []
+            for (let shape of shapes) {
+                let edge = new geom.Edge(shape as any /* XXX */);
+                this.append(edge);
+            }
         }
+    }
+
+    /**
+     * The array of edges
+     */
+    get edges() {
+        return [...this];
     }
 
     /**
      * The bounding box of the multiline
      */
     get box() {
-        return this.edges.reduce((acc,edge) => acc = acc.merge(edge.box), new geom.Box());
+        return this.edges.reduce( (acc,edge) => acc = acc.merge(edge.box), new geom.Box() );
     }
 
     /**
-     * The array of vertices
+     * (Getter) Returns array of vertices
+     * @returns {Point[]}
      */
     get vertices() {
         let v = this.edges.map(edge => edge.start);
-        const last = this.edges[this.edges.length - 1]
-        if (last)
-            v.push(last.end);
+        v.push(this.last.end);
         return v;
     }
 
     /**
      * Return new cloned instance of Multiline
+     * @returns {Multiline}
      */
     clone() {
         return new Multiline(this.toShapes());
@@ -60,8 +69,11 @@ export class Multiline extends LinkedList<any> {
 
     /**
      * Split edge and add new vertex, return new edge inserted
+     * @param {Point} pt - point on edge that will be added as new vertex
+     * @param {Edge} edge - edge to split
+     * @returns {Edge}
      */
-    addVertex(pt: geom.Point, edge: geom.Edge) {
+    addVertex(pt, edge) {
         let shapes = edge.shape.split(pt);
         // if (shapes.length < 2) return;
 
@@ -179,5 +191,6 @@ export class Multiline extends LinkedList<any> {
 
 /**
  * Shortcut function to create multiline
+ * @param args
  */
-export const multiline = (shapes?: Shape<EdgeShape>[]) => new geom.Multiline(shapes);
+export const multiline = (...args) => new geom.Multiline(...args);
