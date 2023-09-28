@@ -58,7 +58,7 @@ export declare class Ray extends Shape<Ray> {
      * @param {Point} pt
      * @returns [Segment,Ray]
      */
-    split(pt: any): (geom.Segment | geom.Ray)[];
+    split(pt: any): (geom.Ray | geom.Segment)[];
     /**
      * Returns array of intersection points between ray and another shape
      * @param {Shape} shape - Shape to intersect with ray

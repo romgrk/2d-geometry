@@ -18,17 +18,7 @@ export class Line extends Shape {
      */
     constructor(...args) {
         super();
-        /**
-         * Point a line passes through
-         * @type {Point}
-         */
         this.pt = new Point();
-        /**
-         * Normal vector to a line <br/>
-         * Vector is normalized (length == 1)<br/>
-         * Direction of the vector is chosen to satisfy inequality norm * p >= 0
-         * @type {Vector}
-         */
         this.norm = new Vector(0, 1);
         if (args.length === 0) {
             return;
@@ -79,7 +69,6 @@ export class Line extends Shape {
     }
     /**
      * Return new cloned instance of line
-     * @returns {Line}
      */
     clone() {
         return new Line(this.pt, this.norm);
@@ -87,7 +76,6 @@ export class Line extends Shape {
     /* The following methods need for implementation of Edge interface
     /**
      * Line has no start point
-     * @returns {undefined}
      */
     get start() { return undefined; }
     /**
@@ -96,38 +84,32 @@ export class Line extends Shape {
     get end() { return undefined; }
     /**
      * Return positive infinity number as length
-     * @returns {number}
      */
     get length() { return Number.POSITIVE_INFINITY; }
     /**
      * Returns infinite box
-     * @returns {Box}
      */
     get box() {
         return new geom.Box(Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY);
     }
     /**
      * Middle point is undefined
-     * @returns {undefined}
      */
     get middle() { return undefined; }
     /**
      * Slope of the line - angle in radians between line and axe x from 0 to 2PI
-     * @returns {number} - slope of the line
      */
     get slope() {
-        let vec = new Vector(this.norm.y, -this.norm.x);
-        return vec.slope;
+        return new Vector(this.norm.y, -this.norm.x).slope;
     }
     /**
      * Get coefficients [A,B,C] of a standard line equation in the form Ax + By = C
      * @code [A, B, C] = line.standard
-     * @returns {number[]} - array of coefficients
      */
     get standard() {
-        let A = this.norm.x;
-        let B = this.norm.y;
-        let C = this.norm.dot(vector(this.pt.x, this.pt.y));
+        const A = this.norm.x;
+        const B = this.norm.y;
+        const C = this.norm.dot(vector(this.pt.x, this.pt.y));
         return [A, B, C];
     }
     /**
@@ -203,8 +185,7 @@ export class Line extends Shape {
     }
     /**
      * Calculate distance and shortest segment from line to shape and returns array [distance, shortest_segment]
-     * @param {Shape} shape Shape of the one of the types Point, Circle, Segment, Arc, Polygon
-     * @returns {[number, Segment]}
+     * @param shape Shape of the one of the types Point, Circle, Segment, Arc, Polygon
      */
     distanceTo(shape) {
         if (shape instanceof geom.Point) {

@@ -7,7 +7,15 @@ import { Vector } from './Vector';
  * @type {Line}
  */
 export declare class Line extends Shape<Line> {
+    /**
+     * Point a line passes through
+     */
     pt: Point;
+    /**
+     * Normal vector to a line <br/>
+     * Vector is normalized (length == 1)<br/>
+     * Direction of the vector is chosen to satisfy inequality norm * p >= 0
+     */
     norm: Vector;
     /**
      * Line may be constructed by point and normal vector or by two points that a line passes through
@@ -17,7 +25,6 @@ export declare class Line extends Shape<Line> {
     constructor(...args: any[]);
     /**
      * Return new cloned instance of line
-     * @returns {Line}
      */
     clone(): geom.Line;
     get start(): any;
@@ -27,30 +34,25 @@ export declare class Line extends Shape<Line> {
     get end(): any;
     /**
      * Return positive infinity number as length
-     * @returns {number}
      */
     get length(): number;
     /**
      * Returns infinite box
-     * @returns {Box}
      */
     get box(): geom.Box;
     /**
      * Middle point is undefined
-     * @returns {undefined}
      */
     get middle(): any;
     /**
      * Slope of the line - angle in radians between line and axe x from 0 to 2PI
-     * @returns {number} - slope of the line
      */
     get slope(): number;
     /**
      * Get coefficients [A,B,C] of a standard line equation in the form Ax + By = C
      * @code [A, B, C] = line.standard
-     * @returns {number[]} - array of coefficients
      */
-    get standard(): number[];
+    get standard(): readonly [number, number, number];
     /**
      * Return true if parallel or incident to other line
      * @param {Line} other_line - line to check
@@ -86,10 +88,9 @@ export declare class Line extends Shape<Line> {
     intersect(shape: any): geom.Point[];
     /**
      * Calculate distance and shortest segment from line to shape and returns array [distance, shortest_segment]
-     * @param {Shape} shape Shape of the one of the types Point, Circle, Segment, Arc, Polygon
-     * @returns {[number, Segment]}
+     * @param shape Shape of the one of the types Point, Circle, Segment, Arc, Polygon
      */
-    distanceTo(shape: any): (number | geom.Segment)[];
+    distanceTo(shape: geom.Shape<any>): [number, geom.Segment];
     /**
      * Split line with a point or array of points and return array of shapes
      * Assumed (but not checked) that all points lay on the line
