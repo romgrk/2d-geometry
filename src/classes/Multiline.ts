@@ -1,5 +1,5 @@
 import LinkedList from '../data_structures/linked_list';
-import {convertToString} from "../utils/attributes";
+import { convertToString } from '../utils/attributes';
 import * as geom from './index'
 import type { Shape } from './Shape';
 
@@ -34,26 +34,25 @@ export class Multiline extends LinkedList<any> {
     }
 
     /**
-     * (Getter) Return bounding box of the multiline
-     * @returns {Box}
+     * The bounding box of the multiline
      */
     get box() {
-        return this.edges.reduce( (acc,edge) => acc = acc.merge(edge.box), new geom.Box() );
+        return this.edges.reduce((acc,edge) => acc = acc.merge(edge.box), new geom.Box());
     }
 
     /**
-     * (Getter) Returns array of vertices
-     * @returns {Point[]}
+     * The array of vertices
      */
     get vertices() {
         let v = this.edges.map(edge => edge.start);
-        v.push(this.last.end);
+        const last = this.edges[this.edges.length - 1]
+        if (last)
+            v.push(last.end);
         return v;
     }
 
     /**
      * Return new cloned instance of Multiline
-     * @returns {Multiline}
      */
     clone() {
         return new Multiline(this.toShapes());
@@ -61,11 +60,8 @@ export class Multiline extends LinkedList<any> {
 
     /**
      * Split edge and add new vertex, return new edge inserted
-     * @param {Point} pt - point on edge that will be added as new vertex
-     * @param {Edge} edge - edge to split
-     * @returns {Edge}
      */
-    addVertex(pt, edge) {
+    addVertex(pt: geom.Point, edge: geom.Edge) {
         let shapes = edge.shape.split(pt);
         // if (shapes.length < 2) return;
 
@@ -183,6 +179,5 @@ export class Multiline extends LinkedList<any> {
 
 /**
  * Shortcut function to create multiline
- * @param args
  */
-export const multiline = (...args) => new geom.Multiline(...args);
+export const multiline = (shapes?: Shape<EdgeShape>[]) => new geom.Multiline(shapes);
