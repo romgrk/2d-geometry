@@ -235,7 +235,6 @@ export class Segment extends Shape<Segment> {
 
     /**
      * Return unit vector in the direction from end to start
-     * @returns {Vector}
      */
     tangentInEnd() {
         let vec = new geom.Vector(this.end, this.start);
@@ -244,7 +243,6 @@ export class Segment extends Shape<Segment> {
 
     /**
      * Returns new segment with swapped start and end points
-     * @returns {Segment}
      */
     reverse() {
         return new Segment(this.end, this.start);
@@ -254,10 +252,9 @@ export class Segment extends Shape<Segment> {
      * When point belongs to segment, return array of two segments split by given point,
      * if point is inside segment. Returns clone of this segment if query point is incident
      * to start or end point of the segment. Returns empty array if point does not belong to segment
-     * @param {Point} pt Query point
-     * @returns {Segment[]}
+     * @param pt Query point
      */
-    split(pt) {
+    split(pt: geom.Point) {
         if (this.start.equalTo(pt))
             return [null, this.clone()];
 

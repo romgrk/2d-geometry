@@ -38,8 +38,8 @@ export class Point extends Shape<Point> {
             }
         }
 
-        if (args.length === 1 && args[0] instanceof Object && args[0].name === "point") {
-            let {x, y} = args[0];
+        if (args.length === 1 && args[0] instanceof Object) {
+            let { x, y } = args[0];
             this.x = x;
             this.y = y;
             return;

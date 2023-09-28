@@ -9,7 +9,6 @@ import {Shape} from "./Shape";
 
 /**
  * Class representing a circular arc
- * @type {Arc}
  */
 export class Arc extends Shape<Arc> {
     /**
@@ -156,7 +155,6 @@ export class Arc extends Shape<Arc> {
 
     /**
      * Get arc length
-     * @returns {number}
      */
     get length() {
         return Math.abs(this.sweep * this.r);
@@ -227,10 +225,9 @@ export class Arc extends Shape<Arc> {
 
     /**
      * Get point at given length
-     * @param {number} length - The length along the arc
-     * @returns {Point}
+     * @param length - The length along the arc
      */
-    pointAtLength(length) {
+    pointAtLength(length: number) {
         if (length > this.length || length < 0) return null;
         if (length === 0) return this.start;
         if (length === this.length) return this.end;
