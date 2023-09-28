@@ -1,1 +1,0 @@
-{"version":3,"file":"constants.d.ts","sourceRoot":"","sources":["../../../../src/data_structures/interval-tree/utils/constants.ts"],"names":[],"mappings":"AAAA,QAAA,MAAM,iBAAiB,IAAI,CAAC;AAC5B,QAAA,MAAM,mBAAmB,IAAI,CAAC;AAE9B,oBAAY,KAAK;IACb,GAAG,IAAI;IACP,KAAK,IAAI;CACZ;AAED,OAAO,EAAE,iBAAiB,EAAE,mBAAmB,EAAE,CAAA"}

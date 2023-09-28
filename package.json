@@ -7,6 +7,9 @@
   "types": "dist/index.d.ts",
   "type": "module",
   "scripts": {
+    "start": "npx tsc -w",
+    "build": "npx tsc",
+    "prepare": "npm run build",
     "test": "cross-env NODE_ENV=test nyc --reporter=text --reporter=html mocha --recursive",
     "generate-docs": "jsdoc -c ./.jsdoc.json --verbose",
     "create-patch": "npm version patch && git push —-tags origin master",
