@@ -281,9 +281,8 @@ export class Segment extends Shape<Segment> {
      * @returns {Point}
      */
     pointAtLength(length) {
-        if (length > this.length || length < 0) return null;
-        if (length == 0) return this.start;
-        if (length == this.length) return this.end;
+        if (length <= 0) return this.start;
+        if (length >= this.length) return this.end;
         let factor = length / this.length;
         return new geom.Point(
             (this.end.x - this.start.x) * factor + this.start.x,

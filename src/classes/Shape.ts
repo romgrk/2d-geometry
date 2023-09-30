@@ -6,6 +6,8 @@ import type { Vector } from './Vector'
 
 export type AnyShape = Shape<unknown>
 
+let ORIGIN_POINT: Point
+
 /**
  * Base class representing shape
  * Implement common methods of affine transformations
@@ -28,6 +30,7 @@ export class Shape<T> {
      * Translation vector may be also defined by a pair of numbers.
      */
     translate(v: Vector): T;
+    translate(p: { x: number, y: number }): T;
     translate(x: number, y: number): T;
     translate(a: unknown, b?: unknown): T {
         return this.transform(new Matrix().translate(a as any, b as any))
@@ -41,7 +44,7 @@ export class Shape<T> {
      * @param angle - angle in radians
      * @param [center=(0,0)] center
      */
-    rotate(angle: number, center: Point = ({} as Point /* fixed in _setupShape */)): T {
+    rotate(angle: number, center: Point = ORIGIN_POINT): T {
         return this.transform(new Matrix().rotate(angle, center.x, center.y));
     }
 
@@ -78,7 +81,5 @@ export class Shape<T> {
  * @private
  */
 export function _setupShape(point: Function) {
-    Shape.prototype.rotate = function rotate(angle: number, center: Point = point()): any {
-        return this.transform(new Matrix().rotate(angle, center.x, center.y));
-    }
+    ORIGIN_POINT = point()
 }

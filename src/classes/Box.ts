@@ -85,6 +85,22 @@ export class Box extends Shape<Box> {
     }
 
     /**
+     * Snap the point to a grid.
+     */
+    snapToGrid(grid: number);
+    snapToGrid(xGrid: number, yGrid: number);
+    snapToGrid(a: number = 1, b?: unknown) {
+        const xGrid = a
+        const yGrid = b === undefined ? a : b as number
+        return new Box(
+            Math.round(this.xmin / xGrid) * xGrid,
+            Math.round(this.ymin / yGrid) * yGrid,
+            Math.round(this.xmax / xGrid) * xGrid,
+            Math.round(this.ymax / yGrid) * yGrid,
+        )
+    }
+
+    /**
      * Returns true if not intersected with other box
      * @param otherBox - other box to test
      */
