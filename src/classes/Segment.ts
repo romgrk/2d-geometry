@@ -5,17 +5,20 @@ import * as Intersection from '../algorithms/intersection';
 import {convertToString} from "../utils/attributes";
 import { PlanarSet } from '../data_structures/planar_set';
 import * as geom from './index'
-import {Shape} from "./Shape";
+import {Point} from './Point';
+import {Shape} from './Shape';
 
 /**
  * Class representing a segment
  * @type {Segment}
  */
 export class Segment extends Shape<Segment> {
+    static EMPTY = Object.freeze(new Segment(Point.EMPTY, Point.EMPTY));
+
     /** Start point */
-    ps: geom.Point
+    ps: Point
     /** End Point */
-    pe: geom.Point
+    pe: Point
 
     /**
      *
@@ -24,8 +27,8 @@ export class Segment extends Shape<Segment> {
      */
     constructor(...args) {
         super()
-        this.ps = new geom.Point();
-        this.pe = new geom.Point();
+        this.ps = new Point();
+        this.pe = new Point();
 
         if (args.length === 0) {
             return;
@@ -33,33 +36,33 @@ export class Segment extends Shape<Segment> {
 
         if (args.length === 1 && args[0] instanceof Array && args[0].length === 4) {
             let coords = args[0];
-            this.ps = new geom.Point(coords[0], coords[1]);
-            this.pe = new geom.Point(coords[2], coords[3]);
+            this.ps = new Point(coords[0], coords[1]);
+            this.pe = new Point(coords[2], coords[3]);
             return;
         }
 
         if (args.length === 1 && args[0] instanceof Object && args[0].name === "segment") {
             let {ps, pe} = args[0];
-            this.ps = new geom.Point(ps.x, ps.y);
-            this.pe = new geom.Point(pe.x, pe.y);
+            this.ps = new Point(ps.x, ps.y);
+            this.pe = new Point(pe.x, pe.y);
             return;
         }
 
         // second point omitted issue #84
-        if (args.length === 1 && args[0] instanceof geom.Point) {
+        if (args.length === 1 && args[0] instanceof Point) {
             this.ps = args[0].clone();
             return;
         }
 
-        if (args.length === 2 && args[0] instanceof geom.Point && args[1] instanceof geom.Point) {
+        if (args.length === 2 && args[0] instanceof Point && args[1] instanceof Point) {
             this.ps = args[0].clone();
             this.pe = args[1].clone();
             return;
         }
 
         if (args.length === 4) {
-            this.ps = new geom.Point(args[0], args[1]);
-            this.pe = new geom.Point(args[2], args[3]);
+            this.ps = new Point(args[0], args[1]);
+            this.pe = new Point(args[2], args[3]);
             return;
         }
 
@@ -147,7 +150,7 @@ export class Segment extends Shape<Segment> {
      * @returns {Point[]}
      */
     intersect(shape) {
-        if (shape instanceof geom.Point) {
+        if (shape instanceof Point) {
             return this.contains(shape) ? [shape] : [];
         }
 
@@ -187,7 +190,7 @@ export class Segment extends Shape<Segment> {
      * @returns {Segment} shortest segment between segment and shape (started at segment, ended at shape)
      */
     distanceTo(shape) {
-        if (shape instanceof geom.Point) {
+        if (shape instanceof Point) {
             let [dist, shortest_segment] = Distance.point2segment(shape, this);
             shortest_segment = shortest_segment.reverse();
             return [dist, shortest_segment];
@@ -254,7 +257,7 @@ export class Segment extends Shape<Segment> {
      * to start or end point of the segment. Returns empty array if point does not belong to segment
      * @param pt Query point
      */
-    split(pt: geom.Point) {
+    split(pt: Point) {
         if (this.start.equalTo(pt))
             return [null, this.clone()];
 
@@ -272,7 +275,7 @@ export class Segment extends Shape<Segment> {
      * @returns {Point}
      */
     middle() {
-        return new geom.Point((this.start.x + this.end.x) / 2, (this.start.y + this.end.y) / 2);
+        return new Point((this.start.x + this.end.x) / 2, (this.start.y + this.end.y) / 2);
     }
 
     /**
@@ -284,7 +287,7 @@ export class Segment extends Shape<Segment> {
         if (length <= 0) return this.start;
         if (length >= this.length) return this.end;
         let factor = length / this.length;
-        return new geom.Point(
+        return new Point(
             (this.end.x - this.start.x) * factor + this.start.x,
             (this.end.y - this.start.y) * factor + this.start.y
         );

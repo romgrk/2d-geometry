@@ -22,6 +22,8 @@ import * as geom from '../classes'
  * @type {Polygon}
  */
 export class Polygon {
+    static EMPTY = Object.freeze(new Polygon([]));
+
     faces: PlanarSet
     edges: PlanarSet
 

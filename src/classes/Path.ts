@@ -10,6 +10,8 @@ type Part = Segment
  * Class representing a path
  */
 export class Path extends Shape<Path> {
+    static EMPTY = Object.freeze(new Path([]));
+
     parts: Part[]
     private _length: number
 

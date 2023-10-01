@@ -10,6 +10,8 @@ import {Shape} from "./Shape";
  * @type {Point}
  */
 export class Point extends Shape<Point> {
+    static EMPTY = Object.freeze(new Point(0, 0));
+
     /** x-coordinate (float number) */
     x: number
     /** y-coordinate (float number) */

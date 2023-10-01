@@ -9,6 +9,8 @@ import {Matrix} from "./Matrix";
  * @type {Vector}
  */
 export class Vector extends Shape<Vector> {
+    static EMPTY = Object.freeze(new Vector(0, 0));
+
     /** x-coordinate of a vector (float number) */
     x: number
     /** y-coordinate of a vector (float number) */

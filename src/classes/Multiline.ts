@@ -8,6 +8,8 @@ import type { Shape } from './Shape';
  * [segment]{@link geom.Segment}, [arc]{@link geom.Arc}, [line]{@link geom.Line} or [ray]{@link geom.Ray}
  */
 export class Multiline extends LinkedList<any> {
+    static EMPTY = Object.freeze(new Multiline([]));
+
     constructor(input?: Shape<geom.Segment | geom.Arc | geom.Ray | geom.Line>[]) {
         super();
 

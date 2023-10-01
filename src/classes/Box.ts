@@ -11,6 +11,8 @@ import { Shape } from './Shape'
  * @type {Box}
  */
 export class Box extends Shape<Box> {
+    static EMPTY = Object.freeze(new Box(0, 0, 0, 0));
+
     /** Minimal x coordinate */
     xmin: number
     /** Minimal y coordinate */

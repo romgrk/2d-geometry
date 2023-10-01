@@ -1,7 +1,8 @@
 import { Position, Overlap } from "../utils/constants";
 import * as Utils from '../utils/utils'
 import {ray_shoot} from "../algorithms/ray_shooting";
-import { Arc, Face, Line, Ray, Segment } from './index';
+import { Arc, Face, Line, Ray } from './index';
+import { Segment } from './Segment';
 
 /**
  * Class representing an edge of polygon. Edge shape may be Segment or Arc.
@@ -10,6 +11,7 @@ import { Arc, Face, Line, Ray, Segment } from './index';
  * @type {Edge}
  */
 export class Edge {
+    static EMPTY = Object.freeze(new Edge(Segment.EMPTY));
 
     /**
      * Shape of the edge: Segment or Arc

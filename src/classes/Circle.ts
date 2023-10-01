@@ -5,6 +5,7 @@ import * as Distance from '../algorithms/distance'
 import * as Intersection from '../algorithms/intersection';
 import {convertToString} from "../utils/attributes";
 import * as geom from './index'
+import {Point} from "./Point";
 import {Shape} from "./Shape";
 
 /**
@@ -12,6 +13,8 @@ import {Shape} from "./Shape";
  * @type {Circle}
  */
 export class Circle extends Shape<Circle> {
+    static EMPTY = Object.freeze(new Circle(Point.EMPTY, 0));
+
     /** Circle center */
     pc: geom.Point
     /** Circle radius */
@@ -24,16 +27,16 @@ export class Circle extends Shape<Circle> {
      */
     constructor(...args) {
         super()
-        this.pc = new geom.Point();
+        this.pc = new Point();
         this.r = 1;
 
         if (args.length === 1 && args[0] instanceof Object && args[0].name === "circle") {
             let {pc, r} = args[0];
-            this.pc = new geom.Point(pc);
+            this.pc = new Point(pc);
             this.r = r;
         } else {
             let [pc, r] = [...args];
-            if (pc && pc instanceof geom.Point) this.pc = pc.clone();
+            if (pc && pc instanceof Point) this.pc = pc.clone();
             if (r !== undefined) this.r = r;
         }
         // throw Errors.ILLEGAL_PARAMETERS;    unreachable code
