@@ -576,3 +576,7 @@ export function sort(dist_and_segment) {
 export function distance(shape1, shape2) {
     return shape1.distanceTo(shape2);
 }
+
+export function pythagore(width: number, height: number) {
+    return Math.sqrt(width * width + height * height)
+}
