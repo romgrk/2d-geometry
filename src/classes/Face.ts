@@ -41,7 +41,7 @@ export class Face extends CircularLinkedList<any> {
          */
         // this.last;
 
-        this._box = undefined;  // new Box();
+        this._box = undefined;
         this._orientation = undefined;
 
         if (args.length === 0) {
@@ -117,6 +117,7 @@ export class Face extends CircularLinkedList<any> {
                 ]);
             }
         }
+
         /* If passed two edges, consider them as start and end of the face loop */
         /* THIS METHOD WILL BE USED BY BOOLEAN OPERATIONS */
         /* Assume that edges already copied to polygon.edges set in the clip algorithm !!! */

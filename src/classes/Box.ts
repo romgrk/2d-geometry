@@ -83,7 +83,7 @@ export class Box extends Shape<Box> {
      * Return property box like all other shapes
      */
     get box() {
-        return this.clone();
+        return this;
     }
 
     /**

@@ -1,10 +1,12 @@
 import { convertToString } from '../utils/attributes'
+import { Arc } from './Arc'
 import { Box } from './Box'
+import { Matrix } from './Matrix'
 import { Point } from './Point'
 import { Segment } from './Segment'
 import { Shape } from './Shape'
 
-type Part = Segment
+type Part = Segment | Arc
 
 /**
  * Class representing a path
@@ -12,13 +14,23 @@ type Part = Segment
 export class Path extends Shape<Path> {
     static EMPTY = Object.freeze(new Path([]));
 
+    static fromPoints(points: Point[]) {
+        const segments = []
+        for (let i = 0; i < points.length - 1; i++) {
+            segments.push(new Segment(points[i], points[i + 1]))
+        }
+        return new Path(segments)
+    }
+
     parts: Part[]
     private _length: number
+    private _box: Box | null
 
     constructor(parts: Part[]) {
         super()
         this.parts = parts
         this._length = -1
+        this._box = null
     }
 
     clone() {
@@ -35,10 +47,24 @@ export class Path extends Shape<Path> {
     }
 
     /**
+     * Path center
+     */
+    get center() {
+        return this.box.center;
+    }
+
+    /**
      * The bounding box
      */
     get box() {
-        return this.parts.reduce((acc, p) => acc = acc.merge(p.box), new Box())
+        return (this._box ??= this.parts.reduce((acc, p) => acc = acc.merge(p.box), new Box()))
+    }
+
+    /**
+     * Return new segment transformed using affine transformation matrix
+     */
+    transform(matrix = new Matrix()) {
+        return new Path(this.parts.map(p => p.transform(matrix)))
     }
 
     /**

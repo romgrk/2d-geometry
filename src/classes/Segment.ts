@@ -16,19 +16,19 @@ export class Segment extends Shape<Segment> {
     static EMPTY = Object.freeze(new Segment(Point.EMPTY, Point.EMPTY));
 
     /** Start point */
-    ps: Point
+    start: Point
     /** End Point */
-    pe: Point
+    end: Point
 
-    /**
-     *
-     * @param {Point} ps - start point
-     * @param {Point} pe - end point
-     */
+    constructor();
+    constructor(other: Segment);
+    constructor(start: Point, end: Point);
+    constructor(coords: [number, number, number, number]);
+    constructor(x1: number, y1: number, x2: number, y2: number);
     constructor(...args) {
         super()
-        this.ps = new Point();
-        this.pe = new Point();
+        this.start = Point.EMPTY;
+        this.end = Point.EMPTY;
 
         if (args.length === 0) {
             return;
@@ -36,33 +36,33 @@ export class Segment extends Shape<Segment> {
 
         if (args.length === 1 && args[0] instanceof Array && args[0].length === 4) {
             let coords = args[0];
-            this.ps = new Point(coords[0], coords[1]);
-            this.pe = new Point(coords[2], coords[3]);
+            this.start = new Point(coords[0], coords[1]);
+            this.end = new Point(coords[2], coords[3]);
             return;
         }
 
         if (args.length === 1 && args[0] instanceof Object && args[0].name === "segment") {
             let {ps, pe} = args[0];
-            this.ps = new Point(ps.x, ps.y);
-            this.pe = new Point(pe.x, pe.y);
+            this.start = new Point(ps.x, ps.y);
+            this.end = new Point(pe.x, pe.y);
             return;
         }
 
         // second point omitted issue #84
         if (args.length === 1 && args[0] instanceof Point) {
-            this.ps = args[0].clone();
+            this.start = args[0].clone();
             return;
         }
 
         if (args.length === 2 && args[0] instanceof Point && args[1] instanceof Point) {
-            this.ps = args[0].clone();
-            this.pe = args[1].clone();
+            this.start = args[0].clone();
+            this.end = args[1].clone();
             return;
         }
 
         if (args.length === 4) {
-            this.ps = new Point(args[0], args[1]);
-            this.pe = new Point(args[2], args[3]);
+            this.start = new Point(args[0], args[1]);
+            this.end = new Point(args[2], args[3]);
             return;
         }
 
@@ -77,23 +77,12 @@ export class Segment extends Shape<Segment> {
         return new geom.Segment(this.start, this.end);
     }
 
-    /** Start point */
-    get start() {
-        return this.ps;
-    }
-
-    /** End point */
-    get end() {
-        return this.pe;
-    }
-
-
     /**
      * Returns array of start and end point
      * @returns [Point,Point]
      */
     get vertices() {
-        return [this.ps.clone(), this.pe.clone()];
+        return [this.start.clone(), this.end.clone()];
     }
 
     /**
@@ -132,7 +121,7 @@ export class Segment extends Shape<Segment> {
      * @returns {boolean}
      */
     equalTo(seg) {
-        return this.ps.equalTo(seg.ps) && this.pe.equalTo(seg.pe);
+        return this.start.equalTo(seg.ps) && this.end.equalTo(seg.pe);
     }
 
     /**
@@ -311,7 +300,7 @@ export class Segment extends Shape<Segment> {
      * @returns {Segment} - transformed segment
      */
     transform(matrix = new geom.Matrix()) {
-        return new Segment(this.ps.transform(matrix), this.pe.transform(matrix))
+        return new Segment(this.start.transform(matrix), this.end.transform(matrix))
     }
 
     /**
@@ -319,7 +308,7 @@ export class Segment extends Shape<Segment> {
      * @returns {boolean}
      */
     isZeroLength() {
-        return this.ps.equalTo(this.pe)
+        return this.start.equalTo(this.end)
     }
 
     /**

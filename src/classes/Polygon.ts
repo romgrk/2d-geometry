@@ -15,6 +15,11 @@ import {convertToString} from "../utils/attributes";
 import { PlanarSet } from '../data_structures/planar_set';
 import * as geom from '../classes'
 
+const isPointLike = (n: any): n is [number, number] =>
+    Array.isArray(n) && n.length === 2 && typeof n[0] === 'number' && typeof n[1] === 'number'
+
+const isPoints = (e: any): e is [number, number][] => Array.isArray(e) && e.every(isPointLike)
+
 /**
  * Class representing a polygon.<br/>
  * Polygon in FlattenJS is a multipolygon comprised from a set of [faces]{@link geom.Face}. <br/>
@@ -24,7 +29,13 @@ import * as geom from '../classes'
 export class Polygon {
     static EMPTY = Object.freeze(new Polygon([]));
 
+    /**
+     * Container of faces (closed loops), may be empty
+     */
     faces: PlanarSet
+    /**
+     * Container of edges
+     */
     edges: PlanarSet
 
     /**
@@ -39,56 +50,42 @@ export class Polygon {
      * Alternatively, it is possible to use polygon.addFace method
      * @param {args} - array of shapes or array of arrays
      */
-    constructor(...args: any[]) {
-        /**
-         * Container of faces (closed loops), may be empty
-         * @type {PlanarSet}
-         */
+    constructor(arg?: any) {
         this.faces = new PlanarSet();
-        /**
-         * Container of edges
-         * @type {PlanarSet}
-         */
         this.edges = new PlanarSet();
 
         /* It may be array of something that may represent one loop (face) or
          array of arrays that represent multiple loops
          */
-        if (args.length === 1 &&
-            ((args[0] instanceof Array && args[0].length > 0) ||
-                args[0] instanceof geom.Circle || args[0] instanceof geom.Box)) {
 
-            let argsArray = args[0] as any;
+        if (Array.isArray(arg) && arg.every(Array.isArray)) {
+            const inputs = arg as any;
 
-            if (args[0] instanceof Array && args[0].every(loop => loop instanceof Array)) {
-                if (argsArray.every(el => {
-                    return el instanceof Array && el.length === 2 && typeof (el[0]) === "number" && typeof (el[1]) === "number"
-                })) {
-                    this.faces.add(new geom.Face(this, argsArray));    // one-loop polygon as array of pairs of numbers
-                } else {
-                    for (let loop of argsArray) {   // multi-loop polygon
-                        /* Check extra level of nesting for GeoJSON-style multi polygons */
-                        if (loop instanceof Array && loop[0] instanceof Array &&
-                            loop[0].every(el => {
-                                return el instanceof Array && el.length === 2 && typeof (el[0]) === "number" && typeof (el[1]) === "number"
-                            })) {
-                            for (let loop1 of loop) {
-                                this.faces.add(new geom.Face(this, loop1));
-                            }
-                        } else {
-                            this.faces.add(new geom.Face(this, loop));
+            if (isPoints(inputs)) {
+                // one-loop polygon as array of pairs of numbers
+                this.faces.add(new geom.Face(this, inputs));
+            } else {
+                // multi-loop polygon
+                for (let loop of inputs) {
+                    /* Check extra level of nesting for GeoJSON-style multi polygons */
+                    if (isPoints(loop)) {
+                        for (let subloop of loop) {
+                            this.faces.add(new geom.Face(this, subloop));
                         }
+                    } else {
+                        this.faces.add(new geom.Face(this, loop));
                     }
                 }
-            } else {
-                this.faces.add(new geom.Face(this, argsArray));    // one-loop polygon
             }
+        }
+
+        if (arg instanceof geom.Circle || arg instanceof geom.Box) {
+            this.faces.add(new geom.Face(this, arg));    // one-loop polygon
         }
     }
 
     /**
      * (Getter) Returns bounding box of the polygon
-     * @returns {Box}
      */
     get box() {
         return [...this.faces].reduce((acc, face) => acc.merge(face.box), new geom.Box());
@@ -96,7 +93,6 @@ export class Polygon {
 
     /**
      * (Getter) Returns array of vertices
-     * @returns {Array}
      */
     get vertices() {
         return [...this.edges].map(edge => edge.start);
@@ -104,10 +100,9 @@ export class Polygon {
 
     /**
      * Create new cloned instance of the polygon
-     * @returns {Polygon}
      */
     clone() {
-        let polygon = new Polygon();
+        const polygon = new Polygon();
         for (let face of this.faces) {
             polygon.addFace(face.shapes);
         }
@@ -116,7 +111,6 @@ export class Polygon {
 
     /**
      * Return true is polygon has no edges
-     * @returns {boolean}
      */
     isEmpty() {
         return this.edges.size === 0;

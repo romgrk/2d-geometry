@@ -111,12 +111,12 @@ export function intersectSegment2Line(seg: Segment, line: Line): Point[] {
     let ip = [];
 
     // Boundary cases
-    if (seg.ps.on(line)) {
-        ip.push(seg.ps);
+    if (seg.start.on(line)) {
+        ip.push(seg.start);
     }
     // If both ends lay on line, return two intersection points
-    if (seg.pe.on(line) && !seg.isZeroLength()) {
-        ip.push(seg.pe);
+    if (seg.end.on(line) && !seg.isZeroLength()) {
+        ip.push(seg.end);
     }
 
     if (ip.length > 0) {
@@ -130,13 +130,13 @@ export function intersectSegment2Line(seg: Segment, line: Line): Point[] {
 
     // Not a boundary case, check if both points are on the same side and
     // hence there is no intersection
-    if (seg.ps.leftTo(line) && seg.pe.leftTo(line) ||
-        !seg.ps.leftTo(line) && !seg.pe.leftTo(line)) {
+    if (seg.start.leftTo(line) && seg.end.leftTo(line) ||
+        !seg.start.leftTo(line) && !seg.end.leftTo(line)) {
         return ip;
     }
 
     // Calculate intersection between lines
-    let line1 = new Line(seg.ps, seg.pe);
+    let line1 = new Line(seg.start, seg.end);
     return intersectLine2Line(line1, line);
 }
 
@@ -150,38 +150,38 @@ export function intersectSegment2Segment(seg1: Segment, seg2: Segment): Point[] 
 
     // Special case of seg1 zero length
     if (seg1.isZeroLength()) {
-        if (seg1.ps.on(seg2)) {
-            ip.push(seg1.ps);
+        if (seg1.start.on(seg2)) {
+            ip.push(seg1.start);
         }
         return ip;
     }
 
     // Special case of seg2 zero length
     if (seg2.isZeroLength()) {
-        if (seg2.ps.on(seg1)) {
-            ip.push(seg2.ps);
+        if (seg2.start.on(seg1)) {
+            ip.push(seg2.start);
         }
         return ip;
     }
 
     // Neither seg1 nor seg2 is zero length
-    let line1 = new Line(seg1.ps, seg1.pe);
-    let line2 = new Line(seg2.ps, seg2.pe);
+    let line1 = new Line(seg1.start, seg1.end);
+    let line2 = new Line(seg2.start, seg2.end);
 
     // Check overlapping between segments in case of incidence
     // If segments touching, add one point. If overlapping, add two points
     if (line1.incidentTo(line2)) {
-        if (seg1.ps.on(seg2)) {
-            ip.push(seg1.ps);
+        if (seg1.start.on(seg2)) {
+            ip.push(seg1.start);
         }
-        if (seg1.pe.on(seg2)) {
-            ip.push(seg1.pe);
+        if (seg1.end.on(seg2)) {
+            ip.push(seg1.end);
         }
-        if (seg2.ps.on(seg1) && !seg2.ps.equalTo(seg1.ps) && !seg2.ps.equalTo(seg1.pe)) {
-            ip.push(seg2.ps);
+        if (seg2.start.on(seg1) && !seg2.start.equalTo(seg1.start) && !seg2.start.equalTo(seg1.end)) {
+            ip.push(seg2.start);
         }
-        if (seg2.pe.on(seg1) && !seg2.pe.equalTo(seg1.ps) && !seg2.pe.equalTo(seg1.pe)) {
-            ip.push(seg2.pe);
+        if (seg2.end.on(seg1) && !seg2.end.equalTo(seg1.start) && !seg2.end.equalTo(seg1.end)) {
+            ip.push(seg2.end);
         }
     } else {                /* not incident - parallel or intersect */
         // Calculate intersection between lines
@@ -210,15 +210,15 @@ export function intersectSegment2Circle(segment: Segment, circle: Circle): Point
 
     // Special case of zero length segment
     if (segment.isZeroLength()) {
-        let [dist, _] = segment.ps.distanceTo(circle.pc);
+        let [dist, _] = segment.start.distanceTo(circle.pc);
         if (Utils.EQ(dist, circle.r)) {
-            ips.push(segment.ps);
+            ips.push(segment.start);
         }
         return ips;
     }
 
     // Non zero-length segment
-    let line = new Line(segment.ps, segment.pe);
+    let line = new Line(segment.start, segment.end);
 
     let ips_tmp = intersectLine2Circle(line, circle);
 
@@ -240,14 +240,14 @@ export function intersectSegment2Arc(segment: Segment, arc): Point[] {
 
     // Special case of zero-length segment
     if (segment.isZeroLength()) {
-        if (segment.ps.on(arc)) {
-            ip.push(segment.ps);
+        if (segment.start.on(arc)) {
+            ip.push(segment.start);
         }
         return ip;
     }
 
     // Non-zero length segment
-    let line = new Line(segment.ps, segment.pe);
+    let line = new Line(segment.start, segment.end);
     let circle = new Circle(arc.pc, arc.r);
 
     let ip_tmp = intersectLine2Circle(line, circle);
