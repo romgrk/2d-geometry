@@ -68,7 +68,7 @@ export class Polygon {
                 // multi-loop polygon
                 for (let loop of inputs) {
                     /* Check extra level of nesting for GeoJSON-style multi polygons */
-                    if (isPoints(loop)) {
+                    if (Array.isArray(loop) && isPoints(loop[0])) {
                         for (let subloop of loop) {
                             this.faces.add(new geom.Face(this, subloop));
                         }
@@ -79,8 +79,11 @@ export class Polygon {
             }
         }
 
-        if (arg instanceof geom.Circle || arg instanceof geom.Box) {
-            this.faces.add(new geom.Face(this, arg));    // one-loop polygon
+        if (arg instanceof geom.Box) {
+            this.faces.add(new geom.Face(this, arg));
+        }
+        if (arg instanceof geom.Path) {
+            this.faces.add(new geom.Face(this, arg));
         }
     }
 

@@ -33,12 +33,12 @@ export class Face extends CircularLinkedList<any> {
 
 
     constructor(polygon: Polygon);
-    constructor(polygon: Polygon, shape: geom.Point[]);
+    constructor(polygon: Polygon, points: geom.Point[]);
     constructor(polygon: Polygon, shape: [number, number][]);
     constructor(polygon: Polygon, shape: (geom.Segment | geom.Arc)[]);
+    constructor(polygon: Polygon, path: geom.Path);
     constructor(polygon: Polygon, face: Face);
-    constructor(polygon: Polygon, circle: geom.Circle);
-    constructor(polygon: Polygon, box: geom.Box);
+    constructor(polygon: Polygon, shape: geom.Box | geom.Circle);
     constructor(polygon: Polygon, a: geom.Edge, b: geom.Edge);
     constructor(polygon: Polygon, a?: unknown, b?: unknown) {
         super();
@@ -110,6 +110,11 @@ export class Face extends CircularLinkedList<any> {
                     new geom.Segment(new geom.Point(box.xmax, box.ymax), new geom.Point(box.xmin, box.ymax)),
                     new geom.Segment(new geom.Point(box.xmin, box.ymax), new geom.Point(box.xmin, box.ymin))
                 ]);
+            }
+            /* Instantiate face from a path in CCW orientation */
+            else if (a instanceof geom.Path) {
+                const path = a
+                this.shapes2face(polygon.edges, path.parts);
             }
         }
 
