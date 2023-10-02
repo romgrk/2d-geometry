@@ -1,7 +1,7 @@
 import * as Utils from '../utils/utils'
 import * as Intersection from '../algorithms/intersection';
 import * as geom from '../classes'
-import { PlanarSet } from '../data_structures/planar_set';
+import { PlanarSet } from '../data_structures/PlanarSet';
 import { IntervalTree } from '../data_structures/interval-tree';
 
 /**

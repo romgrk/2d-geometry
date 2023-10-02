@@ -3,7 +3,7 @@ import * as Utils from '../utils/utils'
 import * as Distance from '../algorithms/distance';
 import * as Intersection from '../algorithms/intersection';
 import {convertToString} from "../utils/attributes";
-import { PlanarSet } from '../data_structures/planar_set';
+import { PlanarSet } from '../data_structures/PlanarSet';
 import * as geom from './index'
 import {Point} from './Point';
 import {Shape} from './Shape';

@@ -1,4 +1,5 @@
 import { Box } from '../classes/Box';
+import type { Point } from '../classes/Point'
 import { IntervalTree } from '../data_structures/interval-tree';
 
 type AnyShape = {
@@ -31,25 +32,23 @@ export class PlanarSet extends Set {
      * a shape was actually added.<br/>
      * Method returns planar set object updated and may be chained
      * @param shape - shape to be added, should have valid <i>box</i> property
-     * @returns {PlanarSet}
      */
     add(shape: AnyShape) {
-        let size = this.size;
+        const size = this.size;
         super.add(shape);
         // size not changed - item not added, probably trying to add same item twice
         if (this.size > size) {
-            let node = this.index.insert(shape.box as any, shape);
+            this.index.insert(shape.box as any, shape);
         }
         return this;         // in accordance to Set.add interface
     }
 
     /**
      * Delete shape from planar set. Returns true if shape was actually deleted, false otherwise
-     * @param {AnyShape} shape - shape to be deleted
-     * @returns {boolean}
+     * @param shape - shape to be deleted
      */
-    delete(shape) {
-        let deleted = super.delete(shape);
+    delete(shape: AnyShape) {
+        const deleted = super.delete(shape);
         if (deleted) {
             this.index.remove(shape.box, shape);
         }
@@ -67,31 +66,25 @@ export class PlanarSet extends Set {
     /**
      * 2d range search in planar set.<br/>
      * Returns array of all shapes in planar set which bounding box is intersected with query box
-     * @param {Box} box - query box
-     * @returns {AnyShape[]}
+     * @param box - query box
      */
-    search(box) {
-        let resp = this.index.search(box);
-        return resp;
+    search(box: Box) {
+        return this.index.search(box);
     }
 
     /**
      * Point location test. Returns array of shapes which contains given point
-     * @param {Point} point - query point
-     * @returns {Array}
+     * @param point - query point
      */
-    hit(point) {
-        let box = new Box(point.x - 1, point.y - 1, point.x + 1, point.y + 1);
-        let resp = this.index.search(box as any);
-        return resp.filter((shape) => point.on(shape));
+    hit(point: Point) {
+        const box = new Box(point.x - 1, point.y - 1, point.x + 1, point.y + 1);
+        return this.index.search(box as any).filter((shape) => point.on(shape));
     }
 
     /**
      * Returns svg string to draw all shapes in planar set
-     * @returns {String}
      */
     svg() {
-        let svgcontent = [...(this as any)].reduce((acc, shape) => acc + shape.svg(), "");
-        return svgcontent;
+        return [...(this as any)].reduce<string>((acc, shape) => acc + shape.svg(), '');
     }
 }

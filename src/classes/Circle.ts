@@ -1,5 +1,5 @@
 import Errors from '../utils/errors'
-import { PlanarSet } from '../data_structures/planar_set';
+import { PlanarSet } from '../data_structures/PlanarSet';
 import * as Utils from '../utils/utils'
 import * as Distance from '../algorithms/distance'
 import * as Intersection from '../algorithms/intersection';

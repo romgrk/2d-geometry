@@ -12,7 +12,7 @@ import {Multiline} from "./Multiline";
 import {intersectEdge2Line} from "../algorithms/intersection";
 import {INSIDE, BOUNDARY} from "../utils/constants";
 import {convertToString} from "../utils/attributes";
-import { PlanarSet } from '../data_structures/planar_set';
+import { PlanarSet } from '../data_structures/PlanarSet';
 import * as geom from '../classes'
 
 const isPointLike = (n: any): n is [number, number] =>

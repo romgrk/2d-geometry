@@ -3,6 +3,7 @@ import * as Utils from '../utils/utils'
 import {CCW, ORIENTATION} from '../utils/constants';
 import * as geom from './index'
 import { Box } from './Box';
+import type { Polygon } from './Polygon';
 
 /**
  * Class representing a face (closed loop) in a [polygon]{@link geom.Polygon} object.
@@ -30,21 +31,22 @@ export class Face extends CircularLinkedList<any> {
     _box: Box | undefined
     _orientation: number | undefined
 
-    constructor(polygon, ...args) {
-        super();            // construct empty list of edges
-        /**
-         * Reference to the first edge in face
-         */
-        // this.first;
-        /**
-         * Reference to the last edge in face
-         */
-        // this.last;
+
+    constructor(polygon: Polygon);
+    constructor(polygon: Polygon, shape: geom.Point[]);
+    constructor(polygon: Polygon, shape: [number, number][]);
+    constructor(polygon: Polygon, shape: (geom.Segment | geom.Arc)[]);
+    constructor(polygon: Polygon, face: Face);
+    constructor(polygon: Polygon, circle: geom.Circle);
+    constructor(polygon: Polygon, box: geom.Box);
+    constructor(polygon: Polygon, a: geom.Edge, b: geom.Edge);
+    constructor(polygon: Polygon, a?: unknown, b?: unknown) {
+        super();
 
         this._box = undefined;
         this._orientation = undefined;
 
-        if (args.length === 0) {
+        if (!a && !b) {
             return;
         }
 
@@ -52,63 +54,56 @@ export class Face extends CircularLinkedList<any> {
          1) array of shapes that performs close loop or
          2) array of points that performs set of vertices
          */
-        if (args.length === 1) {
-            if (args[0] instanceof Array) {
-                // let argsArray = args[0];
-                let shapes = args[0];  // argsArray[0];
+        if (a !== undefined && b === undefined) {
+            if (a instanceof Array) {
+                const shapes = a;
                 if (shapes.length === 0)
                     return;
 
                 /* array of geom.Points */
-                if (shapes.every((shape) => {return shape instanceof geom.Point})) {
+                if (shapes.every((shape) => shape instanceof geom.Point)) {
                     let segments = Face.points2segments(shapes);
                     this.shapes2face(polygon.edges, segments);
                 }
                 /* array of points as pairs of numbers */
-                else if (shapes.every((shape) => {return shape instanceof Array && shape.length === 2})) {
-                    let points = shapes.map((shape) => new geom.Point(shape[0],shape[1]));
-                    let segments = Face.points2segments(points);
+                else if (shapes.every((shape) => shape instanceof Array && shape.length === 2)) {
+                    const points = shapes.map((shape) => new geom.Point(shape[0], shape[1]));
+                    const segments = Face.points2segments(points);
                     this.shapes2face(polygon.edges, segments);
                 }
                 /* array of segments ot arcs */
-                else if (shapes.every((shape) => {
-                    return (shape instanceof geom.Segment || shape instanceof geom.Arc)
-                })) {
+                else if (shapes.every((shape) => shape instanceof geom.Segment || shape instanceof geom.Arc)) {
                     this.shapes2face(polygon.edges, shapes);
                 }
                 // this is from JSON.parse object
-                else if (shapes.every((shape) => {
-                    return (shape.name === "segment" || shape.name === "arc")
-                })) {
+                else if (shapes.every((shape) => shape.name === "segment" || shape.name === "arc")) {
                     let flattenShapes = [];
                     for (let shape of shapes) {
-                        let flattenShape;
                         if (shape.name === "segment") {
-                            flattenShape = new geom.Segment(shape);
+                            flattenShapes.push(new geom.Segment(shape));
                         } else {
-                            flattenShape = new geom.Arc(shape);
+                            flattenShapes.push(new geom.Arc(shape));
                         }
-                        flattenShapes.push(flattenShape);
                     }
                     this.shapes2face(polygon.edges, flattenShapes);
                 }
             }
             /* Create new face and copy edges into polygon.edges set */
-            else if (args[0] instanceof Face) {
-                let face = args[0];
+            else if (a instanceof Face) {
+                const face = a;
                 this.first = face.first;
                 this.last = face.last;
-                for (let edge of face) {
+                for (const edge of face) {
                     polygon.edges.add(edge);
                 }
             }
             /* Instantiate face from a circle in CCW orientation */
-            else if (args[0] instanceof geom.Circle) {
-                this.shapes2face(polygon.edges, [args[0].toArc(CCW)]);
+            else if (a instanceof geom.Circle) {
+                this.shapes2face(polygon.edges, [a.toArc(CCW)]);
             }
             /* Instantiate face from a box in CCW orientation */
-            else if (args[0] instanceof geom.Box) {
-                let box = args[0];
+            else if (a instanceof geom.Box) {
+                const box = a;
                 this.shapes2face(polygon.edges, [
                     new geom.Segment(new geom.Point(box.xmin, box.ymin), new geom.Point(box.xmax, box.ymin)),
                     new geom.Segment(new geom.Point(box.xmax, box.ymin), new geom.Point(box.xmax, box.ymax)),
@@ -121,9 +116,9 @@ export class Face extends CircularLinkedList<any> {
         /* If passed two edges, consider them as start and end of the face loop */
         /* THIS METHOD WILL BE USED BY BOOLEAN OPERATIONS */
         /* Assume that edges already copied to polygon.edges set in the clip algorithm !!! */
-        if (args.length === 2 && args[0] instanceof geom.Edge && args[1] instanceof geom.Edge) {
-            this.first = args[0];                          // first edge in face or undefined
-            this.last = args[1];                           // last edge in face or undefined
+        if (a instanceof geom.Edge && b instanceof geom.Edge) {
+            this.first = a;                          // first edge in face or undefined
+            this.last = b;                           // last edge in face or undefined
             this.last.next = this.first;
             this.first.prev = this.last;
 
