@@ -61,8 +61,5 @@
     "nyc": "^15.1.0",
     "rollup": "^3.25.1",
     "typescript": "^5.2.2"
-  },
-  "dependencies": {
-    "@flatten-js/interval-tree": "^1.0.21"
   }
 }
