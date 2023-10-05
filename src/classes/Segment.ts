@@ -340,4 +340,6 @@ export class Segment extends Shape<Segment> {
 /**
  * Shortcut method to create new segment
  */
-export const segment = (...args) => new geom.Segment(...args);
+export const segment = (...args) =>
+    // @ts-ignore
+    new geom.Segment(...args);

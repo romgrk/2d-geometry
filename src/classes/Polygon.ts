@@ -161,6 +161,7 @@ export class Polygon {
      * @returns {Face}
      */
     addFace(...args) {
+        // @ts-ignore
         let face = new geom.Face(this, ...args);
         this.faces.add(face);
         return face;
