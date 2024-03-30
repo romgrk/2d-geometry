@@ -1,6 +1,6 @@
-Fork of https://github.com/alexbol99/flatten-js
+# 2d-geometry
 
-# Javascript library for 2d geometry
+This library is a fork of [flatten-js](https://github.com/alexbol99/flatten-js) focused on typescript support and usability.
 
 **2d-geometry** is a javascript library for manipulating abstract geometrical shapes like point, vector, line, ray, segment,
 circle, arc and polygon. Shapes may be organized into Planar Set - searchable container which support spatial queries.
@@ -17,11 +17,6 @@ TypeScript users may take advantage of static type checking with typescript defi
 Anyway, all classes implement svg() method, that returns a string which may be inserted into SVG container. 
 It works pretty well together with  [d3js](https://d3js.org/) library, but it is definitely possible to create bridges to other graphic libraries.
 
-The best way to start working with FlattenJS is to use awesome [Observable](https://beta.observablehq.com/) javascript interactive notebooks.
-Check out collection of [Tutorials](https://observablehq.com/collection/@alexbol99/2d-geometry-tutorials) published in Observable Notebooks.
-
-Full documentation may be found here: [https://alexbol99.github.io/2d-geometry/index.html](https://alexbol99.github.io/2d-geometry/index.html)
-
 ## Installation
 
     npm install --save 2d-geometry
@@ -29,18 +24,12 @@ Full documentation may be found here: [https://alexbol99.github.io/2d-geometry/i
 ## Usage
 
 ```javascript
-import {Point, Vector, Circle, Line, Ray, Segment, Arc, Box, Polygon, Matrix, PlanarSet} from '2d-geometry';
-```
-
-It is possible to import Flatten namespace as default import, and then destruct all classes from it. 
-```javascript
-import Flatten from '2d-geometry'
-const {Point, Vector, Circle, Line, Ray, Segment, Arc, Box, Polygon, Matrix, PlanarSet} = Flatten;
+import { Point, Vector, Circle, Line, Ray, Segment, Arc, Box, Polygon, Matrix, PlanarSet } from '2d-geometry';
 ```
 
 Some classes have shortcuts to avoid annoying *new* constructor:
 ```javascript
-import {point, vector, circle, line, ray, segment, arc, polygon, matrix} from '2d-geometry';
+import { point, vector, circle, line, ray, segment, arc, polygon, matrix } from '2d-geometry';
 ```
 
 ## Example
@@ -48,7 +37,7 @@ import {point, vector, circle, line, ray, segment, arc, polygon, matrix} from '2
 After module imported, it is possible to create some construction:
 ```javascript
     // extract object creators
-    import {point, circle, segment} from '2d-geometry';
+    import { point, circle, segment } from '2d-geometry';
 
     // make some construction
     let s1 = segment(10,10,200,200);
@@ -199,7 +188,7 @@ correspondent cell left undefined.
 Intersection between two exteriors not calculated because usually it is meaningless.
 
 ```javascript
-let {relate} = Flatten.Relations;
+let {relate} = Relations;
 // 
 // define two shapes: polygon1, polygon2
 //
@@ -223,7 +212,7 @@ String may be obtained with ```de9im.toString()``` method.
 The spatial relationships between two shapes exposed via namespace `Relations`.
 The spatial predicates return `true` if relationship match and `false` otherwise.
 ```javascript
-let {intersect, disjoint, equal, touch, inside, contain, covered, cover} = Flatten.Relations;
+let {intersect, disjoint, equal, touch, inside, contain, covered, cover} = Relations;
 // define shape a and shape b
 let p = intersect(a, b);
 console.log(p)             // true / false
@@ -265,7 +254,6 @@ All **2d-geometry** shape objects may be serialized using `JSON.stringify()` met
 `JSON.parse` restore object from a string, and then constructor can use this object to create Flatten object.
  
 ```javascript
-let {lint, point} = Flatten;
 let l = line(point(4, 0), point(0, 4));
 // Serialize
 let str = JSON.stringify(l);  
