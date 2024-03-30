@@ -3,7 +3,12 @@ import {convertToString} from "../utils/attributes";
 import * as Distance from '../algorithms/distance';
 import * as Utils from "../utils/utils";
 import * as geom from './index'
-import {Shape} from "./Shape";
+import { Shape } from "./Shape";
+
+export type PointLike = {
+    x: number
+    y: number
+}
 
 /**
  * Class representing a point
@@ -17,6 +22,9 @@ export class Point extends Shape<Point> {
     /** y-coordinate (float number) */
     y: number
 
+    constructor(x: number, y: number);
+    constructor(other: PointLike);
+    constructor(other: [number, number]);
     /**
      * Point may be constructed by two numbers, or by array of two numbers
      * @param {number} x - x-coordinate (float number)
@@ -29,15 +37,6 @@ export class Point extends Shape<Point> {
 
         if (args.length === 0) {
             return;
-        }
-
-        if (args.length === 1 && args[0] instanceof Array && args[0].length === 2) {
-            let arr = args[0];
-            if (typeof (arr[0]) == "number" && typeof (arr[1]) == "number") {
-                this.x = arr[0];
-                this.y = arr[1];
-                return;
-            }
         }
 
         if (args.length === 1 && args[0] instanceof Object) {
@@ -54,14 +53,23 @@ export class Point extends Shape<Point> {
                 return;
             }
         }
+
+        if (args.length === 1 && args[0] instanceof Array && args[0].length === 2) {
+            let arr = args[0];
+            if (typeof (arr[0]) == "number" && typeof (arr[1]) == "number") {
+                this.x = arr[0];
+                this.y = arr[1];
+                return;
+            }
+        }
+
         throw Errors.ILLEGAL_PARAMETERS;
     }
 
     /**
      * Returns bounding box of a point
-     * @returns {Box}
      */
-    get box() {
+    get box(): geom.Box {
         return new geom.Box(this.x, this.y, this.x, this.y);
     }
 
@@ -75,6 +83,10 @@ export class Point extends Shape<Point> {
 
     get vertices() {
         return [this.clone()];
+    }
+
+    contains(other: Point) {
+        return this.equalTo(other)
     }
 
     /**
@@ -195,37 +207,13 @@ export class Point extends Shape<Point> {
 
     /**
      * Returns true if point is on a shape, false otherwise
-     * @param {Shape} shape Shape of the one of supported types Point, Line, Circle, Segment, Arc, Polygon
-     * @returns {boolean}
+     * @param shape - Shape of the one of supported types Point, Line, Circle, Segment, Arc, Polygon
      */
-    on(shape) {
-        if (shape instanceof geom.Point) {
+    on(shape: Shape<any>): boolean {
+        if (shape instanceof Point) {
             return this.equalTo(shape);
         }
-
-        if (shape instanceof geom.Line) {
-            return shape.contains(this);
-        }
-
-        if (shape instanceof geom.Ray) {
-            return shape.contains(this)
-        }
-
-        if (shape instanceof geom.Circle) {
-            return shape.contains(this);
-        }
-
-        if (shape instanceof geom.Segment) {
-            return shape.contains(this);
-        }
-
-        if (shape instanceof geom.Arc) {
-            return shape.contains(this);
-        }
-
-        if (shape instanceof geom.Polygon) {
-            return shape.contains(this);
-        }
+        return shape.contains(this)
     }
 
     get name() {
@@ -251,4 +239,5 @@ export class Point extends Shape<Point> {
     }
 }
 
+// @ts-ignore
 export const point = (...args) => new Point(...args);

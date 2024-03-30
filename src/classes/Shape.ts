@@ -12,7 +12,7 @@ let ORIGIN_POINT: Point
  * Base class representing shape
  * Implement common methods of affine transformations
  */
-export class Shape<T> {
+export abstract class Shape<T> {
     get name(): string {
         throw(Errors.CANNOT_INVOKE_ABSTRACT_METHOD);
     }
@@ -60,6 +60,9 @@ export class Shape<T> {
     transform(...args): T {
         throw(Errors.CANNOT_INVOKE_ABSTRACT_METHOD);
     }
+
+
+    abstract contains(point: Point): boolean
 
     /**
      * This method returns an object that defines how data will be
