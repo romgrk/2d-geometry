@@ -37,6 +37,10 @@ export class Path extends Shape<Path> {
         return new Path(this.parts)
     }
 
+    contains(other: Shape<unknown>): boolean {
+        throw new Error('unimplemented')
+    }
+
     /**
      * The total path length
      */

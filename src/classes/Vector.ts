@@ -77,6 +77,10 @@ export class Vector extends Shape<Vector> {
         return new Vector(this.x, this.y);
     }
 
+    contains(other: Shape<unknown>): boolean {
+        throw new Error('unimplemented')
+    }
+
     /**
      * Slope of the vector in radians from 0 to 2PI
      * @returns {number}
