@@ -40,6 +40,15 @@ export class Point extends Shape<Point> {
             return;
         }
 
+        if (args.length === 1 && args[0] instanceof Array && args[0].length === 2) {
+            let arr = args[0];
+            if (typeof (arr[0]) == "number" && typeof (arr[1]) == "number") {
+                this.x = arr[0];
+                this.y = arr[1];
+                return;
+            }
+        }
+
         if (args.length === 1 && args[0] instanceof Object) {
             let { x, y } = args[0];
             this.x = x;
@@ -51,15 +60,6 @@ export class Point extends Shape<Point> {
             if (typeof (args[0]) == "number" && typeof (args[1]) == "number") {
                 this.x = args[0];
                 this.y = args[1];
-                return;
-            }
-        }
-
-        if (args.length === 1 && args[0] instanceof Array && args[0].length === 2) {
-            let arr = args[0];
-            if (typeof (arr[0]) == "number" && typeof (arr[1]) == "number") {
-                this.x = arr[0];
-                this.y = arr[1];
                 return;
             }
         }
