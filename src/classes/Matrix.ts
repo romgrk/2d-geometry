@@ -1,5 +1,5 @@
-import Errors from '../utils/errors'
-import * as Utils from '../utils/utils'
+import { ILLEGAL_PARAMETERS } from '../utils/errors'
+import { EQ } from '../utils/utils'
 import type { Vector } from './Vector'
 
 /**
@@ -97,7 +97,7 @@ export class Matrix {
             tx = a;
             ty = b;
         } else {
-            throw Errors.ILLEGAL_PARAMETERS;
+            throw ILLEGAL_PARAMETERS();
         }
         return this.multiply(new Matrix(1, 0, 0, 1, tx, ty))
     };
@@ -137,12 +137,12 @@ export class Matrix {
      * @returns {boolean} true if equal, false otherwise
      */
     equalTo(matrix) {
-        if (!Utils.EQ(this.tx, matrix.tx)) return false;
-        if (!Utils.EQ(this.ty, matrix.ty)) return false;
-        if (!Utils.EQ(this.a, matrix.a)) return false;
-        if (!Utils.EQ(this.b, matrix.b)) return false;
-        if (!Utils.EQ(this.c, matrix.c)) return false;
-        if (!Utils.EQ(this.d, matrix.d)) return false;
+        if (!EQ(this.tx, matrix.tx)) return false;
+        if (!EQ(this.ty, matrix.ty)) return false;
+        if (!EQ(this.a, matrix.a)) return false;
+        if (!EQ(this.b, matrix.b)) return false;
+        if (!EQ(this.c, matrix.c)) return false;
+        if (!EQ(this.d, matrix.d)) return false;
         return true;
     };
 };
