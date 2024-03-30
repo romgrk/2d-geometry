@@ -7,8 +7,8 @@
   "types": "dist/index.d.ts",
   "type": "module",
   "scripts": {
-    "start": "npx tsc -w",
-    "build": "npx tsc",
+    "start": "tsc -w",
+    "build": "tsc",
     "prepare": "npm run build",
     "test": "cross-env NODE_ENV=test nyc --reporter=text --reporter=html mocha --recursive",
     "generate-docs": "jsdoc -c ./.jsdoc.json --verbose",
