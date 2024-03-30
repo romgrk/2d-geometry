@@ -37,6 +37,10 @@ export class Box extends Shape<Box> {
         return new Box(this.xmin, this.ymin, this.xmax, this.ymax);
     }
 
+    contains(other: Shape<unknown>): boolean {
+        throw new Error('unimplemented')
+    }
+
     /**
      * Property low need for interval tree interface
      */

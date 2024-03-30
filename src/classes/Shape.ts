@@ -62,7 +62,7 @@ export abstract class Shape<T> {
     }
 
 
-    abstract contains(point: Point): boolean
+    abstract contains(other: Shape<unknown>): boolean
 
     /**
      * This method returns an object that defines how data will be

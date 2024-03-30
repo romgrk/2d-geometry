@@ -22,6 +22,7 @@ export class Point extends Shape<Point> {
     /** y-coordinate (float number) */
     y: number
 
+    constructor();
     constructor(x: number, y: number);
     constructor(other: PointLike);
     constructor(other: [number, number]);
