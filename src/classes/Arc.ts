@@ -1,4 +1,4 @@
-import { PIx2, CCW } from '../utils/constants';
+import { TAU, CCW } from '../utils/constants';
 import * as Distance from '../algorithms/distance';
 import { PlanarSet } from '../data_structures/PlanarSet';
 import * as Utils from '../utils/utils'
@@ -107,23 +107,23 @@ export class Arc extends Shape<Arc> {
     get sweep() {
         if (Utils.EQ(this.startAngle, this.endAngle))
             return 0.0;
-        if (Utils.EQ(Math.abs(this.startAngle - this.endAngle), PIx2)) {
-            return PIx2;
+        if (Utils.EQ(Math.abs(this.startAngle - this.endAngle), TAU)) {
+            return TAU;
         }
         let sweep;
         if (this.counterClockwise) {
             sweep = Utils.GT(this.endAngle, this.startAngle) ?
-                this.endAngle - this.startAngle : this.endAngle - this.startAngle + PIx2;
+                this.endAngle - this.startAngle : this.endAngle - this.startAngle + TAU;
         } else {
             sweep = Utils.GT(this.startAngle, this.endAngle) ?
-                this.startAngle - this.endAngle : this.startAngle - this.endAngle + PIx2;
+                this.startAngle - this.endAngle : this.startAngle - this.endAngle + TAU;
         }
 
-        if (Utils.GT(sweep, PIx2)) {
-            sweep -= PIx2;
+        if (Utils.GT(sweep, TAU)) {
+            sweep -= TAU;
         }
         if (Utils.LT(sweep, 0)) {
-            sweep += PIx2;
+            sweep += TAU;
         }
         return sweep;
     }
@@ -198,10 +198,8 @@ export class Arc extends Shape<Arc> {
      * When given point belongs to arc, return array of two arcs split by this point. If points is incident
      * to start or end point of the arc, return clone of the arc. If point does not belong to the arcs, return
      * empty array.
-     * @param {Point} pt Query point
-     * @returns {Arc[]}
      */
-    split(pt) {
+    split(pt: Point): (Arc | null)[] {
         if (this.start.equalTo(pt))
             return [null, this.clone()];
 
@@ -209,6 +207,21 @@ export class Arc extends Shape<Arc> {
             return [this.clone(), null];
 
         let angle = new geom.Vector(this.pc, pt).slope;
+
+        return [
+            new geom.Arc(this.pc, this.r, this.startAngle, angle, this.counterClockwise),
+            new geom.Arc(this.pc, this.r, angle, this.endAngle, this.counterClockwise)
+        ]
+    }
+
+    splitAtLength(length: number): Arc[] {
+        if (Utils.EQ_0(length))
+            return [null, this.clone()];
+
+        if (Utils.EQ(length, this.length))
+            return [this.clone(), null];
+
+        let angle = this.startAngle + TAU * (length / this.length);
 
         return [
             new geom.Arc(this.pc, this.r, this.startAngle, angle, this.counterClockwise),

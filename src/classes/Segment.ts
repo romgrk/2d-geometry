@@ -236,18 +236,33 @@ export class Segment extends Shape<Segment> {
      * When point belongs to segment, return array of two segments split by given point,
      * if point is inside segment. Returns clone of this segment if query point is incident
      * to start or end point of the segment. Returns empty array if point does not belong to segment
-     * @param pt Query point
+     * @param point Query point
      */
-    split(pt: Point) {
-        if (this.start.equalTo(pt))
+    split(point: Point) {
+        if (this.start.equalTo(point))
             return [null, this.clone()];
 
-        if (this.end.equalTo(pt))
+        if (this.end.equalTo(point))
             return [this.clone(), null];
 
         return [
-            new geom.Segment(this.start, pt),
-            new geom.Segment(pt, this.end)
+            new geom.Segment(this.start, point),
+            new geom.Segment(point, this.end)
+        ]
+    }
+
+    splitAtLength(length: number) {
+        if (Utils.EQ_0(length))
+            return [null, this.clone()];
+
+        if (Utils.EQ(length, this.length))
+            return [this.clone(), null];
+
+        const point = this.pointAtLength(length)
+
+        return [
+            new geom.Segment(this.start, point),
+            new geom.Segment(point, this.end)
         ]
     }
 

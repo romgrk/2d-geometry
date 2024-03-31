@@ -38,7 +38,10 @@ export class Path extends Shape<Path> {
     }
 
     contains(other: Shape<unknown>): boolean {
-        throw new Error('unimplemented')
+        if (other instanceof Point) {
+            return this.parts.some(part => part.contains(other))
+        }
+        return false
     }
 
     /**
@@ -74,9 +77,9 @@ export class Path extends Shape<Path> {
     /**
      * Point at a distance along the path.
      */
-    getPointAtLength(length: number) {
+    pointAtLength(length: number) {
         if (this.parts.length === 0)
-            return new Point(0, 0)
+            return Point.EMPTY
 
         let currentLength = 0
 
@@ -110,13 +113,11 @@ export class Path extends Shape<Path> {
 
             if (currentLength >= start && !didStart) {
                 const lengthInsidePart = start - (currentLength - part.length)
-                const point = part.pointAtLength(lengthInsidePart)
-                const [_, second] = part.split(point)
+                const [_, second] = part.splitAtLength(lengthInsidePart)
                 if (second !== null) {
                     if (currentLength >= end) {
                         const lengthInsidePartEnd = end - (currentLength - part.length)
-                        const point = second.pointAtLength(lengthInsidePartEnd - lengthInsidePart)
-                        const [first] = second.split(point)
+                        const [first] = second.splitAtLength(lengthInsidePartEnd - lengthInsidePart)
                         if (first !== null)
                             newParts.push(first)
                         return new Path(newParts)
@@ -130,8 +131,7 @@ export class Path extends Shape<Path> {
 
             if (currentLength >= end) {
                 const lengthInsidePart = end - (currentLength - part.length)
-                const point = part.pointAtLength(lengthInsidePart)
-                const [first] = part.split(point)
+                const [first] = part.splitAtLength(lengthInsidePart)
                 if (first !== null)
                     newParts.push(first)
                 break
@@ -149,7 +149,7 @@ export class Path extends Shape<Path> {
      * Get the SVGPath "d" attribute
      */
     toSVG() {
-        const start = this.getPointAtLength(0)
+        const start = this.pointAtLength(0)
 
         let result = `M${start.x},${start.y} `
 

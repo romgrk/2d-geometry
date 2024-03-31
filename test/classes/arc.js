@@ -14,7 +14,7 @@ describe('#Flatten.Arc', function() {
     it('Default constructor constructs full circle unit arc with zero center and sweep 2PI CCW', function() {
         let arc = new Arc();
         expect(arc.pc).to.deep.equal({x: 0, y: 0});
-        expect(arc.sweep).to.equal(Flatten.PIx2);
+        expect(arc.sweep).to.equal(Flatten.TAU);
         expect(arc.counterClockwise).to.equal(Flatten.CCW);
     });
     it('Constructor creates CCW arc if parameter counterClockwise is omitted', function () {

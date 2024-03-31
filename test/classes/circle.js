@@ -38,14 +38,14 @@ describe('#Flatten.Circle', function() {
     it('Can transform circle into closed CCW arc', function () {
         let circle = new Circle(new Point(0,0), 2);
         let arc = circle.toArc(true);
-        expect(arc.sweep).to.equal(Flatten.PIx2);
+        expect(arc.sweep).to.equal(Flatten.TAU);
         expect(arc.start.equalTo(point(-2,0))).to.be.true;
         expect(arc.end.equalTo(point(-2,0))).to.be.true;
     });
     it('Can transform circle into closed CW arc', function () {
         let circle = new Circle(new Point(0,0), 2);
         let arc = circle.toArc(false);
-        expect(arc.sweep).to.equal(Flatten.PIx2);
+        expect(arc.sweep).to.equal(Flatten.TAU);
         expect(arc.start.equalTo(point(-2,0))).to.be.true;
         expect(arc.end.equalTo(point(-2,0))).to.be.true;
     });

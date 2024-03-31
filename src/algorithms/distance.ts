@@ -91,6 +91,15 @@ export function point2arc(pt: geom.Point, arc: geom.Arc): [number, geom.Segment]
 }
 
 /**
+ * Calculate distance and shortest segment between segment and point
+ */
+export function segment2point(segment: geom.Segment, point: geom.Point): [number, geom.Segment] {
+    const result = point2segment(point, segment)
+    result[1] = result[1].reverse()
+    return result
+}
+
+/**
  * Calculate distance and shortest segment between segment and line
  */
 export function segment2line(seg: geom.Segment, line: geom.Line): [number, geom.Segment] {

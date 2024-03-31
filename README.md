@@ -24,12 +24,12 @@ It works pretty well together with  [d3js](https://d3js.org/) library, but it is
 ## Usage
 
 ```javascript
-import { Point, Vector, Circle, Line, Ray, Segment, Arc, Box, Polygon, Matrix, PlanarSet } from '2d-geometry';
+import { Point, Vector, Circle, Line, Ray, Segment, Arc, Box, Bezier, Polygon, Path, Matrix, PlanarSet } from '2d-geometry';
 ```
 
 Some classes have shortcuts to avoid annoying *new* constructor:
 ```javascript
-import { point, vector, circle, line, ray, segment, arc, polygon, matrix } from '2d-geometry';
+import { box, bezier, point, vector, circle, line, ray, segment, arc, polygon, matrix } from '2d-geometry';
 ```
 
 ## Example

@@ -1,5 +1,6 @@
 export * from './Arc'
 export * from './Box'
+export * from './Bezier'
 export * from './Circle'
 export * from './Edge'
 export * from './Face'
