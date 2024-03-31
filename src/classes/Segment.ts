@@ -71,7 +71,6 @@ export class Segment extends Shape<Segment> {
 
     /**
      * Return new cloned instance of segment
-     * @returns {Segment}
      */
     clone() {
         return new Segment(this.start, this.end);
@@ -87,7 +86,6 @@ export class Segment extends Shape<Segment> {
 
     /**
      * Length of a segment
-     * @returns {number}
      */
     get length() {
         return this.start.distanceTo(this.end)[0];
@@ -95,7 +93,6 @@ export class Segment extends Shape<Segment> {
 
     /**
      * Slope of the line - angle to axe x in radians from 0 to 2PI
-     * @returns {number}
      */
     get slope() {
         let vec = new geom.Vector(this.start, this.end);
@@ -104,7 +101,6 @@ export class Segment extends Shape<Segment> {
 
     /**
      * Bounding box
-     * @returns {Box}
      */
     get box() {
         return new geom.Box(
@@ -117,28 +113,22 @@ export class Segment extends Shape<Segment> {
 
     /**
      * Returns true if equals to query segment, false otherwise
-     * @param {Seg} seg - query segment
-     * @returns {boolean}
      */
-    equalTo(seg) {
-        return this.start.equalTo(seg.ps) && this.end.equalTo(seg.pe);
+    equalTo(seg: Segment) {
+        return this.start.equalTo(seg.start) && this.end.equalTo(seg.end);
     }
 
     /**
      * Returns true if segment contains point
-     * @param {Point} pt Query point
-     * @returns {boolean}
      */
-    contains(pt) {
+    contains(pt: Point) {
         return Utils.EQ_0(this.distanceToPoint(pt));
     }
 
     /**
      * Returns array of intersection points between segment and other shape
-     * @param {Shape} shape - Shape of the one of supported types <br/>
-     * @returns {Point[]}
      */
-    intersect(shape) {
+    intersect(shape: Shape) {
         if (shape instanceof Point) {
             return this.contains(shape) ? [shape] : [];
         }
@@ -170,13 +160,15 @@ export class Segment extends Shape<Segment> {
         if (shape instanceof geom.Polygon) {
             return  Intersection.intersectSegment2Polygon(this, shape);
         }
+
+        throw new Error('unreachable')
     }
 
     /**
      * Calculate distance and shortest segment from segment to shape and return as array [distance, shortest segment]
      * @param {Shape} shape Shape of the one of supported types Point, Line, Circle, Segment, Arc, Polygon or Planar Set
      * @returns {number} distance from segment to shape
-     * @returns {Segment} shortest segment between segment and shape (started at segment, ended at shape)
+     * @returns {[number, Segment]} shortest segment between segment and shape (started at segment, ended at shape)
      */
     distanceTo(shape) {
         if (shape instanceof Point) {
