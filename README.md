@@ -2,7 +2,7 @@
 
 **2d-geometry** is a fork of [flatten-js](https://github.com/alexbol99/flatten-js) focused on performance, ergonomics and Typescript.
 
-This library is meant to be a complete solution for manipulating abstract geometrical shapes like point, vector and circles. It also provides a lot of useful methods and algorithms like finding intersections, checking inclusion, calculating distance, applying affine transformations, performing boolean operations and more. It does not concern too much about visualization, but all classes implement svg() method, that returns a string which may be inserted into SVG container. 
+This library is meant to be a complete solution for manipulating abstract geometrical shapes like point, vector and circles. It also provides a lot of useful methods and algorithms like finding intersections, checking inclusion, calculating distance, applying affine transformations, performing boolean operations and more. It does not concern itself too much with visualization, but all classes implement a `svg()` method that returns a SVG string.
 
 ### Why fork?
 
@@ -13,7 +13,7 @@ The original is also written in a way that's impossible to tree-shake for bundle
 ## Installation
 
 ```
-npm install --save 2d-geometry
+pnpm install --save 2d-geometry
 ```
 
 ## Usage
@@ -36,30 +36,16 @@ import {
 } from '2d-geometry';
 ```
 
-Some classes have shortcuts to avoid annoying *new* constructor:
+Some classes have shortcuts to avoid calling with *new*, for example:
 ```javascript
-import { box, bezier, point, vector, circle, line, ray, segment, arc, polygon, matrix } from '2d-geometry';
-```
+import { point, circle, segment } from '2d-geometry';
 
-## Example
-
-After module imported, it is possible to create some construction:
-```javascript
-    import { point, circle, segment } from '2d-geometry';
-
-    // make some construction
-    let s1 = segment(10,10,200,200);
-    let s2 = segment(10,160,200,30);
-    let c = circle(point(200, 110), 50);
-    let ip = s1.intersect(s2);
+const s1 = segment(10, 10, 200, 200);
+const s2 = segment(10, 160, 200, 30);
+const c = circle(point(200, 110), 50);
 ```
 
 You may test the code above also in [NPM RunKit](https://npm.runkit.com/2d-geometry)
-
-You may also check out examples section in the code which illustrate different use cases:
-* in nodejs
-* in a browser using ```<script>``` tag with **unpkg.com** loader
-* in a React application 
 
 ## Content of the library
 
