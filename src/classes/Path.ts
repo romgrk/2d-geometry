@@ -1,12 +1,13 @@
 import { convertToString } from '../utils/attributes'
 import { Arc } from './Arc'
 import { Box } from './Box'
+import { Bezier } from './Bezier'
 import { Matrix } from './Matrix'
 import { Point } from './Point'
 import { Segment } from './Segment'
 import { Shape } from './Shape'
 
-type Part = Segment | Arc
+type Part = Segment | Arc | Bezier
 
 /**
  * Class representing a path
@@ -29,7 +30,7 @@ export class Path extends Shape<Path> {
     constructor(parts: Part[]) {
         super()
         this.parts = parts
-        this._length = -1
+        this._length = NaN
         this._box = null
     }
 
@@ -48,7 +49,7 @@ export class Path extends Shape<Path> {
      * The total path length
      */
     get length() {
-        if (this._length === -1)
+        if (Number.isNaN(this._length))
             this._length = this.parts.reduce((l, p) => l + p.length, 0)
         return this._length
     }
