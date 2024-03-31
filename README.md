@@ -1,30 +1,39 @@
 # 2d-geometry
 
-This library is a fork of [flatten-js](https://github.com/alexbol99/flatten-js) focused on typescript support and usability.
+**2d-geometry** is a fork of [flatten-js](https://github.com/alexbol99/flatten-js) focused on performance, ergonomics and Typescript.
 
-**2d-geometry** is a javascript library for manipulating abstract geometrical shapes like point, vector, line, ray, segment,
-circle, arc and polygon. Shapes may be organized into Planar Set - searchable container which support spatial queries.
+This library is meant to be a complete solution for manipulating abstract geometrical shapes like point, vector and circles. It also provides a lot of useful methods and algorithms like finding intersections, checking inclusion, calculating distance, applying affine transformations, performing boolean operations and more. It does not concern too much about visualization, but all classes implement svg() method, that returns a string which may be inserted into SVG container. 
 
-**2d-geometry** provides a lot of useful methods and algorithms like finding intersections, checking inclusion, calculating distance, applying
-affine transformations, performing boolean operations and more.
+### Why fork?
 
-Packages are distributed in 3 formats: commonjs, umd and es6 modules. Package.json file
-provides various entry points suitable for different targets.
+The original library is **great** from a feature-set and mathematical point of view, but Typescript support is mediocre, and some very useful primitives are not available. This library also adds the very needed `Bezier` (cubic bezier curves) and `Path` (sequence of `Arc`, `Segment` and `Bezier`), which make working with SVG and Canvas a breeze.
 
-TypeScript users may take advantage of static type checking with typescript definition file index.d.ts included into the package.
-
-**2d-geometry** does not concern too much about visualization.
-Anyway, all classes implement svg() method, that returns a string which may be inserted into SVG container. 
-It works pretty well together with  [d3js](https://d3js.org/) library, but it is definitely possible to create bridges to other graphic libraries.
+The original is also written in a way that's impossible to tree-shake for bundlers, so you pay for all the advanced mathematical features even if you don't use them. This fork will break API at some point to split some features (notably intersection & distance algorithms) and optimize bundle size.
 
 ## Installation
 
-    npm install --save 2d-geometry
+```
+npm install --save 2d-geometry
+```
 
 ## Usage
 
 ```javascript
-import { Point, Vector, Circle, Line, Ray, Segment, Arc, Box, Bezier, Polygon, Path, Matrix, PlanarSet } from '2d-geometry';
+import {
+    Point,
+    Vector, // Oriented vector starting at (0, 0)
+    Line, // Infinite line
+    Ray, // Semi-infinite line (starts at a point, doesn't end)
+    Segment, // Finite line (starts and ends at a point)
+    Arc,
+    Circle,
+    Box,
+    Bezier, // Cubic bezier
+    Path, // Sequence of Arc, Segment and Bezier
+    Polygon,
+    Matrix,
+    PlanarSet,
+} from '2d-geometry';
 ```
 
 Some classes have shortcuts to avoid annoying *new* constructor:
@@ -36,7 +45,6 @@ import { box, bezier, point, vector, circle, line, ray, segment, arc, polygon, m
 
 After module imported, it is possible to create some construction:
 ```javascript
-    // extract object creators
     import { point, circle, segment } from '2d-geometry';
 
     // make some construction
@@ -54,17 +62,6 @@ You may also check out examples section in the code which illustrate different u
 * in a React application 
 
 ## Content of the library
-
-### Basic shapes
-**2d-geometry** library implements following basic shapes:
-* [Point](https://alexbol99.github.io/2d-geometry/Point.html)
-* [Vector](https://alexbol99.github.io/2d-geometry/Vector.html)
-* [Line](https://alexbol99.github.io/2d-geometry/Line.html)
-* [Ray](https://alexbol99.github.io/2d-geometry/Ray.html)
-* [Segment](https://alexbol99.github.io/2d-geometry/Segment.html)
-* [Arc (circular)](https://alexbol99.github.io/2d-geometry/Arc.html)
-* [Circle](https://alexbol99.github.io/2d-geometry/Circle.html)
-* [Box (may be used as rectangle)](https://alexbol99.github.io/2d-geometry/Box.html)
 
 ### Polygon
 
@@ -271,14 +268,12 @@ in a very straightforward way:
 <body>
     <svg id="stage" width="500" height="500"></svg>
 <script>
-    const Flatten = window["2d-geometry"];
-    const {point, circle, segment} = Flatten;
+    import { point, circle, segment } from '2d-geometry'
 
-    // make some construction
-    let s1 = segment(10,10,200,200);
-    let s2 = segment(10,160,200,30);
-    let c = circle(point(200, 110), 50);
-    let ip = s1.intersect(s2);
+    const s1 = segment(10, 10, 200, 200)
+    const s2 = segment(10, 160, 200, 30)
+    const c = circle(point(200, 110), 50)
+    const ip = s1.intersect(s2)
 
     document.getElementById("stage").innerHTML = s1.svg() + s2.svg() + c.svg() + ip[0].svg();
 </script>
