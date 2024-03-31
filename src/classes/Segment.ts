@@ -74,7 +74,7 @@ export class Segment extends Shape<Segment> {
      * @returns {Segment}
      */
     clone() {
-        return new geom.Segment(this.start, this.end);
+        return new Segment(this.start, this.end);
     }
 
     /**

@@ -12,7 +12,7 @@ let ORIGIN_POINT: Point
  * Base class representing shape
  * Implement common methods of affine transformations
  */
-export abstract class Shape<T> {
+export abstract class Shape<T = unknown> {
     get name(): string {
         throw(Errors.CANNOT_INVOKE_ABSTRACT_METHOD);
     }
