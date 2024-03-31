@@ -8,7 +8,7 @@ This library is meant to be a complete solution for manipulating abstract geomet
 
 The original library is **great** from a feature-set and mathematical point of view, but Typescript support is mediocre, and some very useful primitives are not available. This library also adds the very needed `Bezier` (cubic bezier curves) and `Path` (sequence of `Arc`, `Segment` and `Bezier`), which make working with SVG and Canvas a breeze.
 
-The original is also written in a way that's impossible to tree-shake for bundlers, so you pay for all the advanced mathematical features even if you don't use them. This fork will break API at some point to split some features (notably intersection & distance algorithms) and optimize bundle size.
+The original is also written in a way that's impossible to tree-shake for bundlers, so you pay for all the advanced mathematical features even if you don't use them. This fork will break API with a new major at some point to split some features (notably intersection & distance algorithms) and optimize bundle size.
 
 ## Installation
 
@@ -36,13 +36,21 @@ import {
 } from '2d-geometry';
 ```
 
-Some classes have shortcuts to avoid calling with *new*, for example:
+Some classes have shortcuts to avoid calling with `new`, for example:
 ```javascript
 import { point, circle, segment } from '2d-geometry';
 
 const s1 = segment(10, 10, 200, 200);
 const s2 = segment(10, 160, 200, 30);
 const c = circle(point(200, 110), 50);
+```
+
+The methods are immutable by default, and create new copies of their content:
+```javascript
+import { Point } from '2d-geometry';
+
+const a = Point.EMPTY // contains a frozen `new Point(0, 0)`
+const b = a.translate(50, 100)
 ```
 
 You may test the code above also in [NPM RunKit](https://npm.runkit.com/2d-geometry)
