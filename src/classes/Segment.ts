@@ -25,44 +25,46 @@ export class Segment extends Shape<Segment> {
     constructor(start: Point, end: Point);
     constructor(coords: [number, number, number, number]);
     constructor(x1: number, y1: number, x2: number, y2: number);
-    constructor(...args) {
+    constructor(a?: unknown, b?: unknown, c?: unknown, d?: unknown) {
         super()
         this.start = Point.EMPTY;
         this.end = Point.EMPTY;
 
-        if (args.length === 0) {
+        const argsLength = +(a !== undefined) + +(b !== undefined) + +(c !== undefined) + +(d !== undefined)
+
+        if (argsLength === 0) {
             return;
         }
 
-        if (args.length === 1 && args[0] instanceof Array && args[0].length === 4) {
-            let coords = args[0];
+        if (argsLength === 1 && Array.isArray(a)) {
+            let coords = a;
             this.start = new Point(coords[0], coords[1]);
-            this.end = new Point(coords[2], coords[3]);
+            this.end   = new Point(coords[2], coords[3]);
             return;
         }
 
-        if (args.length === 1 && args[0] instanceof Object && args[0].name === "segment") {
-            let {ps, pe} = args[0];
-            this.start = new Point(ps.x, ps.y);
-            this.end = new Point(pe.x, pe.y);
+        if (argsLength === 1 && a instanceof Segment) {
+            let {start, end} = a;
+            this.start = new Point(start.x, start.y);
+            this.end   = new Point(end.x, end.y);
             return;
         }
 
         // second point omitted issue #84
-        if (args.length === 1 && args[0] instanceof Point) {
-            this.start = args[0].clone();
+        if (argsLength === 1 && a instanceof Point) {
+            this.start = a.clone();
             return;
         }
 
-        if (args.length === 2 && args[0] instanceof Point && args[1] instanceof Point) {
-            this.start = args[0].clone();
-            this.end = args[1].clone();
+        if (argsLength === 2 && a instanceof Point && b instanceof Point) {
+            this.start = a.clone();
+            this.end   = b.clone();
             return;
         }
 
-        if (args.length === 4) {
-            this.start = new Point(args[0], args[1]);
-            this.end = new Point(args[2], args[3]);
+        if (argsLength === 4) {
+            this.start = new Point(a as any, b as any);
+            this.end   = new Point(c as any, d as any);
             return;
         }
 
@@ -303,28 +305,23 @@ export class Segment extends Shape<Segment> {
 
     /**
      * Return new segment transformed using affine transformation matrix
-     * @param {Matrix} matrix - affine transformation matrix
-     * @returns {Segment} - transformed segment
      */
-    transform(matrix = new geom.Matrix()) {
+    transform(matrix = new geom.Matrix()): Segment {
         return new Segment(this.start.transform(matrix), this.end.transform(matrix))
     }
 
     /**
      * Returns true if segment start is equal to segment end up to DP_TOL
-     * @returns {boolean}
      */
-    isZeroLength() {
+    isZeroLength(): boolean {
         return this.start.equalTo(this.end)
     }
 
     /**
      * Sort given array of points from segment start to end, assuming all points lay on the segment
-     * @param {Point[]} - array of points
-     * @returns {Point[]} new array sorted
      */
-    sortPoints(pts) {
-        let line = new geom.Line(this.start, this.end);
+    sortPoints(pts: Point[]): Point[] {
+        const line = new geom.Line(this.start, this.end);
         return line.sortPoints(pts);
     }
 
@@ -334,12 +331,11 @@ export class Segment extends Shape<Segment> {
 
     /**
      * Return string to draw segment in svg
-     * @param {Object} attrs - an object with attributes for svg path element,
+     * @param attrs - an object with attributes for svg path element,
      * like "stroke", "strokeWidth" <br/>
      * Defaults are stroke:"black", strokeWidth:"1"
-     * @returns {string}
      */
-    svg(attrs = {}) {
+    svg(attrs: object = {}): string {
         return `\n<line x1="${this.start.x}" y1="${this.start.y}" x2="${this.end.x}" y2="${this.end.y}" ${convertToString(attrs)} />`;
     }
 }
