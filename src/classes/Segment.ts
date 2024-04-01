@@ -212,9 +212,8 @@ export class Segment extends Shape<Segment> {
 
     /**
      * Returns unit vector in the direction from start to end
-     * @returns {Vector}
      */
-    tangentInStart() {
+    tangentInStart(): geom.Vector {
         let vec = new geom.Vector(this.start, this.end);
         return vec.normalize();
     }
@@ -270,7 +269,6 @@ export class Segment extends Shape<Segment> {
 
     /**
      * Return middle point of the segment
-     * @returns {Point}
      */
     middle() {
         return new Point((this.start.x + this.end.x) / 2, (this.start.y + this.end.y) / 2);
@@ -278,21 +276,19 @@ export class Segment extends Shape<Segment> {
 
     /**
      * Get point at given length
-     * @param {number} length - The length along the segment
-     * @returns {Point}
      */
-    pointAtLength(length) {
+    pointAtLength(length: number) {
         if (length <= 0) return this.start;
         if (length >= this.length) return this.end;
-        let factor = length / this.length;
+        const factor = length / this.length;
         return new Point(
             (this.end.x - this.start.x) * factor + this.start.x,
             (this.end.y - this.start.y) * factor + this.start.y
         );
     }
 
-    distanceToPoint(pt) {
-        let [dist, ...rest] = Distance.point2segment(pt, this);
+    distanceToPoint(point: Point) {
+        const [dist] = Distance.point2segment(point, this);
         return dist;
     };
 
