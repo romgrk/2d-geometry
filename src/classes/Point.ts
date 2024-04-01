@@ -28,11 +28,11 @@ export class Point extends Shape<Point> {
     constructor(other: [number, number]);
     /**
      * Point may be constructed by two numbers, or by array of two numbers
-     * @param {number} x - x-coordinate (float number)
-     * @param {number} y - y-coordinate (float number)
      */
     constructor(...args) {
         super()
+        this.x = NaN;
+        this.y = NaN;
         this.x = 0;
         this.y = 0;
 
@@ -76,7 +76,6 @@ export class Point extends Shape<Point> {
 
     /**
      * Return new cloned instance of point
-     * @returns {Point}
      */
     clone() {
         return new Point(this.x, this.y);

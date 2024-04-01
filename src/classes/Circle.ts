@@ -3,14 +3,13 @@ import { PlanarSet } from '../data_structures/PlanarSet';
 import * as Utils from '../utils/utils'
 import * as Distance from '../algorithms/distance'
 import * as Intersection from '../algorithms/intersection';
-import {convertToString} from "../utils/attributes";
+import {convertToString} from '../utils/attributes';
 import * as geom from './index'
-import {Point} from "./Point";
-import {Shape} from "./Shape";
+import {Point, PointLike} from './Point';
+import {Shape} from './Shape';
 
 /**
  * Class representing a circle
- * @type {Circle}
  */
 export class Circle extends Shape<Circle> {
     static EMPTY = Object.freeze(new Circle(Point.EMPTY, 0));
@@ -20,39 +19,42 @@ export class Circle extends Shape<Circle> {
     /** Circle radius */
     r: number
 
-    /**
-     *
-     * @param {Point} pc - circle center point
-     * @param {number} r - circle radius
-     */
-    constructor(...args) {
+    constructor();
+    constructor(other: Circle);
+    constructor(pc: PointLike, r?: number);
+    constructor(x: number, y: number, r?: number);
+    constructor(a?: unknown, b?: unknown, c?: unknown) {
         super()
-        this.pc = new Point();
+        this.pc = Point.EMPTY;
+        this.r = NaN;
         this.r = 1;
 
-        if (args.length === 1 && args[0] instanceof Object && args[0].name === "circle") {
-            let {pc, r} = args[0];
-            this.pc = new Point(pc);
-            this.r = r;
+        if (a instanceof Circle) {
+            this.pc = new Point(a.pc);
+            this.r = a.r;
+        } else if (a instanceof Point) {
+            this.pc = a
+            this.r = (b as number) ?? 1
+        } else if (typeof a === 'object' && a !== null) {
+            this.pc = new Point(a as PointLike)
+            this.r = (b as number) ?? 1
+        } else if (typeof a === 'number') {
+            this.pc = new Point(a, b as number)
+            this.r = (c as number) ?? 1
         } else {
-            let [pc, r] = [...args];
-            if (pc && pc instanceof Point) this.pc = pc.clone();
-            if (r !== undefined) this.r = r;
+            throw Errors.ILLEGAL_PARAMETERS;
         }
-        // throw Errors.ILLEGAL_PARAMETERS;    unreachable code
     }
 
     /**
      * Return new cloned instance of circle
-     * @returns {Circle}
      */
     clone() {
-        return new geom.Circle(this.pc.clone(), this.r);
+        return new Circle(this.pc.clone(), this.r);
     }
 
     /**
      * Circle center
-     * @returns {Point}
      */
     get center() {
         return this.pc;
@@ -60,7 +62,6 @@ export class Circle extends Shape<Circle> {
 
     /**
      * Circle bounding box
-     * @returns {Box}
      */
     get box() {
         return new geom.Box(
@@ -73,10 +74,8 @@ export class Circle extends Shape<Circle> {
 
     /**
      * Return true if circle contains shape: no point of shape lies outside of the circle
-     * @param {Shape} shape - test shape
-     * @returns {boolean}
      */
-    contains(shape) {
+    contains(shape: Shape): boolean {
         if (shape instanceof geom.Point) {
             return Utils.LE(shape.distanceTo(this.center)[0], this.r);
         }
@@ -99,12 +98,11 @@ export class Circle extends Shape<Circle> {
         }
 
         /* TODO: box, polygon */
+        throw new Error('unimplemented')
     }
 
     /**
      * Transform circle to closed arc
-     * @param {boolean} counterclockwise
-     * @returns {Arc}
      */
     toArc(counterclockwise = true) {
         return new geom.Arc(this.center, this.r, Math.PI, -Math.PI, counterclockwise);
@@ -113,12 +111,10 @@ export class Circle extends Shape<Circle> {
     /**
      * Method scale is supported only for uniform scaling of the circle with (0,0) center
      */
-    scale(s: number);
-    scale(sx: number, sy: number);
-    scale(a: number, b?: number) {
-        if (a !== b)
-            throw Errors.OPERATION_IS_NOT_SUPPORTED
-        if (!(this.pc.x === 0.0 && this.pc.y === 0.0))
+    scale(s: number): Circle;
+    scale(sx: number, sy: number): Circle;
+    scale(a: number, b?: number): Circle {
+        if (b !== undefined && a !== b)
             throw Errors.OPERATION_IS_NOT_SUPPORTED
         return new geom.Circle(this.pc, this.r * a)
     }
@@ -165,12 +161,11 @@ export class Circle extends Shape<Circle> {
 
     /**
      * Calculate distance and shortest segment from circle to shape and return array [distance, shortest segment]
-     * @param {Shape} shape Shape of the one of supported types Point, Line, Circle, Segment, Arc, Polygon or Planar Set
+     * @param shape Shape of the one of supported types Point, Line, Circle, Segment, Arc, Polygon or Planar Set
      * @returns {number} distance from circle to shape
      * @returns {Segment} shortest segment between circle and shape (started at circle, ended at shape)
-
      */
-    distanceTo(shape) {
+    distanceTo(shape: Shape): [number, geom.Segment] {
         if (shape instanceof geom.Point) {
             let [distance, shortest_segment] = Distance.point2circle(shape, this);
             shortest_segment = shortest_segment.reverse();
@@ -216,10 +211,8 @@ export class Circle extends Shape<Circle> {
 
     /**
      * Return string to draw circle in svg
-     * @param {Object} attrs - an object with attributes of svg circle element
-     * @returns {string}
      */
-    svg(attrs = {}) {
+    svg(attrs: object = {}): string {
         return `\n<circle cx="${this.pc.x}" cy="${this.pc.y}" r="${this.r}"
                 ${convertToString({fill: "none", ...attrs})} />`;
     }
@@ -230,4 +223,6 @@ export class Circle extends Shape<Circle> {
  * Shortcut to create new circle
  * @param args
  */
-export const circle = (...args) => new geom.Circle(...args);
+export const circle = (...args: any[]) =>
+    // @ts-ignore
+    new geom.Circle(...args);

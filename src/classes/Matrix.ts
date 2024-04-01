@@ -40,11 +40,21 @@ export class Matrix {
 
     /**
      * Return new cloned instance of matrix
-     * @return {Matrix}
-     **/
+     */
     clone() {
         return new Matrix(this.a, this.b, this.c, this.d, this.tx, this.ty);
-    };
+    }
+
+    /**
+     * Return inversed instance of matrix
+     */
+    inverse() {
+        return new Matrix(
+            1 / this.a, -this.b,
+            -this.c, 1 / this.d,
+            -this.tx, -this.ty,
+        );
+    }
 
     /**
      * Transform vector [x,y] using transformation matrix. <br/>
@@ -55,10 +65,10 @@ export class Matrix {
      *  y'   =     cx + dy + ty
      *  1]                    1 ]
      * </code>
-     * @param {number[]} vector - array[2] of numbers
-     * @returns {number[]} transformation result - array[2] of numbers
+     * @param vector - array[2] of numbers
+     * @returns transformation result - array[2] of numbers
      */
-    transform(vector) {
+    transform(vector: number[]): [number, number] {
         return [
             vector[0] * this.a + vector[1] * this.c + this.tx,
             vector[0] * this.b + vector[1] * this.d + this.ty
@@ -67,17 +77,15 @@ export class Matrix {
 
     /**
      * Returns result of multiplication of this matrix by other matrix
-     * @param {Matrix} other_matrix - matrix to multiply by
-     * @returns {Matrix}
      */
-    multiply(other_matrix) {
+    multiply(other: Matrix) {
         return new Matrix(
-            this.a * other_matrix.a + this.c * other_matrix.b,
-            this.b * other_matrix.a + this.d * other_matrix.b,
-            this.a * other_matrix.c + this.c * other_matrix.d,
-            this.b * other_matrix.c + this.d * other_matrix.d,
-            this.a * other_matrix.tx + this.c * other_matrix.ty + this.tx,
-            this.b * other_matrix.tx + this.d * other_matrix.ty + this.ty
+            this.a * other.a + this.c * other.b,
+            this.b * other.a + this.d * other.b,
+            this.a * other.c + this.c * other.d,
+            this.b * other.c + this.d * other.d,
+            this.a * other.tx + this.c * other.ty + this.tx,
+            this.b * other.tx + this.d * other.ty + this.ty
         )
     };
 
@@ -106,12 +114,11 @@ export class Matrix {
      * Return new matrix as a result of multiplication of the current matrix
      * by the matrix that defines rotation by given angle (in radians) around
      * center of rotation (centerX,centerY) in counterclockwise direction
-     * @param {number} angle - angle in radians
-     * @param {number} centerX - center of rotation
-     * @param {number} centerY - center of rotation
-     * @returns {Matrix}
+     * @param angle - angle in radians
+     * @param centerX - center of rotation
+     * @param centerY - center of rotation
      */
-    rotate(angle, centerX = 0.0, centerY = 0.0) {
+    rotate(angle: number, centerX: number = 0.0, centerY: number = 0.0) {
         let cos = Math.cos(angle);
         let sin = Math.sin(angle);
         return this
@@ -123,20 +130,17 @@ export class Matrix {
     /**
      * Return new matrix as a result of multiplication of the current matrix
      * by the matrix (sx,0,0,sy,0,0) that defines scaling
-     * @param {number} sx
-     * @param {number} sy
-     * @returns {Matrix}
+     * @param sx
+     * @param sy
      */
-    scale(sx, sy) {
+    scale(sx: number, sy: number) {
         return this.multiply(new Matrix(sx, 0, 0, sy, 0, 0));
     };
 
     /**
      * Returns true if two matrix are equal parameter by parameter
-     * @param {Matrix} matrix - other matrix
-     * @returns {boolean} true if equal, false otherwise
      */
-    equalTo(matrix) {
+    equalTo(matrix: Matrix) {
         if (!EQ(this.tx, matrix.tx)) return false;
         if (!EQ(this.ty, matrix.ty)) return false;
         if (!EQ(this.a, matrix.a)) return false;
@@ -149,6 +153,5 @@ export class Matrix {
 
 /**
  * Function to create matrix equivalent to "new" constructor
- * @param args
  */
 export const matrix = (...args) => new Matrix(...args);
