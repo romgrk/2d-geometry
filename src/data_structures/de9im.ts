@@ -1,19 +1,20 @@
-import { AnyShape } from '../classes/Shape'
+import type { Shape } from '../classes/Shape'
 
 /*
-    Dimensionally extended 9-intersected model
-    See https://en.wikipedia.org/wiki/DE-9IM for more details
+ * Dimensionally extended 9-intersected model
+ * See https://en.wikipedia.org/wiki/DE-9IM for more details
  */
+
 // const DISJOINT = RegExp('FF.FF....');
-const EQUAL = RegExp('T.F..FFF.|T.F...F..');
-const INTERSECT = RegExp('T........|.T.......|...T.....|....T....');
-const TOUCH = RegExp('FT.......|F..T.....|F...T....');
-const INSIDE = RegExp('T.F..F...');
-const COVERED = RegExp('T.F..F...|.TF..F...|..FT.F...|..F.TF...');
+const EQUAL       = RegExp('T.F..FFF.|T.F...F..');
+const INTERSECT   = RegExp('T........|.T.......|...T.....|....T....');
+const TOUCH       = RegExp('FT.......|F..T.....|F...T....');
+const INSIDE      = RegExp('T.F..F...');
+const COVERED     = RegExp('T.F..F...|.TF..F...|..FT.F...|..F.TF...');
 
 class DE9IM {
     /** Array representing 3x3 intersection matrix */
-    m: any[]
+    m: (Shape[] | undefined)[]
 
     /**
      * Create new instance of DE9IM matrix
@@ -24,7 +25,6 @@ class DE9IM {
 
     /**
      * Get Interior To Interior intersection
-     * @returns {Shape[] | undefined}
      */
     get I2I() {
         return this.m[0];
@@ -40,7 +40,6 @@ class DE9IM {
 
     /**
      * Get Interior To Boundary intersection
-     * @returns {Shape[] | undefined}
      */
     get I2B() {
         return this.m[1];
@@ -56,7 +55,6 @@ class DE9IM {
 
     /**
      * Get Interior To Exterior intersection
-     * @returns {Shape[] | undefined}
      */
     get I2E() {
         return this.m[2];
@@ -72,7 +70,6 @@ class DE9IM {
 
     /**
      * Get Boundary To Interior intersection
-     * @returns {Shape[] | undefined}
      */
     get B2I() {
         return this.m[3];
@@ -88,7 +85,6 @@ class DE9IM {
 
     /**
      * Get Boundary To Boundary intersection
-     * @returns {Shape[] | undefined}
      */
     get B2B() {
         return this.m[4];
@@ -104,7 +100,6 @@ class DE9IM {
 
     /**
      * Get Boundary To Exterior intersection
-     * @returns {Shape[] | undefined}
      */
     get B2E() {
         return this.m[5];
@@ -120,7 +115,6 @@ class DE9IM {
 
     /**
      * Get Exterior To Interior intersection
-     * @returns {Shape[] | undefined}
      */
     get E2I() {
         return this.m[6];
@@ -136,7 +130,6 @@ class DE9IM {
 
     /**
      * Get Exterior To Boundary intersection
-     * @returns {Shape[] | undefined}
      */
     get E2B() {
         return this.m[7];
@@ -152,7 +145,6 @@ class DE9IM {
 
     /**
      * Get Exterior to Exterior intersection
-     * @returns {Shape[] | undefined}
      */
     get E2E() {
         return this.m[8];
@@ -172,7 +164,6 @@ class DE9IM {
      * - not intersected is 'F'<br/>
      * - not relevant is '*'<br/>
      * For example, string 'FF**FF****' means 'DISJOINT'
-     * @returns {string}
      */
     toString() {
         return this.m.map( e => {
@@ -185,7 +176,7 @@ class DE9IM {
             else {
                 return '*'
             }
-        }).join("")
+        }).join('')
     }
 
     equal() {
