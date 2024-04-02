@@ -5,9 +5,11 @@ import LinkedList from "../data_structures/linked_list";
 import {addToIntPoints, sortIntersections,
     filterDuplicatedIntersections, initializeInclusionFlags, calculateInclusionFlags,
     setOverlappingFlags, intPointsPoolCount, splitByIntersections} from "../data_structures/smart_intersections";
+import type { Polygon } from '../classes/Polygon';
+import type { Shape } from '../classes/Shape';
 
 const {INSIDE, OUTSIDE, BOUNDARY, OVERLAP_SAME, OVERLAP_OPPOSITE} = Constants;
-const {NOT_VERTEX, START_VERTEX, END_VERTEX} = Constants;
+const {START_VERTEX, END_VERTEX} = Constants;
 
 export const BOOLEAN_UNION = 1;
 export const BOOLEAN_INTERSECT = 2;
@@ -17,49 +19,33 @@ export const BOOLEAN_SUBTRACT = 3;
 /**
  * Unify two polygons polygons and returns new polygon. <br/>
  * Point belongs to the resulted polygon if it belongs to the first OR to the second polygon
- * @param {Polygon} polygon1 - first operand
- * @param {Polygon} polygon2 - second operand
- * @returns {Polygon}
  */
-export function unify(polygon1, polygon2) {
-    let [res_poly, wrk_poly] = booleanOpBinary(polygon1, polygon2, BOOLEAN_UNION, true);
-    return res_poly;
+export function unify(polygon1: Polygon, polygon2: Polygon): Polygon {
+    return booleanOpBinary(polygon1, polygon2, BOOLEAN_UNION, true)[0];
 }
 
 /**
  * Subtract second polygon from the first and returns new polygon
  * Point belongs to the resulted polygon if it belongs to the first polygon AND NOT to the second polygon
- * @param {Polygon} polygon1 - first operand
- * @param {Polygon} polygon2 - second operand
- * @returns {Polygon}
  */
-export function subtract(polygon1, polygon2) {
-    let polygon2_tmp = polygon2.clone();
-    let polygon2_reversed = polygon2_tmp.reverse();
-    let [res_poly, wrk_poly] = booleanOpBinary(polygon1, polygon2_reversed, BOOLEAN_SUBTRACT, true);
-    return res_poly;
+export function subtract(polygon1: Polygon, polygon2: Polygon): Polygon {
+    const polygon2_reversed = polygon2.clone().reverse();
+    return booleanOpBinary(polygon1, polygon2_reversed, BOOLEAN_SUBTRACT, true)[0];
 }
 
 /**
  * Intersect two polygons and returns new polygon
  * Point belongs to the resulted polygon is it belongs to the first AND to the second polygon
- * @param {Polygon} polygon1 - first operand
- * @param {Polygon} polygon2 - second operand
- * @returns {Polygon}
  */
-export function intersect(polygon1, polygon2) {
-    let [res_poly, wrk_poly] = booleanOpBinary(polygon1, polygon2, BOOLEAN_INTERSECT, true);
-    return res_poly;
+export function intersect(polygon1: Polygon, polygon2: Polygon): Polygon {
+    return booleanOpBinary(polygon1, polygon2, BOOLEAN_INTERSECT, true)[0];
 }
 
 /**
  * Returns boundary of intersection between two polygons as two arrays of shapes (Segments/Arcs) <br/>
  * The first array are shapes from the first polygon, the second array are shapes from the second
- * @param {Polygon} polygon1 - first operand
- * @param {Polygon} polygon2 - second operand
- * @returns {Shape[][]}
  */
-export function innerClip(polygon1, polygon2) {
+export function innerClip(polygon1: Polygon, polygon2: Polygon): Shape[][] {
     let [res_poly, wrk_poly] = booleanOpBinary(polygon1, polygon2, BOOLEAN_INTERSECT, false);
 
     let clip_shapes1 = [];
@@ -75,12 +61,9 @@ export function innerClip(polygon1, polygon2) {
 
 /**
  * Returns boundary of subtraction of the second polygon from first polygon as array of shapes
- * @param {Polygon} polygon1 - first operand
- * @param {Polygon} polygon2 - second operand
- * @returns {Shape[]}
  */
-export function outerClip(polygon1, polygon2) {
-    let [res_poly, wrk_poly] = booleanOpBinary(polygon1, polygon2, BOOLEAN_SUBTRACT, false);
+export function outerClip(polygon1: Polygon, polygon2: Polygon): Shape[] {
+    const [res_poly] = booleanOpBinary(polygon1, polygon2, BOOLEAN_SUBTRACT, false);
 
     let clip_shapes1 = [];
     for (let face of res_poly.faces) {
