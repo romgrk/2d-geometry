@@ -54,7 +54,7 @@ export abstract class Shape<T = unknown> {
     scale(s: number): T;
     scale(sx: number, sy: number): T;
     scale(a: unknown, b?: unknown): T {
-        return this.transform(new Matrix().scale(a, b ?? a));
+        return this.transform(new Matrix().scale(a as number, (b ?? a) as number));
     }
 
     transform(...args): T {
