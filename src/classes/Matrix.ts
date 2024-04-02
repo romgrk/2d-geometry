@@ -2,6 +2,8 @@ import { ILLEGAL_PARAMETERS } from '../utils/errors'
 import { EQ } from '../utils/utils'
 import type { Vector } from './Vector'
 
+const det = (a: number, b: number, c: number, d: number) => a * d - b * c
+
 /**
  * Class representing an affine transformation 3x3 matrix:
  * <pre>
@@ -19,6 +21,9 @@ export class Matrix {
     tx: number
     ty: number
 
+    static EMPTY    = Object.freeze(new Matrix(0, 0, 0, 0, 0, 0));
+    static IDENTITY = Object.freeze(new Matrix(1, 0, 0, 1, 0, 0));
+
     /**
      * Construct new instance of affine transformation matrix <br/>
      * If parameters omitted, construct identity matrix a = 1, d = 1
@@ -30,6 +35,13 @@ export class Matrix {
      * @param ty - position (2,1) translation by y
      */
     constructor(a = 1, b = 0, c = 0, d = 1, tx = 0, ty = 0) {
+        this.a = NaN;
+        this.b = NaN;
+        this.c = NaN;
+        this.d = NaN;
+        this.tx = NaN;
+        this.ty = NaN;
+
         this.a = a;
         this.b = b;
         this.c = c;
@@ -48,12 +60,67 @@ export class Matrix {
     /**
      * Return inversed instance of matrix
      */
-    inverse() {
-        return new Matrix(
-            1 / this.a, -this.b,
-            -this.c, 1 / this.d,
-            -this.tx, -this.ty,
-        );
+    invert() {
+        const a = this.a
+        const b = this.c
+        const c = this.tx
+        const d = this.b
+        const e = this.d
+        const f = this.ty
+        const g = 0
+        const h = 0
+        const i = 1
+        // const current = [
+        //     a, b, c,
+        //     d, e, f,
+        //     g, h, i
+        // ]
+        // const cofactors = [
+        //     det(e, f, h, i), -det(d, f, g, i),  det(d, e, g, g),
+        //    -det(b, c, h, i),  det(a, c, g, i), -det(a, b, g, h),
+        //     det(b, c, e, f), -det(a, c, d, f),  det(a, b, d, e),
+        // ]
+        // const adjoint = [
+        //     det(e, f, h, i), -det(b, c, h, i),  det(b, c, e, f),
+        //    -det(d, f, g, i),  det(a, c, g, i), -det(a, c, d, f),
+        //     det(d, e, g, g), -det(a, b, g, h),  det(a, b, d, e),
+        // ]
+        const D = this.determinant()
+        // const inverse = [
+        //     det(e, f, h, i) / D, -det(b, c, h, i) / D,  det(b, c, e, f) / D,
+        //    -det(d, f, g, i) / D,  det(a, c, g, i) / D, -det(a, c, d, f) / D,
+        //     det(d, e, g, g) / D, -det(a, b, g, h) / D,  det(a, b, d, e) / D,
+        // ]
+
+        const ai  =  det(e, f, h, i) / D
+        const ci  = -det(b, c, h, i) / D
+        const txi =  det(b, c, e, f) / D
+        const bi  = -det(d, f, g, i) / D
+        const di  =  det(a, c, g, i) / D
+        const tyi = -det(a, c, d, f) / D
+
+        return new Matrix(ai, bi, ci, di, txi, tyi)
+    }
+
+    /**
+     * Get the determinant of matrix
+     */
+    determinant() {
+        const a = this.a
+        const b = this.c
+        const c = this.tx
+        const d = this.b
+        const e = this.d
+        const f = this.ty
+        const g = 0
+        const h = 0
+        const i = 1
+
+        return (
+            a * (e * i - f * h) -
+            b * (d * i - f * g) +
+            c * (d * h - e * g)
+        )
     }
 
     /**
