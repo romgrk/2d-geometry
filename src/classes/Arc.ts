@@ -44,30 +44,13 @@ export class Arc extends Shape<Arc> {
      */
     constructor(...args) {
         super()
-        /**
-         * Arc center
-         * @type {Point}
-         */
-        this.pc = new Point();
-        /**
-         * Arc radius
-         * @type {number}
-         */
+        this.pc = Point.EMPTY;
+        this.r = NaN;
+        this.startAngle = NaN;
+        this.endAngle = NaN;
         this.r = 1;
-        /**
-         * Arc start angle in radians
-         * @type {number}
-         */
         this.startAngle = 0;
-        /**
-         * Arc end angle in radians
-         * @type {number}
-         */
         this.endAngle = 2 * Math.PI;
-        /**
-         * Arc orientation
-         * @type {boolean}
-         */
         this.counterClockwise = CCW;
 
         if (args.length === 0)

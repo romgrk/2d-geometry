@@ -1,12 +1,17 @@
 import Errors from '../utils/errors'
 import { Matrix } from './Matrix'
 import type { Box } from './Box'
-import type { Point } from './Point'
+import type { PointLike } from './Point'
 import type { Vector } from './Vector'
 
 export type AnyShape = Shape<unknown>
 
-let ORIGIN_POINT: Point
+let ORIGIN_POINT: PointLike = {
+    x: NaN,
+    y: NaN,
+}
+ORIGIN_POINT.x = 0
+ORIGIN_POINT.y = 0
 
 /**
  * Base class representing shape
@@ -38,7 +43,7 @@ export abstract class Shape<T = unknown> {
      * @param angle - angle in radians
      * @param [center=(0,0)] center
      */
-    rotate(angle: number, center: Point = ORIGIN_POINT): T {
+    rotate(angle: number, center: PointLike = ORIGIN_POINT): T {
         return this.transform(new Matrix().rotate(angle, center.x, center.y));
     }
 
@@ -51,7 +56,7 @@ export abstract class Shape<T = unknown> {
         return this.transform(new Matrix().scale(a as number, (b ?? a) as number));
     }
 
-    transform(...args): T {
+    transform(_a: unknown): T {
         throw(Errors.CANNOT_INVOKE_ABSTRACT_METHOD);
     }
 
@@ -61,22 +66,12 @@ export abstract class Shape<T = unknown> {
     /**
      * This method returns an object that defines how data will be
      * serialized when called JSON.stringify() method
-     * @returns {Object}
      */
-    toJSON() {
-        return Object.assign({}, this, {name: this.name});
+    toJSON(): { name: string } & Record<string, any> {
+        return Object.assign({}, this, { name: this.name });
     }
 
-    svg(attrs = {}) {
+    svg(_attrs: object = {}) {
         throw(Errors.CANNOT_INVOKE_ABSTRACT_METHOD);
     }
-}
-
-/**
- * There is a circular dependency between Shape & Point, so we inject point later
- * when everything is properly defined.
- * @private
- */
-export function _setupShape(point: Function) {
-    ORIGIN_POINT = point()
 }

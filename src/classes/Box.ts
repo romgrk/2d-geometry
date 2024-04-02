@@ -201,7 +201,6 @@ export class Box extends Shape<Box> {
 
     /**
      * Transform box into array of segments from low left corner in counterclockwise
-     * @returns {Segment[]}
      */
     toSegments() {
         let pts = this.toPoints();
