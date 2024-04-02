@@ -78,6 +78,22 @@ export class Segment extends Shape<Segment> {
         return new Segment(this.start, this.end);
     }
 
+    get name() {
+        return 'segment'
+    }
+
+    /**
+     * Bounding box
+     */
+    get box() {
+        return new geom.Box(
+            Math.min(this.start.x, this.end.x),
+            Math.min(this.start.y, this.end.y),
+            Math.max(this.start.x, this.end.x),
+            Math.max(this.start.y, this.end.y)
+        )
+    }
+
     /**
      * Returns array of start and end point
      * @returns [Point,Point]
@@ -97,20 +113,7 @@ export class Segment extends Shape<Segment> {
      * Slope of the line - angle to axe x in radians from 0 to 2PI
      */
     get slope() {
-        let vec = new geom.Vector(this.start, this.end);
-        return vec.slope;
-    }
-
-    /**
-     * Bounding box
-     */
-    get box() {
-        return new geom.Box(
-            Math.min(this.start.x, this.end.x),
-            Math.min(this.start.y, this.end.y),
-            Math.max(this.start.x, this.end.x),
-            Math.max(this.start.y, this.end.y)
-        )
+        return new geom.Vector(this.start, this.end).slope;
     }
 
     /**
@@ -168,14 +171,13 @@ export class Segment extends Shape<Segment> {
 
     /**
      * Calculate distance and shortest segment from segment to shape and return as array [distance, shortest segment]
-     * @param {Shape} shape Shape of the one of supported types Point, Line, Circle, Segment, Arc, Polygon or Planar Set
+     * @param shape Shape of the one of supported types Point, Line, Circle, Segment, Arc, Polygon or Planar Set
      * @returns {number} distance from segment to shape
      * @returns {[number, Segment]} shortest segment between segment and shape (started at segment, ended at shape)
      */
-    distanceTo(shape) {
+    distanceTo(shape: Shape): [number, Segment] {
         if (shape instanceof Point) {
-            let [dist, shortest_segment] = Distance.point2segment(shape, this);
-            shortest_segment = shortest_segment.reverse();
+            let [dist, shortest_segment] = Distance.segment2point(this, shape);
             return [dist, shortest_segment];
         }
 
@@ -293,16 +295,16 @@ export class Segment extends Shape<Segment> {
     };
 
     definiteIntegral(ymin = 0.0) {
-        let dx = this.end.x - this.start.x;
-        let dy1 = this.start.y - ymin;
-        let dy2 = this.end.y - ymin;
+        const dx = this.end.x - this.start.x;
+        const dy1 = this.start.y - ymin;
+        const dy2 = this.end.y - ymin;
         return (dx * (dy1 + dy2) / 2);
     }
 
     /**
      * Return new segment transformed using affine transformation matrix
      */
-    transform(matrix = new geom.Matrix()): Segment {
+    transform(matrix: geom.Matrix): Segment {
         return new Segment(this.start.transform(matrix), this.end.transform(matrix))
     }
 
@@ -319,10 +321,6 @@ export class Segment extends Shape<Segment> {
     sortPoints(pts: Point[]): Point[] {
         const line = new geom.Line(this.start, this.end);
         return line.sortPoints(pts);
-    }
-
-    get name() {
-        return "segment"
     }
 
     /**

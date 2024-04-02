@@ -38,6 +38,10 @@ export class Box extends Shape<Box> {
     }
 
     contains(other: Shape<unknown>): boolean {
+        if (other instanceof Point) {
+            return other.x >= this.xmin && other.x <= this.xmax && other.y >= this.ymin && other.y <= this.ymax
+        }
+
         throw new Error('unimplemented')
     }
 

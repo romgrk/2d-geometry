@@ -34,15 +34,19 @@ export class Path extends Shape<Path> {
         this._box = null
     }
 
-    clone() {
-        return new Path(this.parts)
+    get name() {
+        return 'path'
     }
 
-    contains(other: Shape<unknown>): boolean {
-        if (other instanceof Point) {
-            return this.parts.some(part => part.contains(other))
-        }
-        return false
+    /**
+     * The bounding box
+     */
+    get box() {
+        return (this._box ??= this.parts.reduce((acc, p) => acc = acc.merge(p.box), new Box()))
+    }
+
+    clone() {
+        return new Path(this.parts)
     }
 
     /**
@@ -61,11 +65,11 @@ export class Path extends Shape<Path> {
         return this.box.center;
     }
 
-    /**
-     * The bounding box
-     */
-    get box() {
-        return (this._box ??= this.parts.reduce((acc, p) => acc = acc.merge(p.box), new Box()))
+    contains(other: Shape<unknown>): boolean {
+        if (other instanceof Point) {
+            return this.parts.some(part => part.contains(other))
+        }
+        return false
     }
 
     /**

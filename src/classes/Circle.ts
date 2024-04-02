@@ -53,11 +53,8 @@ export class Circle extends Shape<Circle> {
         return new Circle(this.pc.clone(), this.r);
     }
 
-    /**
-     * Circle center
-     */
-    get center() {
-        return this.pc;
+    get name() {
+        return 'circle'
     }
 
     /**
@@ -70,6 +67,13 @@ export class Circle extends Shape<Circle> {
             this.pc.x + this.r,
             this.pc.y + this.r
         );
+    }
+
+    /**
+     * Circle center
+     */
+    get center() {
+        return this.pc;
     }
 
     /**
@@ -203,10 +207,6 @@ export class Circle extends Shape<Circle> {
             let [dist, shortest_segment] = Distance.shape2planarSet(this, shape);
             return [dist, shortest_segment];
         }
-    }
-
-    get name() {
-        return "circle"
     }
 
     /**

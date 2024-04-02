@@ -58,7 +58,7 @@ export class Matrix {
     }
 
     /**
-     * Return inversed instance of matrix
+     * Return the matrix inverse
      */
     invert() {
         const a = this.a

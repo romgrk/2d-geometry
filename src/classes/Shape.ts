@@ -13,17 +13,11 @@ let ORIGIN_POINT: Point
  * Implement common methods of affine transformations
  */
 export abstract class Shape<T = unknown> {
-    get name(): string {
-        throw(Errors.CANNOT_INVOKE_ABSTRACT_METHOD);
-    }
+    abstract get name(): string
 
-    get box(): Box {
-        throw(Errors.CANNOT_INVOKE_ABSTRACT_METHOD);
-    }
+    abstract get box(): Box
 
-    clone() {
-        throw(Errors.CANNOT_INVOKE_ABSTRACT_METHOD);
-    }
+    abstract clone(): Shape
 
     /**
      * Returns new shape translated by given vector.

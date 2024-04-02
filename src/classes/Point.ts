@@ -1,9 +1,11 @@
-import Errors from "../utils/errors";
-import {convertToString} from "../utils/attributes";
+import Errors from '../utils/errors';
+import {convertToString} from '../utils/attributes';
 import * as Distance from '../algorithms/distance';
-import * as Utils from "../utils/utils";
+import * as Utils from '../utils/utils';
 import * as geom from './index'
-import { Shape } from "./Shape";
+import type { Line } from './Line';
+import type { Matrix } from './Matrix';
+import { Shape } from './Shape';
 
 export type PointLike = {
     x: number
@@ -29,39 +31,36 @@ export class Point extends Shape<Point> {
     /**
      * Point may be constructed by two numbers, or by array of two numbers
      */
-    constructor(...args) {
+    constructor(a?: unknown, b?: unknown) {
         super()
         this.x = NaN;
         this.y = NaN;
         this.x = 0;
         this.y = 0;
 
-        if (args.length === 0) {
+        const argsLength = +(a !== undefined) + +(b !== undefined)
+
+        if (argsLength === 0) {
             return;
         }
 
-        if (args.length === 1 && args[0] instanceof Array && args[0].length === 2) {
-            let arr = args[0];
-            if (typeof (arr[0]) == "number" && typeof (arr[1]) == "number") {
-                this.x = arr[0];
-                this.y = arr[1];
-                return;
-            }
+        if (argsLength === 1 && a instanceof Array) {
+            this.x = a[0];
+            this.y = a[1];
+            return;
         }
 
-        if (args.length === 1 && args[0] instanceof Object) {
-            let { x, y } = args[0];
+        if (argsLength === 1) {
+            let { x, y } = a as PointLike;
             this.x = x;
             this.y = y;
             return;
         }
 
-        if (args.length === 2) {
-            if (typeof (args[0]) == "number" && typeof (args[1]) == "number") {
-                this.x = args[0];
-                this.y = args[1];
-                return;
-            }
+        if (argsLength === 2) {
+            this.x = a as number;
+            this.y = b as number;
+            return;
         }
 
         throw Errors.ILLEGAL_PARAMETERS;
@@ -91,10 +90,8 @@ export class Point extends Shape<Point> {
 
     /**
      * Returns true if points are equal up to [Utils.DP_TOL]{@link DP_TOL} tolerance
-     * @param {Point} pt Query point
-     * @returns {boolean}
      */
-    equalTo(pt) {
+    equalTo(pt: Point) {
         return Utils.EQ(this.x, pt.x) && Utils.EQ(this.y, pt.y);
     }
 
@@ -102,10 +99,8 @@ export class Point extends Shape<Point> {
      * Defines predicate "less than" between points. Returns true if the point is less than query points, false otherwise <br/>
      * By definition point1 < point2 if {point1.y < point2.y || point1.y == point2.y && point1.x < point2.x <br/>
      * Numeric values compared with [Utils.DP_TOL]{@link DP_TOL} tolerance
-     * @param {Point} pt Query point
-     * @returns {boolean}
      */
-    lessThan(pt) {
+    lessThan(pt: Point) {
         if (Utils.LT(this.y, pt.y))
             return true;
         if (Utils.EQ(this.y, pt.y) && Utils.LT(this.x, pt.x))
@@ -115,19 +110,15 @@ export class Point extends Shape<Point> {
 
     /**
      * Return new point transformed by affine transformation matrix
-     * @param {Matrix} m - affine transformation matrix (a,b,c,d,tx,ty)
-     * @returns {Point}
      */
-    transform(m) {
+    transform(m: Matrix) {
         return new Point(m.transform([this.x, this.y]))
     }
 
     /**
      * Returns projection point on given line
-     * @param {Line} line Line this point be projected on
-     * @returns {Point}
      */
-    projectionOn(line) {
+    projectionOn(line: Line) {
         if (this.equalTo(line.pt))                   // this point equal to line anchor point
             return this.clone();
 
@@ -143,10 +134,8 @@ export class Point extends Shape<Point> {
     /**
      * Returns true if point belongs to the "left" semi-plane, which means, point belongs to the same semi plane where line normal vector points to
      * Return false if point belongs to the "right" semi-plane or to the line itself
-     * @param {Line} line Query line
-     * @returns {boolean}
      */
-    leftTo(line) {
+    leftTo(line: Line) {
         let vec = new geom.Vector(line.pt, this);
         let onLeftSemiPlane = Utils.GT(vec.dot(line.norm), 0);
         return onLeftSemiPlane;
@@ -199,6 +188,8 @@ export class Point extends Shape<Point> {
             return Distance.point2polygon(this, shape);
         }
 
+        throw new Error('unimplemented')
+
         // TODO: enable
         // if (shape instanceof PlanarSet) {
         //     return Distance.shape2planarSet(this, shape);
@@ -217,7 +208,7 @@ export class Point extends Shape<Point> {
     }
 
     get name() {
-        return "point"
+        return 'point'
     }
 
     /**
