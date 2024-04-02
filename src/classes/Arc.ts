@@ -77,7 +77,6 @@ export class Arc extends Shape<Arc> {
 
     /**
      * Return new cloned instance of arc
-     * @returns {Arc}
      */
     clone() {
         return new geom.Arc(this.pc.clone(), this.r, this.startAngle, this.endAngle, this.counterClockwise);
@@ -85,7 +84,6 @@ export class Arc extends Shape<Arc> {
 
     /**
      * Get sweep angle in radians. Sweep angle is non-negative number from 0 to 2*PI
-     * @returns {number}
      */
     get sweep() {
         if (Utils.EQ(this.startAngle, this.endAngle))
@@ -93,7 +91,7 @@ export class Arc extends Shape<Arc> {
         if (Utils.EQ(Math.abs(this.startAngle - this.endAngle), TAU)) {
             return TAU;
         }
-        let sweep;
+        let sweep: number;
         if (this.counterClockwise) {
             sweep = Utils.GT(this.endAngle, this.startAngle) ?
                 this.endAngle - this.startAngle : this.endAngle - this.startAngle + TAU;
