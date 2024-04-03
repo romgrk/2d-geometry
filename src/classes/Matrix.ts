@@ -216,6 +216,10 @@ export class Matrix {
         if (!EQ(this.d, matrix.d)) return false;
         return true;
     };
+
+    isIdentity() {
+        return this.a === 1 && this.b === 0 && this.c === 0 && this.d === 1 && this.tx === 0 && this.ty === 0;
+    }
 };
 
 /**

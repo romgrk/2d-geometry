@@ -3,7 +3,7 @@ import Errors from '../utils/errors'
 import { Matrix } from './Matrix'
 import { Point } from './Point'
 import { Segment } from './Segment'
-import { Shape } from './Shape'
+import { Shape, ShapeTag } from './Shape';
 
 /**
  * Class Box represents bounding box of the shape.
@@ -37,12 +37,26 @@ export class Box extends Shape<Box> {
         return new Box(this.xmin, this.ymin, this.xmax, this.ymax);
     }
 
-    contains(other: Shape<unknown>): boolean {
-        if (other instanceof Point) {
-            return other.x >= this.xmin && other.x <= this.xmax && other.y >= this.ymin && other.y <= this.ymax
-        }
+    get tag() {
+        return ShapeTag.Box
+    }
 
-        throw new Error('unimplemented')
+    get name() {
+        return "box"
+    }
+
+    /**
+     * Return property box like all other shapes
+     */
+    get box() {
+        return this;
+    }
+
+    /**
+     * Return center of the box
+     */
+    get center() {
+        return new Point((this.xmin + this.xmax) / 2, (this.ymin + this.ymax) / 2);
     }
 
     /**
@@ -65,13 +79,6 @@ export class Box extends Shape<Box> {
     get max() {
         return this.clone();
     }
-    
-    /**
-     * Return center of the box
-     */
-    get center() {
-        return new Point((this.xmin + this.xmax) / 2, (this.ymin + this.ymax) / 2);
-    }
 
     /**
      * Return the width of the box
@@ -86,19 +93,20 @@ export class Box extends Shape<Box> {
     get height() {
         return Math.abs(this.ymax - this.ymin);
     }
-    
-    /**
-     * Return property box like all other shapes
-     */
-    get box() {
-        return this;
+
+    contains(other: Shape<unknown>): boolean {
+        if (other instanceof Point) {
+            return other.x >= this.xmin && other.x <= this.xmax && other.y >= this.ymin && other.y <= this.ymax
+        }
+
+        throw new Error('unimplemented')
     }
 
     /**
      * Snap the point to a grid.
      */
-    snapToGrid(grid: number);
-    snapToGrid(xGrid: number, yGrid: number);
+    snapToGrid(grid: number): Box;
+    snapToGrid(xGrid: number, yGrid: number): Box;
     snapToGrid(a: number = 1, b?: unknown) {
         const xGrid = a
         const yGrid = b === undefined ? a : b as number
@@ -232,10 +240,6 @@ export class Box extends Shape<Box> {
         const transformed_points = this.toPoints().map(pt => pt.transform(m))
         return transformed_points.reduce(
             (new_box, pt) => new_box.merge(pt.box), new Box())
-    }
-
-    get name() {
-        return "box"
     }
 
     /**

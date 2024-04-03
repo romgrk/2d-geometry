@@ -5,7 +5,7 @@ import { Bezier } from './Bezier'
 import { Matrix } from './Matrix'
 import { Point } from './Point'
 import { Segment } from './Segment'
-import { Shape } from './Shape'
+import { Shape, ShapeTag } from './Shape'
 
 type Part = Segment | Arc | Bezier
 
@@ -13,7 +13,12 @@ type Part = Segment | Arc | Bezier
  * Class representing a path
  */
 export class Path extends Shape<Path> {
-    static EMPTY = Object.freeze(new Path([]));
+    static EMPTY = Object.freeze((() => {
+        const p = new Path([])
+        p.length
+        p.box
+        return p
+    })());
 
     static fromPoints(points: Point[]) {
         const segments = []
@@ -32,6 +37,10 @@ export class Path extends Shape<Path> {
         this.parts = parts
         this._length = NaN
         this._box = null
+    }
+
+    get tag() {
+        return ShapeTag.Path
     }
 
     get name() {

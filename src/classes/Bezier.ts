@@ -3,7 +3,8 @@ import {Arc} from './Arc';
 import {Box} from './Box';
 import {Point} from './Point';
 import {Segment} from './Segment';
-import {Shape} from './Shape';
+import { Shape, ShapeTag } from './Shape';
+import { lerp } from '../utils/lerp';
 import * as Utils from '../utils/utils'
 import * as Intersection from '../algorithms/intersection'
 import * as Distance from '../algorithms/distance'
@@ -62,8 +63,12 @@ export class Bezier extends Shape<Bezier> {
         return new Bezier(this.start, this.control1, this.control2, this.end);
     }
 
+    get tag() {
+        return ShapeTag.Bezier
+    }
+
     /**
-     * Returns array of points
+     * Returns LUT
      */
     get lut() {
         if (this._lut === EMPTY) {
@@ -150,6 +155,13 @@ export class Bezier extends Shape<Bezier> {
     }
 
     /**
+     * Bounding box
+     */
+    get center() {
+        return this.pointAtLength(this.length / 2)
+    }
+
+    /**
      * Returns true if equals to query segment, false otherwise
      */
     equalTo(other: Bezier): boolean {
@@ -208,9 +220,8 @@ export class Bezier extends Shape<Bezier> {
      * When point belongs to segment, return array of two segments split by given point,
      * if point is inside segment. Returns clone of this segment if query point is incident
      * to start or end point of the segment. Returns empty array if point does not belong to segment
-     * @param pt Query point
      */
-    split(point: Point): (Bezier | null)[] {
+    split(_point: Point): (Bezier | null)[] {
         throw new Error('unimplemented')
     }
 
@@ -222,32 +233,16 @@ export class Bezier extends Shape<Bezier> {
             return [this.clone(), null];
 
         const lut = this.lut
-        let lower = 0
-        let upper = lut.length / 4
-        let current = lower + Math.floor((upper - lower) / 2)
-        while (true) {
-            const len = lut[current * 4 + 3]
+        const index = findIndexFromLUT(lut, length)
 
-            if (length > len) {
-                lower = current
-            } else {
-                upper = current
-            }
-            const index = lower + Math.floor((upper - lower) / 2)
-            if (index === current) {
-                break
-            }
-            current = index
-        }
+        const ta = lut[index * 4 + 2]
+        const la = lut[index * 4 + 3]
 
-        const ta = lut[current * 4 + 2]
-        const la = lut[current * 4 + 3]
-
-        const tb = lut[(current + 1) * 4 + 2]
-        const lb = lut[(current + 1) * 4 + 3]
+        const tb = lut[(index + 1) * 4 + 2]
+        const lb = lut[(index + 1) * 4 + 3]
 
         const f = (length - la) / (lb - la)
-        const t = f * ta + (1 - f) * tb
+        const t = lerp(ta, tb, f)
 
         return this.splitAtT(t)
     }
@@ -297,18 +292,13 @@ export class Bezier extends Shape<Bezier> {
         if (segments.length === 0)
             return Point.EMPTY
 
-        let currentLength = 0
+        const lut = this.lut
+        const index = findIndexFromLUT(lut, length)
+        const lengthAtIndex = lut[index * 4 + 3]
+        const lengthInSegment = length - lengthAtIndex
+        const segment = segments[index]
 
-        for (let i = 0; i < segments.length; i++) {
-            const part = segments[i]
-            currentLength += part.length
-            if (currentLength >= length) {
-                const lengthInsidePart = length - (currentLength - part.length)
-                return part.pointAtLength(lengthInsidePart)
-            }
-        }
-        const last = segments[segments.length - 1]
-        return last.pointAtLength(last.length)
+        return segment.pointAtLength(lengthInSegment)
     }
 
     distanceToPoint(point: Point) {
@@ -374,6 +364,28 @@ function getSegmentDistance(shape: Shape): (s: Segment, o: any) => [number, Segm
     if (shape instanceof Segment) { return Distance.segment2segment }
     if (shape instanceof Arc) { return Distance.segment2arc }
     throw new Error('unimplemented')
+}
+
+function findIndexFromLUT(lut: number[], length: number) {
+    let lower = 0
+    let upper = lut.length / 4
+    let current = lower + Math.floor((upper - lower) / 2)
+    while (true) {
+        const len = lut[current * 4 + 3]
+
+        if (length > len) {
+            lower = current
+        } else {
+            upper = current
+        }
+        const index = lower + Math.floor((upper - lower) / 2)
+        if (index === current) {
+            break
+        }
+        current = index
+    }
+
+    return current
 }
 
 /**

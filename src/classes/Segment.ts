@@ -6,7 +6,7 @@ import {convertToString} from "../utils/attributes";
 import { PlanarSet } from '../data_structures/PlanarSet';
 import * as geom from './index'
 import {Point} from './Point';
-import {Shape} from './Shape';
+import { Shape, ShapeTag } from './Shape';
 
 /**
  * Class representing a segment
@@ -78,13 +78,14 @@ export class Segment extends Shape<Segment> {
         return new Segment(this.start, this.end);
     }
 
+    get tag() {
+        return ShapeTag.Segment
+    }
+
     get name() {
         return 'segment'
     }
 
-    /**
-     * Bounding box
-     */
     get box() {
         return new geom.Box(
             Math.min(this.start.x, this.end.x),
@@ -94,12 +95,19 @@ export class Segment extends Shape<Segment> {
         )
     }
 
+    get center() {
+        return new Point(
+            (this.start.x + this.end.x) / 2,
+            (this.start.y + this.end.y) / 2,
+        )
+    }
+
     /**
      * Returns array of start and end point
      * @returns [Point,Point]
      */
     get vertices() {
-        return [this.start.clone(), this.end.clone()];
+        return [this.start, this.end]
     }
 
     /**
@@ -273,7 +281,7 @@ export class Segment extends Shape<Segment> {
      * Return middle point of the segment
      */
     middle() {
-        return new Point((this.start.x + this.end.x) / 2, (this.start.y + this.end.y) / 2);
+        return this.center;
     }
 
     /**

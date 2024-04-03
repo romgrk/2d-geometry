@@ -5,7 +5,7 @@ import * as Utils from '../utils/utils';
 import * as geom from './index'
 import type { Line } from './Line';
 import type { Matrix } from './Matrix';
-import { Shape } from './Shape';
+import { Shape, ShapeTag } from './Shape';
 
 export type PointLike = {
     x: number
@@ -67,21 +67,37 @@ export class Point extends Shape<Point> {
     }
 
     /**
-     * Returns bounding box of a point
-     */
-    get box(): geom.Box {
-        return new geom.Box(this.x, this.y, this.x, this.y);
-    }
-
-    /**
      * Return new cloned instance of point
      */
     clone() {
         return new Point(this.x, this.y);
     }
 
+    get tag() {
+        return ShapeTag.Point
+    }
+
+    get name() {
+        return 'point'
+    }
+
+    /**
+     * Returns bounding box of a point
+     */
+    get box(): geom.Box {
+        return new geom.Box(this.x, this.y, this.x, this.y);
+    }
+
+    get center() {
+        return this
+    }
+
+    isEmpty() {
+        return this.x === 0 && this.y === 0
+    }
+
     get vertices() {
-        return [this.clone()];
+        return [this];
     }
 
     contains(other: Point) {
@@ -144,8 +160,8 @@ export class Point extends Shape<Point> {
     /**
      * Snap the point to a grid.
      */
-    snapToGrid(grid: number);
-    snapToGrid(xGrid: number, yGrid: number);
+    snapToGrid(grid: number): Point;
+    snapToGrid(xGrid: number, yGrid: number): Point;
     snapToGrid(a: number = 1, b?: unknown) {
         const xGrid = a
         const yGrid = b === undefined ? a : b as number
@@ -205,10 +221,6 @@ export class Point extends Shape<Point> {
             return this.equalTo(shape);
         }
         return shape.contains(this)
-    }
-
-    get name() {
-        return 'point'
     }
 
     /**

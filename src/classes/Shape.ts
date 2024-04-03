@@ -1,7 +1,7 @@
 import Errors from '../utils/errors'
 import { Matrix } from './Matrix'
 import type { Box } from './Box'
-import type { PointLike } from './Point'
+import type { Point, PointLike } from './Point'
 import type { Vector } from './Vector'
 
 export type AnyShape = Shape<unknown>
@@ -13,16 +13,38 @@ let ORIGIN_POINT: PointLike = {
 ORIGIN_POINT.x = 0
 ORIGIN_POINT.y = 0
 
+export enum ShapeTag {
+    Arc,
+    Bezier,
+    Box,
+    Circle,
+    Line,
+    Matrix,
+    Multiline,
+    Path,
+    Point,
+    Polygon,
+    Ray,
+    Segment,
+    Shape,
+    Vector,
+}
+
 /**
  * Base class representing shape
  * Implement common methods of affine transformations
  */
 export abstract class Shape<T = unknown> {
+    abstract get tag(): ShapeTag
+
     abstract get name(): string
 
     abstract get box(): Box
 
+    abstract get center(): Point
+
     abstract clone(): Shape
+
 
     /**
      * Returns new shape translated by given vector.

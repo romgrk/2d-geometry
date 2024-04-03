@@ -14,6 +14,11 @@ import {INSIDE, BOUNDARY} from "../utils/constants";
 import {convertToString} from "../utils/attributes";
 import { PlanarSet } from '../data_structures/PlanarSet';
 import * as geom from '../classes'
+import type { Box } from '../classes/Box';
+import type { Shape } from '../classes/Shape';
+import type { Segment } from '../classes/Segment';
+import type { Vector } from '../classes/Vector';
+import { ShapeTag } from './Shape'
 
 const isPointLike = (n: any): n is [number, number] =>
     Array.isArray(n) && n.length === 2 && typeof n[0] === 'number' && typeof n[1] === 'number'
@@ -87,15 +92,26 @@ export class Polygon {
         }
     }
 
+    get tag() {
+        return ShapeTag.Polygon
+    }
+
     /**
-     * (Getter) Returns bounding box of the polygon
+     * Returns bounding box of the polygon
      */
-    get box() {
+    get box(): Box {
         return [...this.faces].reduce((acc, face) => acc.merge(face.box), new geom.Box());
     }
 
     /**
-     * (Getter) Returns array of vertices
+     * Returns bounding box of the polygon
+     */
+    get center() {
+        return this.box.center
+    }
+
+    /**
+     * Returns array of vertices
      */
     get vertices() {
         return [...this.edges].map(edge => edge.start);
@@ -125,7 +141,6 @@ export class Polygon {
      * 1. All faces are simple polygons (there are no self-intersected polygons) <br/>
      * 2. All faces are orientable and there is no island inside island or hole inside hole - TODO <br/>
      * 3. There is no intersections between faces (excluding touching) - TODO <br/>
-     * @returns {boolean}
      */
     isValid() {
         let valid = true;
@@ -143,10 +158,9 @@ export class Polygon {
 
     /**
      * Returns area of the polygon. Area of an island will be added, area of a hole will be subtracted
-     * @returns {number}
      */
     area() {
-        let signedArea = [...this.faces].reduce((acc, face) => acc + face.signedArea(), 0);
+        const signedArea = [...this.faces].reduce((acc, face) => acc + face.signedArea(), 0);
         return Math.abs(signedArea);
     }
 
@@ -169,10 +183,8 @@ export class Polygon {
 
     /**
      * Delete existing face from polygon
-     * @param {Face} face Face to be deleted
-     * @returns {boolean}
      */
-    deleteFace(face) {
+    deleteFace(face: geom.Face) {
         for (let edge of face) {
             this.edges.delete(edge);
         }
@@ -511,7 +523,6 @@ export class Polygon {
 
     /**
      * Reverse orientation of all faces to opposite
-     * @returns {Polygon}
      */
     reverse() {
         for (let face of this.faces) {
@@ -523,10 +534,8 @@ export class Polygon {
     /**
      * Returns true if polygon contains shape: no point of shape lay outside of the polygon,
      * false otherwise
-     * @param {Shape} shape - test shape
-     * @returns {boolean}
      */
-    contains(shape) {
+    contains(shape: Shape) {
         if (shape instanceof geom.Point) {
             let rel = ray_shoot(this, shape);
             return rel === INSIDE || rel === BOUNDARY;
@@ -537,10 +546,8 @@ export class Polygon {
 
     /**
      * Return distance and shortest segment between polygon and other shape as array [distance, shortest_segment]
-     * @param {Shape} shape Shape of one of the types Point, Circle, Line, Segment, Arc or Polygon
-     * @returns {Number | Segment}
      */
-    distanceTo(shape) {
+    distanceTo(shape: Shape): [number, Segment] {
         // let {Distance} = Flatten;
 
         if (shape instanceof geom.Point) {
@@ -560,13 +567,11 @@ export class Polygon {
 
         /* this method is bit faster */
         if (shape instanceof geom.Polygon) {
-            let min_dist_and_segment = [Number.POSITIVE_INFINITY, new geom.Segment()] as const;
-            let dist, shortest_segment;
+            let min_dist_and_segment = [Number.POSITIVE_INFINITY, geom.Segment.EMPTY] as [number, Segment];
 
             for (let edge of this.edges) {
-                // let [dist, shortest_segment] = Distance.shape2polygon(edge.shape, shape);
                 let min_stop = min_dist_and_segment[0];
-                [dist, shortest_segment] = Distance.shape2planarSet(edge.shape, shape.edges, min_stop);
+                const [dist, shortest_segment] = Distance.shape2planarSet(edge.shape, shape.edges, min_stop);
                 if (Utils.LT(dist, min_stop)) {
                     min_dist_and_segment = [dist, shortest_segment];
                 }
@@ -578,9 +583,8 @@ export class Polygon {
     /**
      * Return array of intersection points between polygon and other shape
      * @param shape Shape of the one of supported types <br/>
-     * @returns {Point[]}
      */
-    intersect(shape) {
+    intersect(shape: Shape) {
         if (shape instanceof geom.Point) {
             return this.contains(shape) ? [shape] : [];
         }
@@ -612,11 +616,9 @@ export class Polygon {
 
     /**
      * Returns new polygon translated by vector vec
-     * @param {Vector} vec
-     * @returns {Polygon}
      */
-    translate(vec) {
-        let newPolygon = new Polygon();
+    translate(vec: Vector) {
+        const newPolygon = new Polygon();
         for (let face of this.faces) {
             newPolygon.addFace(face.shapes.map(shape => shape.translate(vec)));
         }

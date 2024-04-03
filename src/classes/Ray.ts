@@ -2,7 +2,7 @@ import Errors from '../utils/errors'
 import * as Utils from '../utils/utils'
 import * as Intersection from "../algorithms/intersection";
 import * as geom from "./index";
-import {Shape} from "./Shape";
+import { Shape, ShapeTag } from './Shape';
 
 /**
  * Class representing a ray (a half-infinite line).
@@ -48,15 +48,25 @@ export class Ray extends Shape<Ray> {
 
     /**
      * Return new cloned instance of ray
-     * @returns {Ray}
      */
     clone() {
         return new Ray(this.pt, this.norm);
     }
 
+    get tag() {
+        return ShapeTag.Ray
+    }
+
+    get name() {
+        return 'ray'
+    }
+
+    get center() {
+        return this.pt
+    }
+
     /**
      * Slope of the ray - angle in radians between ray and axe x from 0 to 2PI
-     * @returns {number} - slope of the line
      */
     get slope() {
         let vec = new geom.Vector(this.norm.y, -this.norm.x);
@@ -65,7 +75,6 @@ export class Ray extends Shape<Ray> {
 
     /**
      * Returns half-infinite bounding box of the ray
-     * @returns {Box} - bounding box
      */
     get box() {
         let slope = this.slope;
@@ -79,7 +88,6 @@ export class Ray extends Shape<Ray> {
 
     /**
      * Return ray start point
-     * @returns {Point} - ray start point
      */
     get start() {
         return this.pt;
@@ -87,15 +95,13 @@ export class Ray extends Shape<Ray> {
 
     /**
      * Ray has no end point?
-     * @returns {undefined}
      */
-    get end() {return undefined;}
+    get end() { return undefined; }
 
     /**
      * Return positive infinity number as length
-     * @returns {number}
      */
-    get length() {return Number.POSITIVE_INFINITY;}
+    get length() { return Number.POSITIVE_INFINITY; }
 
     /**
      * Returns true if point belongs to ray
@@ -192,10 +198,6 @@ export class Ray extends Shape<Ray> {
             this.pt.transform(m),
             this.norm.clone()
         )
-    }
-
-    get name() {
-        return "ray"
     }
 
     /**

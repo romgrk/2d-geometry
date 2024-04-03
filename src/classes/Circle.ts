@@ -5,8 +5,8 @@ import * as Distance from '../algorithms/distance'
 import * as Intersection from '../algorithms/intersection';
 import {convertToString} from '../utils/attributes';
 import * as geom from './index'
-import {Point, PointLike} from './Point';
-import {Shape} from './Shape';
+import { Point, PointLike } from './Point';
+import { Shape, ShapeTag } from './Shape';
 
 /**
  * Class representing a circle
@@ -53,13 +53,14 @@ export class Circle extends Shape<Circle> {
         return new Circle(this.pc.clone(), this.r);
     }
 
+    get tag() {
+        return ShapeTag.Circle
+    }
+
     get name() {
         return 'circle'
     }
 
-    /**
-     * Circle bounding box
-     */
     get box() {
         return new geom.Box(
             this.pc.x - this.r,
@@ -69,9 +70,6 @@ export class Circle extends Shape<Circle> {
         );
     }
 
-    /**
-     * Circle center
-     */
     get center() {
         return this.pc;
     }

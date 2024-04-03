@@ -25,7 +25,7 @@ export function intersectLine2Line(line1: Line, line2: Line): Point[] {
     let detY = A1 * C2 - C1 * A2;
 
     if (!Utils.EQ_0(det)) {
-        let x, y;
+        let x: number, y: number;
 
         if (B1 === 0) {        // vertical line x  = C1/A1, where A1 == +1 or -1
             x = C1/A1;
@@ -99,7 +99,7 @@ export function intersectLine2Arc(line: Line, arc: Arc): Point[] {
     let circle = new Circle(arc.pc, arc.r);
     let ip_tmp = intersectLine2Circle(line, circle);
     for (let pt of ip_tmp) {
-        if (pt.on(arc)) {
+        if (arc.contains(pt)) {
             ip.push(pt);
         }
     }

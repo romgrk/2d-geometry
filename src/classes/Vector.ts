@@ -1,8 +1,9 @@
 import Errors from '../utils/errors'
 import * as Utils from '../utils/utils'
 import * as geom from './index'
-import {Shape} from "./Shape";
-import {Matrix} from "./Matrix";
+import { Shape, ShapeTag } from './Shape';
+import { Matrix } from './Matrix';
+import { Point } from './Point';
 
 /**
  * Class representing a vector
@@ -24,6 +25,8 @@ export class Vector extends Shape<Vector> {
      */
     constructor(...args) {
         super()
+        this.x = NaN;
+        this.y = NaN;
         this.x = 0;
         this.y = 0;
 
@@ -71,7 +74,6 @@ export class Vector extends Shape<Vector> {
 
     /**
      * Method clone returns new instance of Vector
-     * @returns {Vector}
      */
     clone() {
         return new Vector(this.x, this.y);
@@ -79,6 +81,27 @@ export class Vector extends Shape<Vector> {
 
     contains(other: Shape<unknown>): boolean {
         throw new Error('unimplemented')
+    }
+
+    get tag() {
+        return ShapeTag.Vector
+    }
+
+    get name() {
+        return 'vector'
+    }
+
+    get center() {
+        return new Point(this.x / 2, this.y / 2)
+    }
+
+    get box() {
+        return new geom.Box(
+            Math.min(0, this.x),
+            Math.min(0, this.y),
+            Math.max(0, this.x),
+            Math.max(0, this.y)
+        )
     }
 
     /**
@@ -240,10 +263,6 @@ export class Vector extends Shape<Vector> {
         let n = v.normalize();
         let d = this.dot(n);
         return n.multiply(d);
-    }
-
-    get name() {
-        return "vector"
     }
 }
 

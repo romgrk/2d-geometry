@@ -6,7 +6,7 @@ import * as Intersection from '../algorithms/intersection';
 import {convertToString} from '../utils/attributes';
 import * as geom from './index'
 import {Point} from './Point';
-import {Shape} from './Shape';
+import { Shape, ShapeTag } from './Shape'
 
 /**
  * Class representing a circular arc
@@ -82,6 +82,24 @@ export class Arc extends Shape<Arc> {
         return new geom.Arc(this.pc.clone(), this.r, this.startAngle, this.endAngle, this.counterClockwise);
     }
 
+    get tag() {
+        return ShapeTag.Arc
+    }
+
+    /**
+     * Get bounding box of the arc
+     */
+    get box() {
+        let func_arcs = this.breakToFunctional();
+        let box = func_arcs.reduce((acc, arc) => acc.merge(arc.start.box), new geom.Box());
+        box = box.merge(this.end.box);
+        return box;
+    }
+
+    get center() {
+        return this.pc
+    }
+
     /**
      * Get sweep angle in radians. Sweep angle is non-negative number from 0 to 2*PI
      */
@@ -125,16 +143,8 @@ export class Arc extends Shape<Arc> {
         return p0.rotate(this.endAngle, this.pc) as Point;
     }
 
-    /**
-     * Get center of arc
-     * @returns {Point}
-     */
-    get center() {
-        return this.pc.clone();
-    }
-
     get vertices() {
-        return [this.start.clone(), this.end.clone()];
+        return [this.start, this.end];
     }
 
     /**
@@ -145,22 +155,9 @@ export class Arc extends Shape<Arc> {
     }
 
     /**
-     * Get bounding box of the arc
-     * @returns {Box}
-     */
-    get box() {
-        let func_arcs = this.breakToFunctional();
-        let box = func_arcs.reduce((acc, arc) => acc.merge(arc.start.box), new geom.Box());
-        box = box.merge(this.end.box);
-        return box;
-    }
-
-    /**
      * Returns true if arc contains point, false otherwise
-     * @param {Point} pt - point to test
-     * @returns {boolean}
      */
-    contains(pt) {
+    contains(pt: Point) {
         // first check if  point on circle (pc,r)
         if (!Utils.EQ(this.pc.distanceTo(pt)[0], this.r))
             return false;
@@ -212,7 +209,6 @@ export class Arc extends Shape<Arc> {
 
     /**
      * Return middle point of the arc
-     * @returns {Point}
      */
     middle() {
         let endAngle = this.counterClockwise ? this.startAngle + this.sweep / 2 : this.startAngle - this.sweep / 2;

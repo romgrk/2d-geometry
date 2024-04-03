@@ -3,7 +3,7 @@ import Errors from '../utils/errors'
 import * as Distance from '../algorithms/distance';
 import * as Utils from '../utils/utils'
 import * as geom from './index'
-import {Shape} from "./Shape";
+import { Shape, ShapeTag } from './Shape';
 import { Point } from './Point';
 import { Vector, vector } from './Vector';
 
@@ -94,6 +94,14 @@ export class Line extends Shape<Line> {
         return new Line(this.pt, this.norm);
     }
 
+    get tag() {
+        return ShapeTag.Line
+    }
+
+    get center() {
+        return this.pt
+    }
+
     /* The following methods need for implementation of Edge interface
     /**
      * Line has no start point
@@ -125,7 +133,7 @@ export class Line extends Shape<Line> {
     /**
      * Middle point is undefined
      */
-    get middle() {return undefined}
+    get middle() { return undefined }
 
     /**
      * Slope of the line - angle in radians between line and axe x from 0 to 2PI
