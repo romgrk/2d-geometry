@@ -92,8 +92,13 @@ export class Path extends Shape<Path> {
      * Point at a distance along the path.
      */
     pointAtLength(length: number) {
-        if (this.parts.length === 0)
+        if (this.parts.length === 0) {
             return Point.EMPTY
+        }
+
+        if (length === 0) {
+            return this.parts[0].start
+        }
 
         let currentLength = 0
 

@@ -287,6 +287,10 @@ export class Bezier extends Shape<Bezier> {
      * @param length The length along the segment
      */
     pointAtLength(length: number): Point {
+        if (length === 0) {
+            return this.start
+        }
+
         const segments = this.segments
 
         if (segments.length === 0)
