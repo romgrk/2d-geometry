@@ -65,9 +65,8 @@ export class BezierUtils
     }
 
     /**
-     * Calculate the points for a bezier curve and then draws it.
+     * Calculate the curve LUT
      *
-     * Ignored from docs since it is not directly exposed.
      * @ignore
      * @param toX - Source point x
      * @param toY - Source point y
@@ -78,7 +77,7 @@ export class BezierUtils
      * @param toX - Destination point x
      * @param toY - Destination point y
      */
-    static curveTo(
+    static generateLUT(
         fromX: number, fromY: number,
         cpX: number, cpY: number,
         cpX2: number, cpY2: number,
@@ -96,8 +95,8 @@ export class BezierUtils
         let t2 = 0;
         let t3 = 0;
 
-        let lastX = fromX
-        let lastY = fromY
+        let previousX = fromX
+        let previousY = fromY
         let totalLength = 0;
 
         lut.push(fromX, fromY, dt, totalLength);
@@ -116,15 +115,15 @@ export class BezierUtils
             const x = (dt3 * fromX) + (3 * dt2 * t * cpX) + (3 * dt * t2 * cpX2) + (t3 * toX)
             const y = (dt3 * fromY) + (3 * dt2 * t * cpY) + (3 * dt * t2 * cpY2) + (t3 * toY)
 
-            const dx = x - lastX
-            const dy = y - lastY
+            const dx = x - previousX
+            const dy = y - previousY
 
             totalLength += Math.sqrt(dx * dx + dy * dy)
 
             lut.push(x, y, t, totalLength);
 
-            lastX = x
-            lastY = y
+            previousX = x
+            previousY = y
         }
 
         return lut
