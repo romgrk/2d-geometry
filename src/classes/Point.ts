@@ -242,5 +242,4 @@ export class Point extends Shape<Point> {
     }
 }
 
-// @ts-ignore
-export const point = (...args) => new Point(...args);
+export const point= (a: any, b: any) => new Point(a, b);

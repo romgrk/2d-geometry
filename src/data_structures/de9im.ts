@@ -1,5 +1,3 @@
-import type { Shape } from '../classes/Shape'
-
 /*
  * Dimensionally extended 9-intersected model
  * See https://en.wikipedia.org/wiki/DE-9IM for more details
@@ -14,7 +12,7 @@ const COVERED     = RegExp('T.F..F...|.TF..F...|..FT.F...|..F.TF...');
 
 class DE9IM {
     /** Array representing 3x3 intersection matrix */
-    m: (Shape[] | undefined)[]
+    m: (unknown[] | undefined)[]
 
     /**
      * Create new instance of DE9IM matrix

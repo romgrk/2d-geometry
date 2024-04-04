@@ -1,3 +1,3 @@
 export function lerp(a: number, b: number, f: number) {
-  return a * f + b * (1 - f)
+  return a * (1 - f) + b * f
 }

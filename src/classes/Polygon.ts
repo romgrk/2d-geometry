@@ -96,6 +96,10 @@ export class Polygon {
         return ShapeTag.Polygon
     }
 
+    get name() {
+        return 'polygon'
+    }
+
     /**
      * Returns bounding box of the polygon
      */
