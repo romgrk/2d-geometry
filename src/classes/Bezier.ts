@@ -28,7 +28,6 @@ export class Bezier extends Shape<Bezier> {
     /** Control point 2 */
     control2: Point
 
-    _length: number
     _lut: number[]
     _vertices: Point[]
     _segments: Segment[]
@@ -50,7 +49,6 @@ export class Bezier extends Shape<Bezier> {
             this.control2 = c as any
         }
 
-        this._length = NaN
         this._lut = EMPTY
         this._vertices = EMPTY
         this._segments = EMPTY
@@ -121,10 +119,7 @@ export class Bezier extends Shape<Bezier> {
      * Length of the curve
      */
     get length() {
-        if (Number.isNaN(this._length)) {
-            this._length = this.segments.reduce((result, current) => result + current.length, 0)
-        }
-        return this._length
+        return this.lut[this.lut.length - 1]
     }
 
     /**
