@@ -1,10 +1,9 @@
-import * as geom from './index'
-import {Arc} from './Arc';
-import {Box} from './Box';
-import {Point} from './Point';
-import {Segment} from './Segment';
+import { Arc } from './Arc';
+import { Point } from './Point';
+import { Segment } from './Segment';
 import { Shape, ShapeTag } from './Shape';
 import { lerp } from '../utils/lerp';
+import type { Matrix } from './Matrix'
 import * as Utils from '../utils/utils'
 import * as Intersection from '../algorithms/intersection'
 import * as Distance from '../algorithms/distance'
@@ -14,10 +13,10 @@ const EMPTY = Object.freeze([]) as any[]
 
 /**
  * Class representing a cubic bezier
- * @type {Bezier}
+ * @type {Quadratic}
  */
-export class Bezier extends Shape<Bezier> {
-    static EMPTY = Object.seal(new Bezier(Point.EMPTY, Point.EMPTY, Point.EMPTY, Point.EMPTY));
+export class Quadratic extends Shape<Quadratic> {
+    static EMPTY = Object.seal(new Quadratic(Point.EMPTY, Point.EMPTY, Point.EMPTY));
 
     /** Start point */
     start: Point
@@ -25,28 +24,24 @@ export class Bezier extends Shape<Bezier> {
     end: Point
     /** Control point 1 */
     control1: Point
-    /** Control point 2 */
-    control2: Point
 
     _lut: number[]
     _vertices: Point[]
     _segments: Segment[]
 
-    constructor(other: Bezier);
-    constructor(start: Point, control1: Point, control2: Point, end: Point);
-    constructor(a: unknown, b?: unknown, c?: unknown, d?: unknown) {
+    constructor(other: Quadratic);
+    constructor(start: Point, control1: Point, end: Point);
+    constructor(a: unknown, b?: unknown, c?: unknown) {
         super()
 
-        if (a instanceof Bezier) {
+        if (a instanceof Quadratic) {
             this.start = a.start
             this.end = a.end
             this.control1 = a.control1
-            this.control2 = a.control2
         } else {
             this.start = a as any
-            this.end = d as any
+            this.end = c as any
             this.control1 = b as any
-            this.control2 = c as any
         }
 
         this._lut = EMPTY
@@ -58,11 +53,11 @@ export class Bezier extends Shape<Bezier> {
      * Return new cloned instance of segment
      */
     clone() {
-        return new Bezier(this.start, this.control1, this.control2, this.end);
+        return new Quadratic(this.start, this.control1, this.end);
     }
 
     get tag() {
-        return ShapeTag.Bezier
+        return ShapeTag.Quadratic
     }
 
     /**
@@ -70,13 +65,11 @@ export class Bezier extends Shape<Bezier> {
      */
     get lut() {
         if (this._lut === EMPTY) {
-            this._lut = curves.bezier.generateLUT(
+            this._lut = curves.quadratic.generateLUT(
                 this.start.x,
                 this.start.y,
                 this.control1.x,
                 this.control1.y,
-                this.control2.x,
-                this.control2.y,
                 this.end.x,
                 this.end.y,
             )
@@ -137,11 +130,10 @@ export class Bezier extends Shape<Bezier> {
     /**
      * Returns true if equals to query segment, false otherwise
      */
-    equalTo(other: Bezier): boolean {
+    equalTo(other: Quadratic): boolean {
         return this.start.equalTo(other.start) &&
             this.end.equalTo(other.end) &&
-            this.control1.equalTo(other.control1) &&
-            this.control2.equalTo(other.control2)
+            this.control1.equalTo(other.control1)
     }
 
     /**
@@ -186,7 +178,7 @@ export class Bezier extends Shape<Bezier> {
      * Returns new curve with swapped start and end points
      */
     reverse() {
-        return new Bezier(this.end, this.control2, this.control1, this.start);
+        return new Quadratic(this.end, this.control1, this.start);
     }
 
     /**
@@ -194,11 +186,11 @@ export class Bezier extends Shape<Bezier> {
      * if point is inside segment. Returns clone of this segment if query point is incident
      * to start or end point of the segment. Returns empty array if point does not belong to segment
      */
-    split(_point: Point): (Bezier | null)[] {
+    split(_point: Point): (Quadratic | null)[] {
         throw new Error('unimplemented')
     }
 
-    splitAtLength(length: number): (Bezier | null)[] {
+    splitAtLength(length: number): (Quadratic | null)[] {
         if (Utils.EQ_0(length))
             return [null, this.clone()];
 
@@ -233,18 +225,14 @@ export class Bezier extends Shape<Bezier> {
         // https://stackoverflow.com/questions/18655135/divide-bezier-curve-into-two-equal-halves
         const A = this.start
         const B = this.control1
-        const C = this.control2
-        const D = this.end
-        const E = pointAtRatio(A, B, t)
-        const F = pointAtRatio(B, C, t)
-        const G = pointAtRatio(C, D, t)
-        const H = pointAtRatio(E, F, t)
-        const J = pointAtRatio(F, G, t)
-        const K = pointAtRatio(H, J, t)
+        const C = this.end
+        const D = pointAtRatio(A, B, t)
+        const E = pointAtRatio(B, C, t)
+        const F = pointAtRatio(D, E, t)
 
         return [
-            new Bezier(A, E, H, K),
-            new Bezier(K, J, G, D),
+            new Quadratic(A, D, F),
+            new Quadratic(F, E, C),
         ]
     }
 
@@ -290,11 +278,10 @@ export class Bezier extends Shape<Bezier> {
     /**
      * Return new segment transformed using affine transformation matrix
      */
-    transform(matrix = new geom.Matrix()): Bezier {
-        return new Bezier(
+    transform(matrix: Matrix): Quadratic {
+        return new Quadratic(
             this.start.transform(matrix),
             this.control1.transform(matrix),
-            this.control2.transform(matrix),
             this.end.transform(matrix),
         )
     }
@@ -303,7 +290,7 @@ export class Bezier extends Shape<Bezier> {
      * Returns true if segment start is equal to segment end up to DP_TOL
      */
     isZeroLength(): boolean {
-        return this.start.equalTo(this.end) && this.start.equalTo(this.control1) && this.start.equalTo(this.control2)
+        return this.start.equalTo(this.end) && this.start.equalTo(this.control1)
     }
 
     get name() {
@@ -333,10 +320,9 @@ function getSegmentDistance(shape: Shape): (s: Segment, o: any) => [number, Segm
     throw new Error('unimplemented')
 }
 
-
 /**
- * Shortcut method to create new bezier
+ * Shortcut method to create new quadratic
  */
-export const bezier = (...args) =>
+export const quadratic = (...args) =>
     // @ts-ignore
-    new Bezier(...args);
+    new Quadratic(...args);

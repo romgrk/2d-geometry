@@ -16,6 +16,7 @@ ORIGIN_POINT.y = 0
 export enum ShapeTag {
     Arc,
     Bezier,
+    Quadratic,
     Box,
     Circle,
     Line,

@@ -1,13 +1,14 @@
 import { convertToString } from '../utils/attributes'
-import { Arc } from './Arc'
+import type { Arc } from './Arc'
+import type { Bezier } from './Bezier'
+import type { Quadratic } from './Quadratic'
 import { Box } from './Box'
-import { Bezier } from './Bezier'
 import { Matrix } from './Matrix'
 import { Point } from './Point'
 import { Segment } from './Segment'
 import { Shape, ShapeTag } from './Shape'
 
-type Part = Segment | Arc | Bezier
+type Part = Segment | Arc | Bezier | Quadratic
 
 /**
  * Class representing a path
@@ -51,7 +52,7 @@ export class Path extends Shape<Path> {
      * The bounding box
      */
     get box() {
-        return (this._box ??= this.parts.reduce((acc, p) => acc = acc.merge(p.box), new Box()))
+        return (this._box ??= this.parts.reduce((acc, p) => acc = acc.merge(p.box), Box.EMPTY))
     }
 
     clone() {
@@ -84,7 +85,7 @@ export class Path extends Shape<Path> {
     /**
      * Return new segment transformed using affine transformation matrix
      */
-    transform(matrix = new Matrix()) {
+    transform(matrix: Matrix) {
         return new Path(this.parts.map(p => p.transform(matrix)))
     }
 
