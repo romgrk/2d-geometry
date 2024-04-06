@@ -14,20 +14,18 @@ ORIGIN_POINT.x = 0
 ORIGIN_POINT.y = 0
 
 export enum ShapeTag {
+    Box,
+    Circle,
+    Segment,
     Arc,
     Bezier,
     Quadratic,
-    Box,
-    Circle,
-    Line,
-    Matrix,
-    Multiline,
     Path,
+    Ray,
+    Line,
+    Multiline,
     Point,
     Polygon,
-    Ray,
-    Segment,
-    Shape,
     Vector,
 }
 

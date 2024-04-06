@@ -48,9 +48,13 @@ const CHAR = {
 
 }
 
-export function parsePath(description: string) {
-  const result = [new Path([])]
-  let parts = result[result.length - 1].parts
+type Options = {
+  split?: boolean
+}
+
+export function parsePath(description: string, options: Options = {}) {
+  const allParts = [[]]
+  let parts = allParts[allParts.length - 1]
   let current = new Point()
   let anchor = current
   let lastBezier = undefined as undefined | Bezier
@@ -157,8 +161,10 @@ export function parsePath(description: string) {
       case CHAR.z: {
         const end = anchor.clone()
         parts.push(new Segment(current.clone(), end))
-        result.push(new Path([]))
-        parts = result[result.length - 1].parts
+        if (options.split !== false) {
+          allParts.push([])
+          parts = allParts[allParts.length - 1]
+        }
         current = end
         break
       }
@@ -275,5 +281,5 @@ export function parsePath(description: string) {
     skipSeparator()
   }
 
-  return result
+  return allParts.map(parts => new Path(parts))
 }

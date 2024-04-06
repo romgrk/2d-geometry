@@ -6,4 +6,4 @@ export * from './algorithms/distance';
 export * from './algorithms/intersection';
 export * from './algorithms/ray_shooting';
 
-export * as svg from './svg'
+export * as SVG from './svg'

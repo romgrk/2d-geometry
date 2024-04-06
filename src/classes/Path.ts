@@ -33,11 +33,25 @@ export class Path extends Shape<Path> {
     private _length: number
     private _box: Box | null
 
+    /**
+     * Path constructor.
+     * PERF: The `.start` point of each part will be set to a reference to the previous part
+     * `.end` point if both are equal. This allows faster rendering.
+     */
     constructor(parts: Part[]) {
         super()
         this.parts = parts
         this._length = NaN
         this._box = null
+
+        let previous = parts[0]
+        for (let i = 1; i < parts.length; i++) {
+            const current = parts[i]
+            if (current.start.equalTo(previous.end)) {
+                current.start = previous.end
+            }
+            previous = current
+        }
     }
 
     get tag() {

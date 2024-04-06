@@ -35,6 +35,9 @@ export class Arc extends Shape<Arc> {
      */
     counterClockwise: boolean
 
+    _start: Point | null
+    _end: Point | null
+
     constructor(arc: Arc)
     constructor(pc: Point, r: number, startAngle: number, endAngle: number, ccw?: boolean)
     constructor(a?: unknown, b?: unknown, c?: unknown, d?: unknown, e?: unknown) {
@@ -43,6 +46,8 @@ export class Arc extends Shape<Arc> {
         this.r = NaN;
         this.startAngle = NaN;
         this.endAngle = NaN;
+        this._start = null
+        this._end = null
 
         this.r = 1;
         this.startAngle = 0;
@@ -132,17 +137,17 @@ export class Arc extends Shape<Arc> {
      * Get start point of arc
      */
     get start(): Point {
-        let p0 = new Point(this.pc.x + this.r, this.pc.y);
-        return p0.rotate(this.startAngle, this.pc) as Point;
+        return this._start ??= new Point(this.pc.x + this.r, this.pc.y).rotate(this.startAngle, this.pc);
     }
+    set start(p: Point) { this._start = p }
 
     /**
      * Get end point of arc
      */
     get end() {
-        let p0 = new Point(this.pc.x + this.r, this.pc.y);
-        return p0.rotate(this.endAngle, this.pc) as Point;
+        return this._end ??= new Point(this.pc.x + this.r, this.pc.y).rotate(this.endAngle, this.pc);
     }
+    set end(p: Point) { this._end = p }
 
     get vertices() {
         return [this.start, this.end];
@@ -490,6 +495,6 @@ export class Arc extends Shape<Arc> {
 
 /**
  * Function to create arc equivalent to "new" constructor
- * @param args
  */
-export const arc = (...args) => new geom.Arc(...args);
+export const arc = (pc: Point, r: number, startAngle: number, endAngle: number, ccw?: boolean) =>
+    new Arc(pc, r, startAngle, endAngle, ccw)
