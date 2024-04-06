@@ -168,26 +168,9 @@ export class Multiline extends LinkedList<any> {
     /**
      * This method returns an object that defines how data will be
      * serialized when called JSON.stringify() method
-     * @returns {Object}
      */
     toJSON() {
         return this.edges.map(edge => edge.toJSON());
-    }
-
-    /**
-     * Return string to draw multiline in svg
-     * @param attrs  - an object with attributes for svg path element
-     * TODO: support semi-infinite Ray and infinite Line
-     * @returns {string}
-     */
-    svg(attrs = {}) {
-        let svgStr = `\n<path ${convertToString({fill: "none", ...attrs})} d="`;
-        svgStr += `\nM${this.first.start.x},${this.first.start.y}`;
-        for (let edge of this) {
-            svgStr += edge.svg();
-        }
-        svgStr += `" >\n</path>`;
-        return svgStr;
     }
 }
 

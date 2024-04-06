@@ -1,6 +1,5 @@
 import * as geom from './index'
 import {Arc} from './Arc';
-import {Box} from './Box';
 import {Point} from './Point';
 import {Segment} from './Segment';
 import { Shape, ShapeTag } from './Shape';

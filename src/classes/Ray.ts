@@ -199,22 +199,6 @@ export class Ray extends Shape<Ray> {
             this.norm.clone()
         )
     }
-
-    /**
-     * Return string to draw svg segment representing ray inside given box
-     * @param {Box} box Box representing drawing area
-     * @param {Object} attrs - an object with attributes of svg segment element
-     */
-    svg(box, attrs = {}) {
-        let line = new geom.Line(this.pt, this.norm);
-        let ip = Intersection.intersectLine2Box(line, box);
-        ip = ip.filter( pt => this.contains(pt) );
-        if (ip.length === 0 || ip.length === 2)
-            return "";
-        let segment = new geom.Segment(this.pt, ip[0]);
-        return segment.svg(attrs);
-    }
-
 }
 
 export const ray = (...args) => new geom.Ray(...args);

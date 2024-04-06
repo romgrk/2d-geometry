@@ -3,6 +3,7 @@ import Errors from '../utils/errors'
 import * as Distance from '../algorithms/distance';
 import * as Utils from '../utils/utils'
 import * as geom from './index'
+import type { Matrix } from './Matrix';
 import { Shape, ShapeTag } from './Shape';
 import { Point } from './Point';
 import { Vector, vector } from './Vector';
@@ -303,10 +304,9 @@ export class Line extends Shape<Line> {
 
     /**
      * Return new line transformed by affine transformation matrix
-     * @param {Matrix} m - affine transformation matrix (a,b,c,d,tx,ty)
-     * @returns {Line}
+     * @param m - affine transformation matrix (a,b,c,d,tx,ty)
      */
-    transform(m) {
+    transform(m: Matrix) {
         return new Line(
             this.pt.transform(m),
             this.norm.clone()
@@ -333,22 +333,6 @@ export class Line extends Shape<Line> {
 
     get name() {
         return "line"
-    }
-
-    /**
-     * Return string to draw svg segment representing line inside given box
-     * @param {Box} box Box representing drawing area
-     * @param {Object} attrs - an object with attributes of svg circle element
-     */
-    svg(box, attrs = {}) {
-        let ip = Intersection.intersectLine2Box(this, box);
-        if (ip.length === 0)
-            return "";
-        let ps = ip[0];
-        let pe = ip.length === 2 ? ip[1] : ip.find(pt => !pt.equalTo(ps));
-        if (pe === undefined) pe = ps;
-        let segment = new geom.Segment(ps, pe);
-        return segment.svg(attrs);
     }
 
     static points2norm(pt1, pt2) {

@@ -1,6 +1,6 @@
 import CircularLinkedList from '../data_structures/circular_linked_list';
 import * as Utils from '../utils/utils'
-import {CCW, ORIENTATION} from '../utils/constants';
+import { CCW, ORIENTATION } from '../utils/constants';
 import * as geom from './index'
 import { Box } from './Box';
 import type { Polygon } from './Polygon';
@@ -469,7 +469,6 @@ export class Face extends CircularLinkedList<any> {
 
     /**
      * Returns new polygon created from one face
-     * @returns {Polygon}
      */
     toPolygon() {
         return new geom.Polygon(this.shapes);
@@ -478,17 +477,4 @@ export class Face extends CircularLinkedList<any> {
     toJSON() {
         return this.edges.map(edge => edge.toJSON());
     }
-
-    /**
-     * Returns string to be assigned to "d" attribute inside defined "path"
-     */
-    svg(): string {
-        let svgStr = `\nM${this.first.start.x},${this.first.start.y}`;
-        for (let edge of this) {
-            svgStr += edge.svg();
-        }
-        svgStr += ` z`;
-        return svgStr;
-    }
-
 }

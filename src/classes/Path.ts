@@ -1,4 +1,3 @@
-import { convertToString } from '../utils/attributes'
 import type { Arc } from './Arc'
 import type { Bezier } from './Bezier'
 import type { Quadratic } from './Quadratic'
@@ -178,29 +177,4 @@ export class Path extends Shape<Path> {
 
         return new Path(newParts)
     }
-
-    /**
-     * Get the SVGPath "d" attribute
-     */
-    toSVG() {
-        const start = this.pointAtLength(0)
-
-        let result = `M${start.x},${start.y} `
-
-        for (const part of this.parts) {
-            if (part instanceof Segment) {
-                result += `L${part.end.x},${part.end.y}`
-            } else {
-            throw new Error('unreachable')
-            }
-        }
-
-        return result
-    }
-
-    svg(attrs: Record<any, any> = {}) {
-        return (
-            `<path d="${this.toSVG()}" ${convertToString({fill: "none", ...attrs})} />`
-        );
-    };
 }

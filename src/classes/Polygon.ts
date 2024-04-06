@@ -11,14 +11,12 @@ import {
 import {Multiline} from "./Multiline";
 import {intersectEdge2Line} from "../algorithms/intersection";
 import {INSIDE, BOUNDARY} from "../utils/constants";
-import {convertToString} from "../utils/attributes";
 import { PlanarSet } from '../data_structures/PlanarSet';
 import * as geom from '../classes'
 import type { Box } from '../classes/Box';
-import type { Shape } from '../classes/Shape';
 import type { Segment } from '../classes/Segment';
-import type { Vector } from '../classes/Vector';
-import { ShapeTag } from './Shape'
+import { Vector } from '../classes/Vector';
+import { Shape, ShapeTag } from './Shape'
 
 const isPointLike = (n: any): n is [number, number] =>
     Array.isArray(n) && n.length === 2 && typeof n[0] === 'number' && typeof n[1] === 'number'
@@ -31,7 +29,7 @@ const isPoints = (e: any): e is [number, number][] => Array.isArray(e) && e.ever
  * Face, in turn, is a closed loop of [edges]{@link geom.Edge}, where edge may be segment or circular arc<br/>
  * @type {Polygon}
  */
-export class Polygon {
+export class Polygon extends Shape<Polygon> {
     static EMPTY = Object.freeze(new Polygon([]));
 
     /**
@@ -56,6 +54,7 @@ export class Polygon {
      * @param {args} - array of shapes or array of arrays
      */
     constructor(arg?: any) {
+        super()
         this.faces = new PlanarSet();
         this.edges = new PlanarSet();
 
@@ -129,7 +128,7 @@ export class Polygon {
         for (let face of this.faces) {
             polygon.addFace(face.shapes);
         }
-        return polygon;
+        return polygon as any;
     }
 
     /**
@@ -621,7 +620,8 @@ export class Polygon {
     /**
      * Returns new polygon translated by vector vec
      */
-    translate(vec: Vector) {
+    translate(a: unknown, b?: unknown) {
+        const vec = new Vector(a, b)
         const newPolygon = new Polygon();
         for (let face of this.faces) {
             newPolygon.addFace(face.shapes.map(shape => shape.translate(vec)));
@@ -651,7 +651,7 @@ export class Polygon {
      * @param {number} sy - y-axis scaling factor
      * @returns {Polygon}
      */
-    scale(sx, sy) {
+    scale(sx: unknown, sy?: unknown) {
         let newPolygon = new Polygon();
         for (let face of this.faces) {
             newPolygon.addFace(face.shapes.map(shape => shape.scale(sx, sy)));
@@ -675,10 +675,9 @@ export class Polygon {
     /**
      * This method returns an object that defines how data will be
      * serialized when called JSON.stringify() method
-     * @returns {Object}
      */
     toJSON() {
-        return [...this.faces].map(face => face.toJSON());
+        return { name: this.name, faces: [...this.faces].map(face => face.toJSON()) };
     }
 
     /**
@@ -687,20 +686,6 @@ export class Polygon {
      */
     toArray() {
         return [...this.faces].map(face => face.toPolygon());
-    }
-
-    /**
-     * Return string to draw polygon in svg
-     * @param attrs  - an object with attributes for svg path element
-     * @returns {string}
-     */
-    svg(attrs = {}) {
-        let svgStr = `\n<path ${convertToString({fillRule: "evenodd", fill: "lightcyan", ...attrs})} d="`;
-        for (let face of this.faces) {
-            svgStr += face.svg();
-        }
-        svgStr += `" >\n</path>`;
-        return svgStr;
     }
 }
 

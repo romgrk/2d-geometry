@@ -1,4 +1,3 @@
-import {convertToString} from "../utils/attributes";
 import Errors from '../utils/errors'
 import { Matrix } from './Matrix'
 import { Point } from './Point'
@@ -241,18 +240,6 @@ export class Box extends Shape<Box> {
         return transformed_points.reduce(
             (new_box, pt) => new_box.merge(pt.box), new Box())
     }
-
-    /**
-     * Return string to draw box in svg
-     * @param {Object} attrs - an object with attributes of svg rectangle element
-     * @returns {string}
-     */
-    svg(attrs = {}) {
-        const width = this.xmax - this.xmin;
-        const height = this.ymax - this.ymin;
-        return `\n<rect x="${this.xmin}" y="${this.ymin}" width=${width} height=${height}
-                ${convertToString({fill: "none", ...attrs})} />`;
-    };
 }
 
 /**

@@ -2,9 +2,9 @@
   "name": "2d-geometry",
   "version": "2.1.0",
   "description": "Performant & ergonomic 2D geometry in typescript",
-  "main": "dist/index.js",
-  "module": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "index.js",
+  "module": "index.js",
+  "types": "index.d.ts",
   "type": "module",
   "sideEffects": false,
   "scripts": {
@@ -15,6 +15,10 @@
     "generate-docs": "jsdoc -c ./.jsdoc.json --verbose",
     "create-patch": "npm version patch && git push —-tags origin master",
     "publish-npm": "npm publish --access public"
+  },
+  "exports": {
+    ".": "./dist/index.js",
+    "./svg": "./dist/svg/index.js"
   },
   "repository": {
     "type": "git",

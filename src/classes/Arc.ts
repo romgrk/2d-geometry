@@ -3,7 +3,6 @@ import * as Distance from '../algorithms/distance';
 import { PlanarSet } from '../data_structures/PlanarSet';
 import * as Utils from '../utils/utils'
 import * as Intersection from '../algorithms/intersection';
-import {convertToString} from '../utils/attributes';
 import * as geom from './index'
 import { Point } from './Point';
 import { Shape, ShapeTag } from './Shape'
@@ -472,23 +471,6 @@ export class Arc extends Shape<Arc> {
 
     get name() {
         return 'arc'
-    }
-
-    /**
-     * Return string to draw arc in svg
-     */
-    svg(attrs: object = {}) {
-        let largeArcFlag = this.sweep <= Math.PI ? "0" : "1";
-        let sweepFlag = this.counterClockwise ? "1" : "0";
-
-        if (Utils.EQ(this.sweep, TAU)) {
-            let circle = new geom.Circle(this.pc, this.r);
-            return circle.svg(attrs);
-        } else {
-            return `\n<path d="M${(this.start as any).x},${this.start.y}
-                             A${this.r},${this.r} 0 ${largeArcFlag},${sweepFlag} ${this.end.x},${this.end.y}"
-                    ${convertToString({fill: "none", ...attrs})} />`
-        }
     }
 
 }

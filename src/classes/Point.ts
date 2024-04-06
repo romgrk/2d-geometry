@@ -222,24 +222,6 @@ export class Point extends Shape<Point> {
         }
         return shape.contains(this)
     }
-
-    /**
-     * Return string to draw point in svg as circle with radius "r" <br/>
-     * Accept any valid attributes of svg elements as svg object
-     * Defaults attribues are: <br/>
-     * {
-     *    r:"3",
-     *    stroke:"black",
-     *    strokeWidth:"1",
-     *    fill:"red"
-     * }
-     * @param attrs - Any valid attributes of svg circle element, like "r", "stroke", "strokeWidth", "fill"
-     */
-    svg(attrs: Record<string, string> = {}): string {
-        const r = attrs.r ?? 3            // default radius - 3
-        return `\n<circle cx="${this.x}" cy="${this.y}" r="${r}"
-            ${convertToString({fill: "red", ...attrs})} />`;
-    }
 }
 
 export const point= (a: any, b: any) => new Point(a, b);

@@ -330,21 +330,9 @@ export class Segment extends Shape<Segment> {
         const line = new geom.Line(this.start, this.end);
         return line.sortPoints(pts);
     }
-
-    /**
-     * Return string to draw segment in svg
-     * @param attrs - an object with attributes for svg path element,
-     * like "stroke", "strokeWidth" <br/>
-     * Defaults are stroke:"black", strokeWidth:"1"
-     */
-    svg(attrs: object = {}): string {
-        return `\n<line x1="${this.start.x}" y1="${this.start.y}" x2="${this.end.x}" y2="${this.end.y}" ${convertToString(attrs)} />`;
-    }
 }
 
 /**
  * Shortcut method to create new segment
  */
-export const segment = (...args) =>
-    // @ts-ignore
-    new geom.Segment(...args);
+export const segment = (x1: number, y1: number, x2: number, y2: number) => new Segment(x1, y1, x2, y2);

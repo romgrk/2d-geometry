@@ -1,6 +1,5 @@
 import { Position, Overlap } from "../utils/constants";
-import * as Utils from '../utils/utils'
-import {ray_shoot} from "../algorithms/ray_shooting";
+import { ray_shoot } from "../algorithms/ray_shooting";
 import { Arc, Face, Line, Ray } from './index';
 import type { Point } from './Point';
 import { Segment } from './Segment';
@@ -197,31 +196,6 @@ export class Edge {
         /* Do not update overlap flag if already set on previous chain */
         if (this.overlap === undefined) this.overlap = flag;
         if (edge.overlap === undefined) edge.overlap = flag;
-    }
-
-    svg() {
-        if (this.shape instanceof Segment) {
-            return ` L${this.shape.end.x},${this.shape.end.y}`;
-        } else if (this.shape instanceof Arc) {
-            const arc = this.shape;
-            const sweepFlag = arc.counterClockwise ? "1" : "0";
-
-            // Draw full circe arc as special case: split it into two half-circles
-            if (Utils.EQ(arc.sweep, 2 * Math.PI)) {
-                const sign = arc.counterClockwise ? 1 : -1;
-                const halfArc1 = new Arc(arc.pc, arc.r, arc.startAngle, arc.startAngle + sign * Math.PI, arc.counterClockwise);
-                const halfArc2 = new Arc(arc.pc, arc.r, arc.startAngle + sign * Math.PI, arc.endAngle, arc.counterClockwise);
-
-                const largeArcFlag = "0";
-
-                return ` A${halfArc1.r},${halfArc1.r} 0 ${largeArcFlag},${sweepFlag} ${halfArc1.end.x},${halfArc1.end.y}
-                    A${halfArc2.r},${halfArc2.r} 0 ${largeArcFlag},${sweepFlag} ${halfArc2.end.x},${halfArc2.end.y}`
-            } else {
-                const largeArcFlag = arc.sweep <= Math.PI ? "0" : "1";
-
-                return ` A${arc.r},${arc.r} 0 ${largeArcFlag},${sweepFlag} ${arc.end.x},${arc.end.y}`;
-            }
-        }
     }
 
     toJSON() {

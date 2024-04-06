@@ -91,8 +91,4 @@ export abstract class Shape<T = unknown> {
     toJSON(): { name: string } & Record<string, any> {
         return Object.assign({}, this, { name: this.name });
     }
-
-    svg(_attrs: object = {}) {
-        throw(Errors.CANNOT_INVOKE_ABSTRACT_METHOD);
-    }
 }

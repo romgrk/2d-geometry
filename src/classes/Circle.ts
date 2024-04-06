@@ -207,14 +207,6 @@ export class Circle extends Shape<Circle> {
         }
     }
 
-    /**
-     * Return string to draw circle in svg
-     */
-    svg(attrs: object = {}): string {
-        return `\n<circle cx="${this.pc.x}" cy="${this.pc.y}" r="${this.r}"
-                ${convertToString({fill: "none", ...attrs})} />`;
-    }
-
 }
 
 /**
