@@ -4,7 +4,7 @@ import { Bezier } from './classes/Bezier'
 import { Point } from './classes/Point'
 import { Vector } from './classes/Vector'
 import { Segment } from './classes/Segment'
-import { Path, Part } from './classes/Path'
+import { Path } from './classes/Path'
 import { TAU } from './utils/constants'
 
 const c = (s: string) => s.charCodeAt(0)
