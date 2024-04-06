@@ -1,102 +1,59 @@
 import DE9IM from "../data_structures/de9im";
 import * as k from '../utils/constants'
 import {
-    intersectLine2Arc,
     intersectLine2Box,
     intersectLine2Circle,
     intersectLine2Line,
     intersectLine2Polygon,
-    intersectSegment2Line,
-    intersectPolygon2Polygon,
     intersectShape2Polygon,
-    intersectCircle2Circle
 } from "./intersection";
 import {ray_shoot} from "./ray_shooting";
 import * as BooleanOperations from "./boolean_op";
-import {Multiline} from "../classes/Multiline";
+import type { Shape } from "../classes/Shape";
+import { Multiline } from "../classes/Multiline";
 import * as geom from '../classes'
 
 /**
  * Returns true if shapes are topologically equal:  their interiors intersect and
  * no part of the interior or boundary of one geometry intersects the exterior of the other
- * @param shape1
- * @param shape2
- * @returns {boolean}
  */
-export function equal(shape1, shape2) {
-    return relate(shape1, shape2).equal();
-}
+export function equal(a: Shape, b: Shape) { return relate(a, b).equal() }
 
 /**
  * Returns true if shapes have at least one point in common, same as "not disjoint"
- * @param shape1
- * @param shape2
- * @returns {boolean}
  */
-export function intersect(shape1, shape2) {
-    return relate(shape1, shape2).intersect();
-}
+export function intersect(a: Shape, b: Shape) { return relate(a, b).intersect() }
 
 /**
  * Returns true if shapes have at least one point in common, but their interiors do not intersect
- * @param shape1
- * @param shape2
- * @returns {boolean}
  */
-export function touch(shape1, shape2) {
-    return relate(shape1, shape2).touch();
-}
+export function touch(a: Shape, b: Shape) { return relate(a, b).touch() }
 
 /**
  * Returns true if shapes have no points in common neither in interior nor in boundary
- * @param shape1
- * @param shape2
- * @returns {boolean}
  */
-export function disjoint(shape1, shape2) {
-    return !intersect(shape1, shape2);
-}
+export function disjoint(a: Shape, b: Shape) { return !intersect(a, b) }
 
 /**
- * Returns true shape1 lies in the interior of shape2
- * @param shape1
- * @param shape2
- * @returns {boolean}
+ * Returns true a lies in the interior of b
  */
-export function inside(shape1, shape2) {
-    return relate(shape1, shape2).inside();
-}
+export function inside(a: Shape, b: Shape) { return relate(a, b).inside() }
 
 /**
- * Returns true if every point in shape1 lies in the interior or on the boundary of shape2
- * @param shape1
- * @param shape2
- * @returns {boolean}
+ * Returns true if every point in a lies in the interior or on the boundary of b
  */
-export function covered(shape1, shape2) {
-    return  relate(shape1, shape2).covered();
-}
+export function covered(a: Shape, b: Shape) { return  relate(a, b).covered() }
 
 /**
- * Returns true shape1's interior contains shape2 <br/>
- * Same as inside(shape2, shape1)
- * @param shape1
- * @param shape2
- * @returns {boolean}
+ * Returns true a's interior contains b <br/>
+ * Same as inside(b, a)
  */
-export function contain(shape1, shape2) {
-    return inside(shape2, shape1);
-}
+export function contain(a: Shape, b: Shape) { return inside(b, a) }
 
 /**
- * Returns true shape1's cover shape2, same as shape2 covered by shape1
- * @param shape1
- * @param shape2
- * @returns {boolean}
+ * Returns true a's cover b, same as b covered by a
  */
-export function cover(shape1, shape2) {
-    return covered(shape2, shape1);
-}
+export function cover(a: Shape, b: Shape) { return covered(b, a) }
 
 /**
  * Returns relation between two shapes as intersection 3x3 matrix, where each
@@ -104,11 +61,8 @@ export function cover(shape1, shape2) {
  * If there is no intersection, element contains empty array
  * If intersection is irrelevant it left undefined. (For example, intersection
  * between two exteriors is usually irrelevant)
- * @param shape1
- * @param shape2
- * @returns {DE9IM}
  */
-export function relate(shape1, shape2) {
+export function relate(shape1: Shape, shape2: Shape) {
     if (shape1 instanceof geom.Line && shape2 instanceof geom.Line) {
         return relateLine2Line(shape1,  shape2);
     }

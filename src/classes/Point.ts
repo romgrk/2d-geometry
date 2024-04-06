@@ -1,10 +1,10 @@
 import Errors from '../utils/errors';
-import {convertToString} from '../utils/attributes';
 import * as Distance from '../algorithms/distance';
 import * as Utils from '../utils/utils';
 import * as geom from './index'
 import type { Line } from './Line';
 import type { Matrix } from './Matrix';
+import type { Segment } from './Segment';
 import { Shape, ShapeTag } from './Shape';
 
 export type PointLike = {
@@ -41,29 +41,29 @@ export class Point extends Shape<Point> {
         const argsLength = +(a !== undefined) + +(b !== undefined)
 
         if (argsLength === 0) {
-            return;
+            return
         }
 
         if (argsLength === 1 && a instanceof Array) {
-            this.x = a[0];
-            this.y = a[1];
-            return;
+            this.x = a[0]
+            this.y = a[1]
+            return
         }
 
         if (argsLength === 1) {
-            let { x, y } = a as PointLike;
-            this.x = x;
-            this.y = y;
-            return;
+            let { x, y } = a as PointLike
+            this.x = x
+            this.y = y
+            return
         }
 
         if (argsLength === 2) {
-            this.x = a as number;
-            this.y = b as number;
-            return;
+            this.x = a as number
+            this.y = b as number
+            return
         }
 
-        throw Errors.ILLEGAL_PARAMETERS;
+        throw Errors.ILLEGAL_PARAMETERS
     }
 
     /**
@@ -173,11 +173,11 @@ export class Point extends Shape<Point> {
 
     /**
      * Calculate distance and shortest segment from point to shape and return as array [distance, shortest segment]
-     * @param {Shape} shape Shape of the one of supported types Point, Line, Circle, Segment, Arc, Polygon or Planar Set
-     * @returns {number} distance from point to shape
-     * @returns {Segment} shortest segment between point and shape (started at point, ended at shape)
+     * @param shape Shape of the one of supported types Point, Line, Circle, Segment, Arc, Polygon or Planar Set
+     * @returns distance from point to shape
+     * @returns shortest segment between point and shape (started at point, ended at shape)
      */
-    distanceTo(shape) {
+    distanceTo(shape: Shape): [number, Segment] {
         if (shape instanceof Point) {
             let dx = shape.x - this.x;
             let dy = shape.y - this.y;

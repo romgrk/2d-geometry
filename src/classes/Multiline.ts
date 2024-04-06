@@ -1,5 +1,4 @@
 import LinkedList from '../data_structures/linked_list';
-import {convertToString} from "../utils/attributes";
 import * as geom from './index'
 import type { Shape } from './Shape';
 
@@ -53,7 +52,6 @@ export class Multiline extends LinkedList<any> {
 
     /**
      * (Getter) Returns array of vertices
-     * @returns {Point[]}
      */
     get vertices() {
         let v = this.edges.map(edge => edge.start);
@@ -63,7 +61,6 @@ export class Multiline extends LinkedList<any> {
 
     /**
      * Return new cloned instance of Multiline
-     * @returns {Multiline}
      */
     clone() {
         return new Multiline(this.toShapes());
@@ -71,11 +68,10 @@ export class Multiline extends LinkedList<any> {
 
     /**
      * Split edge and add new vertex, return new edge inserted
-     * @param {Point} pt - point on edge that will be added as new vertex
-     * @param {Edge} edge - edge to split
-     * @returns {Edge}
+     * @param pt - point on edge that will be added as new vertex
+     * @param edge - edge to split
      */
-    addVertex(pt, edge) {
+    addVertex(pt: geom.Point, edge: geom.Edge) {
         let shapes = edge.shape.split(pt);
         // if (shapes.length < 2) return;
 

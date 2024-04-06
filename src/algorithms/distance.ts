@@ -6,12 +6,9 @@ import { IntervalTree } from '../data_structures/interval-tree';
 
 /**
  * Calculate distance and shortest segment between points
- * @param pt1
- * @param pt2
- * @returns {Number | Segment} - distance and shortest segment
  */
-export function point2point(pt1, pt2): [number, geom.Segment] {
-    return pt1.distanceTo(pt2);
+export function point2point(a: geom.Point, b: geom.Point): [number, geom.Segment] {
+    return a.distanceTo(b);
 }
 
 /**
