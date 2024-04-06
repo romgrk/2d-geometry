@@ -4,6 +4,7 @@ import * as geom from './index'
 import { Shape, ShapeTag } from './Shape';
 import { Matrix } from './Matrix';
 import { Point } from './Point';
+import { TAU } from '../utils/constants';
 
 /**
  * Class representing a vector
@@ -106,11 +107,10 @@ export class Vector extends Shape<Vector> {
 
     /**
      * Slope of the vector in radians from 0 to 2PI
-     * @returns {number}
      */
     get slope() {
         let angle = Math.atan2(this.y, this.x);
-        if (angle < 0) angle = 2 * Math.PI + angle;
+        if (angle < 0) angle = TAU + angle;
         return angle;
     }
 
@@ -199,7 +199,6 @@ export class Vector extends Shape<Vector> {
 
     /**
      * Returns vector rotated 90 degrees counterclockwise
-     * @returns {Vector}
      */
     rotate90CCW() {
         return new Vector(-this.y, this.x);
@@ -207,7 +206,6 @@ export class Vector extends Shape<Vector> {
 
     /**
      * Returns vector rotated 90 degrees clockwise
-     * @returns {Vector}
      */
     rotate90CW() {
         return new Vector(this.y, -this.x);
@@ -215,7 +213,6 @@ export class Vector extends Shape<Vector> {
 
     /**
      * Return inverted vector
-     * @returns {Vector}
      */
     invert() {
         return new Vector(-this.x, -this.y);
@@ -223,19 +220,15 @@ export class Vector extends Shape<Vector> {
 
     /**
      * Return result of addition of other vector to this vector as a new vector
-     * @param {Vector} v Other vector
-     * @returns {Vector}
      */
-    add(v) {
+    add(v: Vector) {
         return new Vector(this.x + v.x, this.y + v.y);
     }
 
     /**
      * Return result of subtraction of other vector from current vector as a new vector
-     * @param {Vector} v Another vector
-     * @returns {Vector}
      */
-    subtract(v) {
+    subtract(v: Vector) {
         return new Vector(this.x - v.x, this.y - v.y);
     }
 
@@ -250,7 +243,7 @@ export class Vector extends Shape<Vector> {
         let norm1 = this.normalize();
         let norm2 = v.normalize();
         let angle = Math.atan2(norm1.cross(norm2), norm1.dot(norm2));
-        if (angle < 0) angle += 2 * Math.PI;
+        if (angle < 0) angle += TAU;
         return angle;
     }
 

@@ -1,23 +1,20 @@
 /**
  * Global constant CCW defines counterclockwise direction of arc
- * @type {boolean}
  */
 export const CCW = true;
 
 /**
  * Global constant CW defines clockwise direction of arc
- * @type {boolean}
  */
 export const CW = false;
 
 /**
  * Defines orientation for face of the polygon: clockwise, counterclockwise
  * or not orientable in the case of self-intersection
- * @type {{CW: number, CCW: number, NOT_ORIENTABLE: number}}
  */
 export const ORIENTATION = {
-    CCW:-1,
-    CW:1,
+    CCW: -1,
+    CW: 1,
     NOT_ORIENTABLE: 0
 };
 

@@ -8,7 +8,7 @@ import { Point } from './Point'
 import { Segment } from './Segment'
 import { Shape, ShapeTag } from './Shape'
 
-type Part = Segment | Arc | Bezier | Quadratic
+export type Part = Segment | Arc | Bezier | Quadratic
 
 /**
  * Class representing a path

@@ -55,7 +55,7 @@ export abstract class Shape<T = unknown> {
     translate(p: { x: number, y: number }): T;
     translate(x: number, y: number): T;
     translate(a: unknown, b?: unknown): T {
-        return this.transform(new Matrix().translate(a as any, b as any))
+        return this.transform(Matrix.IDENTITY.translate(a as any, b as any))
     }
 
     /**
@@ -67,7 +67,7 @@ export abstract class Shape<T = unknown> {
      * @param [center=(0,0)] center
      */
     rotate(angle: number, center: PointLike = ORIGIN_POINT): T {
-        return this.transform(new Matrix().rotate(angle, center.x, center.y));
+        return this.transform(Matrix.IDENTITY.rotate(angle, center.x, center.y));
     }
 
     /**
@@ -76,7 +76,7 @@ export abstract class Shape<T = unknown> {
     scale(s: number): T;
     scale(sx: number, sy: number): T;
     scale(a: unknown, b?: unknown): T {
-        return this.transform(new Matrix().scale(a as number, (b ?? a) as number));
+        return this.transform(Matrix.IDENTITY.scale(a as number, (b ?? a) as number));
     }
 
     transform(_a: unknown): T {

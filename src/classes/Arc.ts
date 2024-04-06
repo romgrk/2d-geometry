@@ -5,7 +5,7 @@ import * as Utils from '../utils/utils'
 import * as Intersection from '../algorithms/intersection';
 import {convertToString} from '../utils/attributes';
 import * as geom from './index'
-import {Point} from './Point';
+import { Point } from './Point';
 import { Shape, ShapeTag } from './Shape'
 
 /**
@@ -19,7 +19,7 @@ export class Arc extends Shape<Arc> {
      */
     pc: Point
     /**
-     * Arc radius
+     * Arc X radius
      */
     r: number
     /**
@@ -35,51 +35,50 @@ export class Arc extends Shape<Arc> {
      */
     counterClockwise: boolean
 
-    /**
-     * @param {Point} pc - arc center
-     * @param {number} r - arc radius
-     * @param {number} startAngle - start angle in radians from 0 to 2*PI
-     * @param {number} endAngle - end angle in radians from 0 to 2*PI
-     * @param {boolean} counterClockwise - arc direction, true - clockwise, false - counterclockwise
-     */
-    constructor(...args) {
+    constructor(arc: Arc)
+    constructor(pc: Point, r: number, startAngle: number, endAngle: number, ccw?: boolean)
+    constructor(a?: unknown, b?: unknown, c?: unknown, d?: unknown, e?: unknown) {
         super()
         this.pc = Point.EMPTY;
         this.r = NaN;
         this.startAngle = NaN;
         this.endAngle = NaN;
+
         this.r = 1;
         this.startAngle = 0;
-        this.endAngle = 2 * Math.PI;
+        this.endAngle = TAU;
         this.counterClockwise = CCW;
 
-        if (args.length === 0)
+        if (a === undefined)
             return;
 
-        if (args.length === 1 && args[0] instanceof Object && args[0].name === "arc") {
-            let {pc, r, startAngle, endAngle, counterClockwise} = args[0];
+        if (a instanceof Object && (a as any).name === "arc") {
+            const { pc, r, startAngle, endAngle, counterClockwise } = a as Arc;
             this.pc = new Point(pc.x, pc.y);
             this.r = r;
             this.startAngle = startAngle;
             this.endAngle = endAngle;
             this.counterClockwise = counterClockwise;
         } else {
-            let [pc, r, startAngle, endAngle, counterClockwise] = [...args];
-            if (pc && pc instanceof Point) this.pc = pc.clone();
-            if (r !== undefined) this.r = r;
-            if (startAngle !== undefined) this.startAngle = startAngle;
-            if (endAngle !== undefined) this.endAngle = endAngle;
-            if (counterClockwise !== undefined) this.counterClockwise = counterClockwise;
+            if (a !== undefined) this.pc = a as Point;
+            if (b !== undefined) this.r = b as number;
+            if (c !== undefined) this.startAngle = c as number;
+            if (d !== undefined) this.endAngle = d as number;
+            if (e !== undefined) this.counterClockwise = e as boolean;
         }
-
-        // throw geom.Errors.ILLEGAL_PARAMETERS; unreachable code
     }
 
     /**
      * Return new cloned instance of arc
      */
     clone() {
-        return new geom.Arc(this.pc.clone(), this.r, this.startAngle, this.endAngle, this.counterClockwise);
+        return new Arc(
+            this.pc.clone(),
+            this.r,
+            this.startAngle,
+            this.endAngle,
+            this.counterClockwise
+        );
     }
 
     get tag() {
@@ -101,7 +100,7 @@ export class Arc extends Shape<Arc> {
     }
 
     /**
-     * Get sweep angle in radians. Sweep angle is non-negative number from 0 to 2*PI
+     * Get sweep angle in radians. Sweep angle is non-negative number from 0 to TAU
      */
     get sweep() {
         if (Utils.EQ(this.startAngle, this.endAngle))
@@ -110,20 +109,22 @@ export class Arc extends Shape<Arc> {
             return TAU;
         }
         let sweep: number;
-        if (this.counterClockwise) {
-            sweep = Utils.GT(this.endAngle, this.startAngle) ?
+        if (!this.counterClockwise) {
+            sweep = this.endAngle > this.startAngle ?
                 this.endAngle - this.startAngle : this.endAngle - this.startAngle + TAU;
         } else {
-            sweep = Utils.GT(this.startAngle, this.endAngle) ?
+            sweep = this.startAngle > this.endAngle ?
                 this.startAngle - this.endAngle : this.startAngle - this.endAngle + TAU;
         }
 
-        if (Utils.GT(sweep, TAU)) {
+        if (sweep > TAU) {
             sweep -= TAU;
         }
-        if (Utils.LT(sweep, 0)) {
+
+        if (sweep < 0) {
             sweep += TAU;
         }
+
         return sweep;
     }
 
@@ -187,8 +188,8 @@ export class Arc extends Shape<Arc> {
         let angle = new geom.Vector(this.pc, pt).slope;
 
         return [
-            new geom.Arc(this.pc, this.r, this.startAngle, angle, this.counterClockwise),
-            new geom.Arc(this.pc, this.r, angle, this.endAngle, this.counterClockwise)
+            new Arc(this.pc, this.r, this.startAngle, angle, this.counterClockwise),
+            new Arc(this.pc, this.r, angle, this.endAngle, this.counterClockwise)
         ]
     }
 
@@ -199,11 +200,13 @@ export class Arc extends Shape<Arc> {
         if (Utils.EQ(length, this.length))
             return [this.clone(), null];
 
-        let angle = this.startAngle + TAU * (length / this.length);
+        const angle = this.startAngle +
+            (this.counterClockwise ? -1 : +1) *
+            this.sweep * (length / this.length);
 
         return [
-            new geom.Arc(this.pc, this.r, this.startAngle, angle, this.counterClockwise),
-            new geom.Arc(this.pc, this.r, angle, this.endAngle, this.counterClockwise)
+            new Arc(this.pc, this.r, this.startAngle, angle, this.counterClockwise),
+            new Arc(this.pc, this.r, angle, this.endAngle, this.counterClockwise)
         ]
     }
 
@@ -212,7 +215,7 @@ export class Arc extends Shape<Arc> {
      */
     middle() {
         let endAngle = this.counterClockwise ? this.startAngle + this.sweep / 2 : this.startAngle - this.sweep / 2;
-        let arc = new geom.Arc(this.pc, this.r, this.startAngle, endAngle, this.counterClockwise);
+        let arc = new Arc(this.pc, this.r, this.startAngle, endAngle, this.counterClockwise);
         return arc.end;
     }
 
@@ -226,7 +229,7 @@ export class Arc extends Shape<Arc> {
         if (length === this.length) return this.end;
         let factor = length / this.length;
         let endAngle = this.counterClockwise ? this.startAngle + this.sweep * factor : this.startAngle - this.sweep * factor;
-        let arc = new geom.Arc(this.pc, this.r, this.startAngle, endAngle, this.counterClockwise);
+        let arc = new Arc(this.pc, this.r, this.startAngle, endAngle, this.counterClockwise);
         return arc.end;
     }
 
@@ -320,7 +323,7 @@ export class Arc extends Shape<Arc> {
      */
     breakToFunctional() {
         let func_arcs_array = [] as Arc[];
-        let angles = [0, Math.PI / 2, 2 * Math.PI / 2, 3 * Math.PI / 2];
+        let angles = [0, Math.PI / 2, TAU / 2, 3 * Math.PI / 2];
         let pts = [
             this.pc.translate(this.r, 0),
             this.pc.translate(0, this.r),
@@ -364,7 +367,7 @@ export class Arc extends Shape<Arc> {
             } else {
                 new_arc = new geom.Arc(this.pc, this.r, this.startAngle, this.endAngle, this.counterClockwise);
             }
-            // It could be 2*PI when occasionally start = 0 and end = 2*PI but this is not valid for breakToFunctional
+            // It could be TAU when occasionally start = 0 and end = TAU but this is not valid for breakToFunctional
             if (!Utils.EQ_0(new_arc.length) && !Utils.EQ(new_arc.sweep, 2*Math.PI)) {
                 func_arcs_array.push(new_arc.clone());
             }
@@ -374,7 +377,6 @@ export class Arc extends Shape<Arc> {
 
     /**
      * Return tangent unit vector in the start point in the direction from start to end
-     * @returns {Vector}
      */
     tangentInStart() {
         let vec = new geom.Vector(this.pc, this.start);
@@ -384,7 +386,6 @@ export class Arc extends Shape<Arc> {
 
     /**
      * Return tangent unit vector in the end point in the direction from end to start
-     * @returns {Vector}
      */
     tangentInEnd() {
         let vec = new geom.Vector(this.pc, this.end);
@@ -394,10 +395,9 @@ export class Arc extends Shape<Arc> {
 
     /**
      * Returns new arc with swapped start and end angles and reversed direction
-     * @returns {Arc}
      */
     reverse() {
-        return new geom.Arc(this.pc, this.r, this.endAngle, this.startAngle, !this.counterClockwise);
+        return new Arc(this.pc, this.r, this.endAngle, this.startAngle, !this.counterClockwise);
     }
 
     /**
@@ -419,7 +419,7 @@ export class Arc extends Shape<Arc> {
         let startAngle = vector(center, start).slope;
         let endAngle = vector(center, end).slope;
         if (Utils.EQ(startAngle, endAngle)) {
-            endAngle += 2 * Math.PI;
+            endAngle += TAU;
             counterClockwise = true;
         }
         let r = vector(center, start).length;
@@ -449,11 +449,9 @@ export class Arc extends Shape<Arc> {
 
     /**
      * Sort given array of points from arc start to end, assuming all points lay on the arc
-     * @param {Point[]} pts array of points
-     * @returns {Point[]} new array sorted
      */
-    sortPoints(pts) {
-        let {vector} = geom;
+    sortPoints(pts: Point[]) {
+        const { vector } = geom;
         return pts.slice().sort( (pt1, pt2) => {
             let slope1 = vector(this.pc, pt1).slope;
             let slope2 = vector(this.pc, pt2).slope;
@@ -468,19 +466,17 @@ export class Arc extends Shape<Arc> {
     }
 
     get name() {
-        return "arc"
+        return 'arc'
     }
 
     /**
      * Return string to draw arc in svg
-     * @param {Object} attrs - an object with attributes of svg path element
-     * @returns {string}
      */
-    svg(attrs = {}) {
+    svg(attrs: object = {}) {
         let largeArcFlag = this.sweep <= Math.PI ? "0" : "1";
         let sweepFlag = this.counterClockwise ? "1" : "0";
 
-        if (Utils.EQ(this.sweep, 2 * Math.PI)) {
+        if (Utils.EQ(this.sweep, TAU)) {
             let circle = new geom.Circle(this.pc, this.r);
             return circle.svg(attrs);
         } else {
