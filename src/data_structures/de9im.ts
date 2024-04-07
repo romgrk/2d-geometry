@@ -74,38 +74,22 @@ class DE9IM {
      * For example, string 'FF**FF****' means 'DISJOINT'
      */
     toString() {
-        return this.m.map( e => {
-            if (e instanceof Array && e.length > 0) {
-                return 'T'
-            }
-            else if (e instanceof Array && e.length === 0) {
-                return 'F'
-            }
-            else {
-                return '*'
-            }
-        }).join('')
+        return this.m.reduce((string, e) => {
+            if (!e) return string + '*'
+            if (e.length > 0) { return string + 'T' }
+            return string + 'F' // e.length === 0
+        }, '')
     }
 
-    equal() {
-        return EQUAL.test(this.toString());
-    }
+    equal() { return EQUAL.test(this.toString()) }
 
-    intersect() {
-        return INTERSECT.test(this.toString());
-    }
+    intersect() { return INTERSECT.test(this.toString()) }
 
-    touch() {
-        return TOUCH.test(this.toString());
-    }
+    touch() { return TOUCH.test(this.toString()) }
 
-    inside() {
-        return INSIDE.test(this.toString());
-    }
+    inside() { return INSIDE.test(this.toString()) }
 
-    covered() {
-        return COVERED.test(this.toString());
-    }
+    covered() { return COVERED.test(this.toString()) }
 }
 
 export default DE9IM;
