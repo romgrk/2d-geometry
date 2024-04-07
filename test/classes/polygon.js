@@ -7,8 +7,8 @@ import Flatten, {matrix} from '../../index';
 
 import {Point, Circle, Line, Segment, Arc, Box, Polygon, Edge, PlanarSet} from '../../index';
 import {point, vector, circle, line, segment, box, multiline} from '../../index';
-import {intersectLine2Polygon, intersectPolygon2Polygon, intersectMultiline2Polygon} from "../../src/algorithms/intersection";
-import * as BooleanOperations from "../../src/algorithms/boolean_op";
+import {intersectLine2Polygon, intersectPolygon2Polygon, intersectMultiline2Polygon} from "../../dist/algorithms/intersection";
+import * as BooleanOperations from "../../dist/algorithms/boolean_op";
 let {unify} = BooleanOperations;
 
 describe('#Flatten.Polygon', function() {

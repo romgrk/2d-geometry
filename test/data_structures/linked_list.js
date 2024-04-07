@@ -2,7 +2,7 @@
 
 import {expect} from 'chai';
 import Flatten from '../../index';
-import LinkedList from '../../src/data_structures/linked_list';
+import LinkedList from '../../dist/data_structures/linked_list';
 
 describe('#LinkedList', function () {
     it('May create new instance of LinkedList', function () {

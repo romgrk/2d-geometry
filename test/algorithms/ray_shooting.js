@@ -3,7 +3,7 @@
 import { expect } from 'chai';
 import Flatten from '../../index';
 import {Polygon, point,circle} from '../../index';
-import {ray_shoot} from "../../src/algorithms/ray_shooting";
+import {ray_shoot} from "../../dist/algorithms/ray_shooting";
 
 describe('#Algorithms.Ray_Shooting', function() {
     it('Function defined', function () {

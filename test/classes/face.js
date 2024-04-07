@@ -3,7 +3,7 @@
  */
 import { expect } from 'chai';
 import Flatten from '../../index';
-import {ray_shoot} from "../../src/algorithms/ray_shooting";
+import {ray_shoot} from "../../dist/algorithms/ray_shooting";
 
 import {Point, Vector, Circle, Line, Segment, Arc, Box, Polygon, Edge, Face, PlanarSet} from '../../index';
 import {point, vector, circle, line, segment, arc} from '../../index';

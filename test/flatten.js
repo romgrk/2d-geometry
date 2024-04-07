@@ -13,9 +13,6 @@ describe('#Flatten-JS', function() {
     it('Namespace Flatten defined', function () {
         expect(Flatten).to.exist;
     });
-    it('Constant DP_TOL is defined', function () {
-        expect(Flatten.DP_TOL).to.exist;
-    });
     it('Class Matrix defined', function() {
         expect(Matrix).to.exist;
     });

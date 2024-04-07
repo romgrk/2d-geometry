@@ -1,7 +1,7 @@
 'use strict';
 
 import { expect } from 'chai';
-import SVGAttributes from "../../src/utils/attributes";
+import SVGAttributes from "../../dist/utils/attributes";
 
 const defaultAttributes = {
     stroke: "black"

@@ -120,7 +120,7 @@ function relateLine2Line(line1, line2) {
     return denim;
 }
 
-function relateLine2Circle(line,circle) {
+function relateLine2Circle(line, circle) {
     let denim = new DE9IM();
     let ip = intersectLine2Circle(line, circle);
     if (ip.length === 0) {

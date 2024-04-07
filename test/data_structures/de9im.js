@@ -1,7 +1,7 @@
 'use strict';
 
 import { expect } from 'chai';
-import DE9IM from '../../src/data_structures/de9im';
+import DE9IM from '../../dist/data_structures/de9im';
 
 describe('#data_structures.DE9IM', function () {
     it('Class DE9IM', function () {

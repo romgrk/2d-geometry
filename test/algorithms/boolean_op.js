@@ -9,13 +9,13 @@ import {expect} from 'chai';
 //import {Polygon} from 'https://unpkg.com/@flatten-js/core';
 //import {point, segment, arc, circle} from 'https://unpkg.com/@flatten-js/core';
 
-import Flatten from '../../dist/index.js';
+import Flatten from '../../index';
 
-// import {Polygon} from '../../index';
-// import {point, circle, segment, arc} from '../../index';
+import {Polygon} from '../../index';
+import {point, circle, segment, arc} from '../../index';
 
 
-import * as BooleanOperations from "../../src/algorithms/boolean_op";
+import * as BooleanOperations from "../../dist/algorithms/boolean_op";
 let {unify, subtract, intersect} = BooleanOperations;
 
 let {equal} = Flatten.Relations;
