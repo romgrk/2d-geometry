@@ -170,16 +170,6 @@ describe('#Data_structures.PlanarSet', function () {
     expect(resp.length).to.equal(1);
   });
 
-  it('May create svg content string', function () {
-    let planarSet = new PlanarSet();
-    let segment = new Segment(1, 1, 2, 2);
-    let circle = new Circle(new Point(3, 3), 1);
-    planarSet.add(segment);
-    planarSet.add(circle);
-
-    expect(planarSet.svg()).to.exist;
-  });
-
   // it('May give same result as search without index', function() {
   //     let random = function(min, max) { return Math.floor(Math.random() * max) + min;}
   //

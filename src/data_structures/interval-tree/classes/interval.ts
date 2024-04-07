@@ -3,7 +3,7 @@
  * *equal*, *less* and method *max(p1, p1)* that returns maximum in a pair.
  * When interval is an object rather than pair of numbers, this object should have properties *low*, *high*, *max*
  * and implement methods *lessThan(), equalTo(), intersect(), not_intersect(), clone(), output()*.
- * Two static methods *comparableMax(), comparable_less_than()* define how to compare values in pair. <br/>
+ * Two static methods *comparableMax(), comparableLessThan()* define how to compare values in pair. <br/>
  * This interface is described in typescript definition file *index.d.ts*
  *
  * Axis aligned rectangle is an example of such interval.
@@ -18,7 +18,7 @@ export default class Interval {
 
     /**
      * Accept two comparable values and creates new instance of interval
-     * Predicate Interval.comparable_less(low, high) supposed to return true on these values
+     * Predicate Interval.comparableLess(low, high) supposed to return true on these values
      * @param low
      * @param high
      */
@@ -115,7 +115,7 @@ export default class Interval {
      * @param val2
      * @returns {boolean}
      */
-    static comparable_less_than(val1, val2 ) {
+    static comparableLessThan(val1, val2 ) {
         return val1 < val2;
     }
 };
