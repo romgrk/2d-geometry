@@ -12,9 +12,9 @@ const c = (s: string) => s.charCodeAt(0)
 const CHAR = {
   SPACE: c(' '),
   ENTER: c('\n'),
-  TAB:   c('\t'),
+  TAB: c('\t'),
 
-  DOT:   c('.'),
+  DOT: c('.'),
   COMMA: c(','),
   MINUS: c('-'),
 
@@ -45,7 +45,6 @@ const CHAR = {
   c: c('c'),
   T: c('T'),
   t: c('t'),
-
 }
 
 type Options = {
@@ -177,9 +176,8 @@ export function parsePath(description: string, options: Options = {}) {
         // https://www.nan.fyi/svg-paths/arcs
         const rx = number()
         const ry = number()
-        const rotation = number() / 360 * TAU
-        if (rx !== ry || rotation !== 0)
-          throw new Error('unimplemented')
+        const rotation = (number() / 360) * TAU
+        if (rx !== ry || rotation !== 0) throw new Error('unimplemented')
         const large = Boolean(number())
         const sweep = Boolean(number())
         const x = number() + (code === CHAR.a ? current.x : 0)
@@ -198,14 +196,12 @@ export function parsePath(description: string, options: Options = {}) {
         const b = Math.sqrt(r ** 2 - a ** 2)
         const v = new Vector(current, midpoint)
         const n = v.rotate90CCW().normalize()
-        const center = midpoint.translate(n.multiply(sweep ? (large ? -b : b) : (large ? b : -b)))
+        const center = midpoint.translate(n.multiply(sweep ? (large ? -b : b) : large ? b : -b))
 
         const startAngle = new Vector(center, current).slope
-        const endAngle   = new Vector(center, end).slope
+        const endAngle = new Vector(center, end).slope
 
-        parts.push(
-          new Arc(center, r, startAngle, endAngle, !sweep)
-        )
+        parts.push(new Arc(center, r, startAngle, endAngle, !sweep))
         current = end
         break
       }
@@ -213,29 +209,29 @@ export function parsePath(description: string, options: Options = {}) {
       /* Quadratic */
       case CHAR.Q: {
         const control1 = new Point(number(), number())
-        const end      = new Point(number(), number())
-        parts.push(lastQuadratic = new Quadratic(current.clone(), control1, end))
+        const end = new Point(number(), number())
+        parts.push((lastQuadratic = new Quadratic(current.clone(), control1, end)))
         current = end
         break
       }
       case CHAR.q: {
         const control1 = new Point(current.x + number(), current.y + number())
-        const end      = new Point(current.x + number(), current.y + number())
-        parts.push(lastQuadratic = new Quadratic(current.clone(), control1, end))
+        const end = new Point(current.x + number(), current.y + number())
+        parts.push((lastQuadratic = new Quadratic(current.clone(), control1, end)))
         current = end
         break
       }
       case CHAR.T: {
         const control1 = lastQuadratic.end.translate(new Vector(lastQuadratic.control1, lastQuadratic.end))
-        const end      = new Point(number(), number())
-        parts.push(lastQuadratic = new Quadratic(current.clone(), control1, end))
+        const end = new Point(number(), number())
+        parts.push((lastQuadratic = new Quadratic(current.clone(), control1, end)))
         current = end
         break
       }
       case CHAR.t: {
         const control1 = lastQuadratic.end.translate(new Vector(lastQuadratic.control1, lastQuadratic.end))
-        const end      = new Point(current.x + number(), current.y + number())
-        parts.push(lastQuadratic = new Quadratic(current.clone(), control1, end))
+        const end = new Point(current.x + number(), current.y + number())
+        parts.push((lastQuadratic = new Quadratic(current.clone(), control1, end)))
         current = end
         break
       }
@@ -244,32 +240,32 @@ export function parsePath(description: string, options: Options = {}) {
       case CHAR.C: {
         const control1 = new Point(number(), number())
         const control2 = new Point(number(), number())
-        const end      = new Point(number(), number())
-        parts.push(lastBezier = new Bezier(current.clone(), control1, control2, end))
+        const end = new Point(number(), number())
+        parts.push((lastBezier = new Bezier(current.clone(), control1, control2, end)))
         current = end
         break
       }
       case CHAR.c: {
         const control1 = new Point(current.x + number(), current.y + number())
         const control2 = new Point(current.x + number(), current.y + number())
-        const end      = new Point(current.x + number(), current.y + number())
-        parts.push(lastBezier = new Bezier(current.clone(), control1, control2, end))
+        const end = new Point(current.x + number(), current.y + number())
+        parts.push((lastBezier = new Bezier(current.clone(), control1, control2, end)))
         current = end
         break
       }
       case CHAR.S: {
         const control1 = lastBezier.end.translate(new Vector(lastBezier.control1, lastBezier.end))
         const control2 = new Point(number(), number())
-        const end      = new Point(number(), number())
-        parts.push(lastBezier = new Bezier(current.clone(), control1, control2, end))
+        const end = new Point(number(), number())
+        parts.push((lastBezier = new Bezier(current.clone(), control1, control2, end)))
         current = end
         break
       }
       case CHAR.s: {
         const control1 = lastBezier.end.translate(new Vector(lastBezier.control1, lastBezier.end))
         const control2 = new Point(current.x + number(), current.y + number())
-        const end      = new Point(current.x + number(), current.y + number())
-        parts.push(lastBezier = new Bezier(current.clone(), control1, control2, end))
+        const end = new Point(current.x + number(), current.y + number())
+        parts.push((lastBezier = new Bezier(current.clone(), control1, control2, end)))
         current = end
         break
       }
@@ -281,5 +277,5 @@ export function parsePath(description: string, options: Options = {}) {
     skipSeparator()
   }
 
-  return allParts.map(parts => new Path(parts))
+  return allParts.map((parts) => new Path(parts))
 }

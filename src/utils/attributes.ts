@@ -1,39 +1,39 @@
 const defaultAttributes = {
-    stroke: "black"
+  stroke: 'black',
 }
 
 class SVGAttributes {
-    stroke: string
+  stroke: string
 
-    constructor(args = defaultAttributes) {
-        for(const property in args) {
-            this[property] = args[property]
-        }
-        this.stroke = args.stroke ?? defaultAttributes.stroke
+  constructor(args = defaultAttributes) {
+    for (const property in args) {
+      this[property] = args[property]
     }
+    this.stroke = args.stroke ?? defaultAttributes.stroke
+  }
 
-    toAttributesString() {
-        return Object.keys(this)
-            .reduce( (acc, key) =>
-                    acc + (this[key] !== undefined ? this.toAttrString(key, this[key]) : "")
-            , ``)
-    }
+  toAttributesString() {
+    return Object.keys(this).reduce(
+      (acc, key) => acc + (this[key] !== undefined ? this.toAttrString(key, this[key]) : ''),
+      ``,
+    )
+  }
 
-    toAttrString(key, value) {
-        const SVGKey = key === "className" ? "class" : this.convertCamelToKebabCase(key);
-        return value === null ? `${SVGKey} ` : `${SVGKey}="${value.toString()}" `
-    }
+  toAttrString(key, value) {
+    const SVGKey = key === 'className' ? 'class' : this.convertCamelToKebabCase(key)
+    return value === null ? `${SVGKey} ` : `${SVGKey}="${value.toString()}" `
+  }
 
-    convertCamelToKebabCase(str) {
-        return str
-            .match(/[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g)
-            .join('-')
-            .toLowerCase();
-    }
+  convertCamelToKebabCase(str) {
+    return str
+      .match(/[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g)
+      .join('-')
+      .toLowerCase()
+  }
 }
 
 export function convertToString(attrs) {
-    return new SVGAttributes(attrs).toAttributesString()
+  return new SVGAttributes(attrs).toAttributesString()
 }
 
 export default SVGAttributes
