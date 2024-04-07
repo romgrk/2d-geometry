@@ -6,7 +6,7 @@ import type { Vector } from './Vector'
 
 export type AnyShape = Shape<unknown>
 
-let ORIGIN_POINT: PointLike = {
+const ORIGIN_POINT: PointLike = {
     x: NaN,
     y: NaN,
 }

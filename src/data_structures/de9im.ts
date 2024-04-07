@@ -21,140 +21,50 @@ class DE9IM {
         this.m = new Array(9).fill(undefined);
     }
 
-    /**
-     * Get Interior To Interior intersection
-     */
-    get I2I() {
-        return this.m[0];
-    }
+    /** Get Interior To Interior intersection */
+    get I2I() { return this.m[0] }
+    /** Set Interior To Interior intersection */
+    set I2I(geom) { this.m[0] = geom }
 
-    /**
-     * Set Interior To Interior intersection
-     * @param geom
-     */
-    set I2I(geom) {
-        this.m[0] = geom;
-    }
+    /** Get Interior To Boundary intersection */
+    get I2B() { return this.m[1] }
+    /** Set Interior to Boundary intersection */
+    set I2B(geom) { this.m[1] = geom }
 
-    /**
-     * Get Interior To Boundary intersection
-     */
-    get I2B() {
-        return this.m[1];
-    }
+    /** Get Interior To Exterior intersection */
+    get I2E() { return this.m[2] }
+    /** Set Interior to Exterior intersection */
+    set I2E(geom) { this.m[2] = geom }
 
-    /**
-     * Set Interior to Boundary intersection
-     * @param geomc
-     */
-    set I2B(geom) {
-        this.m[1] = geom;
-    }
+    /** Get Boundary To Interior intersection */
+    get B2I() { return this.m[3] }
+    /** Set Boundary to Interior intersection */
+    set B2I(geom) { this.m[3] = geom }
 
-    /**
-     * Get Interior To Exterior intersection
-     */
-    get I2E() {
-        return this.m[2];
-    }
+    /** Get Boundary To Boundary intersection */
+    get B2B() { return this.m[4] }
+    /** Set Boundary to Boundary intersection */
+    set B2B(geom) { this.m[4] = geom }
 
-    /**
-     * Set Interior to Exterior intersection
-     * @param geom
-     */
-    set I2E(geom) {
-        this.m[2] = geom;
-    }
+    /** Get Boundary To Exterior intersection */
+    get B2E() { return this.m[5] }
+    /** Set Boundary to Exterior intersection */
+    set B2E(geom) { this.m[5] = geom }
 
-    /**
-     * Get Boundary To Interior intersection
-     */
-    get B2I() {
-        return this.m[3];
-    }
+    /** Get Exterior To Interior intersection */
+    get E2I() { return this.m[6] }
+    /** Set Exterior to Interior intersection */
+    set E2I(geom) { this.m[6] = geom }
 
-    /**
-     * Set Boundary to Interior intersection
-     * @param geom
-     */
-    set B2I(geom) {
-        this.m[3] = geom;
-    }
+    /** Get Exterior To Boundary intersection */
+    get E2B() { return this.m[7] }
+    /** Set Exterior to Boundary intersection */
+    set E2B(geom) { this.m[7] = geom }
 
-    /**
-     * Get Boundary To Boundary intersection
-     */
-    get B2B() {
-        return this.m[4];
-    }
-
-    /**
-     * Set Boundary to Boundary intersection
-     * @param geom
-     */
-    set B2B(geom) {
-        this.m[4] = geom;
-    }
-
-    /**
-     * Get Boundary To Exterior intersection
-     */
-    get B2E() {
-        return this.m[5];
-    }
-
-    /**
-     * Set Boundary to Exterior intersection
-     * @param geom
-     */
-    set B2E(geom) {
-        this.m[5] = geom;
-    }
-
-    /**
-     * Get Exterior To Interior intersection
-     */
-    get E2I() {
-        return this.m[6];
-    }
-
-    /**
-     * Set Exterior to Interior intersection
-     * @param geom
-     */
-    set E2I(geom) {
-        this.m[6] = geom;
-    }
-
-    /**
-     * Get Exterior To Boundary intersection
-     */
-    get E2B() {
-        return this.m[7];
-    }
-
-    /**
-     * Set Exterior to Boundary intersection
-     * @param geom
-     */
-    set E2B(geom) {
-        this.m[7] = geom;
-    }
-
-    /**
-     * Get Exterior to Exterior intersection
-     */
-    get E2E() {
-        return this.m[8];
-    }
-
-    /**
-     * Set Exterior to Exterior intersection
-     * @param geom
-     */
-    set E2E(geom) {
-        this.m[8] = geom;
-    }
+    /** Get Exterior to Exterior intersection */
+    get E2E() { return this.m[8] }
+    /** Set Exterior to Exterior intersection */
+    set E2E(geom) { this.m[8] = geom }
 
     /**
      * Return de9im matrix as string where<br/>
