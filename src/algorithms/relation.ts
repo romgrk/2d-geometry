@@ -9,7 +9,11 @@ import {
 } from './intersection'
 import { ray_shoot } from './ray_shooting'
 import * as BooleanOperations from './boolean_op'
+import type { Box } from '../classes/Box'
+import type { Line } from '../classes/Line'
+import type { Circle } from '../classes/Circle'
 import type { Shape } from '../classes/Shape'
+import type { Polygon } from '../classes/Polygon'
 import { Multiline } from '../classes/Multiline'
 import * as geom from '../classes'
 
@@ -108,7 +112,7 @@ export function relate(shape1: Shape, shape2: Shape) {
   }
 }
 
-function relateLine2Line(line1, line2) {
+function relateLine2Line(line1: Line, line2: Line) {
   let denim = new DE9IM()
   let ip = intersectLine2Line(line1, line2)
   if (ip.length === 0) {
@@ -132,7 +136,7 @@ function relateLine2Line(line1, line2) {
   return denim
 }
 
-function relateLine2Circle(line, circle) {
+function relateLine2Circle(line: Line, circle: Circle) {
   let denim = new DE9IM()
   let ip = intersectLine2Circle(line, circle)
   if (ip.length === 0) {
@@ -163,7 +167,7 @@ function relateLine2Circle(line, circle) {
   return denim
 }
 
-function relateLine2Box(line, box) {
+function relateLine2Box(line: Line, box: Box) {
   let denim = new DE9IM()
   let ip = intersectLine2Box(line, box)
   if (ip.length === 0) {
@@ -204,7 +208,7 @@ function relateLine2Box(line, box) {
   return denim
 }
 
-function relateLine2Polygon(line, polygon) {
+function relateLine2Polygon(line: Line, polygon: Polygon) {
   let denim = new DE9IM()
   let ip = intersectLine2Polygon(line, polygon)
   let multiline = new Multiline([line])
@@ -223,7 +227,7 @@ function relateLine2Polygon(line, polygon) {
   return denim
 }
 
-function relateShape2Polygon(shape, polygon) {
+function relateShape2Polygon(shape, polygon: Polygon) {
   let denim = new DE9IM()
   let ip = intersectShape2Polygon(shape, polygon)
   let ip_sorted = ip.length > 0 ? ip.slice() : shape.sortPoints(ip)
@@ -261,10 +265,10 @@ function relateShape2Polygon(shape, polygon) {
   return denim
 }
 
-function relatePolygon2Polygon(polygon1, polygon2) {
+function relatePolygon2Polygon(polygon1: Polygon, polygon2: Polygon) {
   let denim = new DE9IM()
 
-  let [ip_sorted1, ip_sorted2] = BooleanOperations.calculateIntersections(polygon1, polygon2)
+  let [ip_sorted1] = BooleanOperations.calculateIntersections(polygon1, polygon2)
   let boolean_intersection = BooleanOperations.intersect(polygon1, polygon2)
   let boolean_difference1 = BooleanOperations.subtract(polygon1, polygon2)
   let boolean_difference2 = BooleanOperations.subtract(polygon2, polygon1)

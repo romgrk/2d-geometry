@@ -10,11 +10,11 @@ export type EdgeShape = Segment | Arc | Quadratic | Bezier
  * Class representing an edge of polygon. Edge shape may be Segment or Arc.
  * Each edge contains references to the next and previous edges in the face of the polygon.
  */
-export class Edge {
+export class Edge<T extends EdgeShape = EdgeShape> {
   static EMPTY = Object.freeze(new Edge(Segment.EMPTY))
 
   /** Shape of the edge: Segment or Arc */
-  shape: EdgeShape
+  shape: T
   /** Pointer to the next edge in the face */
   next: Edge
   /** Pointer to the previous edge in the face */
@@ -36,7 +36,7 @@ export class Edge {
    * Construct new instance of edge
    * @param shape Shape of type Segment or Arc
    */
-  constructor(shape: EdgeShape) {
+  constructor(shape: T) {
     this.shape = shape
     this.next = undefined
     this.prev = undefined
@@ -68,11 +68,11 @@ export class Edge {
     return this.shape.box
   }
 
-  isSegment() {
+  isSegment(): this is Edge<Segment> {
     return this.shape instanceof Segment
   }
 
-  isArc() {
+  isArc(): this is Edge<Arc> {
     return this.shape instanceof Arc
   }
 

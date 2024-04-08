@@ -170,12 +170,12 @@ export class Box extends Shape<Box> {
     return this.clone()
   }
 
-  static comparableMax(box1, box2) {
+  static comparableMax(box1: Box, box2: Box) {
     // return pt1.lessThan(pt2) ? pt2.clone() : pt1.clone();
     return box1.merge(box2)
   }
 
-  static comparableLessThan(pt1, pt2) {
+  static comparableLessThan(pt1: Point, pt2: Point) {
     return pt1.lessThan(pt2)
   }
 
@@ -217,20 +217,18 @@ export class Box extends Shape<Box> {
   /**
    * Box rotation is not supported
    * Attempt to rotate box throws error
-   * @param {number} angle - angle in radians
-   * @param {Point} [center=(0,0)] center
+   * @param angle - angle in radians
+   * @param [center=(0,0)] center
    */
-  rotate(angle, center = new Point()): Box {
+  rotate(_angle: number, _center = Point.EMPTY): Box {
     throw Errors.OPERATION_IS_NOT_SUPPORTED
   }
 
   /**
    * Return new box transformed using affine transformation matrix
    * New box is a bounding box of transformed corner points
-   * @param {Matrix} m - affine transformation matrix
-   * @returns {Box}
    */
-  transform(m = new Matrix()) {
+  transform(m = Matrix.IDENTITY) {
     const transformed_points = this.toPoints().map((pt) => pt.transform(m))
     return transformed_points.reduce((new_box, pt) => new_box.merge(pt.box), new Box())
   }

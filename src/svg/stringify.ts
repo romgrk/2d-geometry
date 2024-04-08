@@ -63,7 +63,7 @@ export function stringify(shape: Shape, attrs?: Record<string, any>) {
       const polygon = shape as Polygon
       let svgStr = `\n<path ${convertToString({ fillRule: 'evenodd', fill: 'lightcyan', ...attrs })} d="`
       for (let face of polygon.faces) {
-        svgStr += face.svg()
+        svgStr += face.shapes.map(shape => stringify(shape))
       }
       svgStr += `" >\n</path>`
       return svgStr

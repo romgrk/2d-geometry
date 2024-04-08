@@ -1,10 +1,12 @@
 import Errors from '../utils/errors'
 
+export type LinkedListElement<T> = { next?: T; prev?: T }
+
 /**
  * Class implements bidirectional non-circular linked list. <br/>
  * LinkedListElement - object of any type that has properties next and prev.
  */
-class LinkedList<T extends { next?: T; prev?: T }> {
+class LinkedList<T extends LinkedListElement<T>> {
   first: T
   last: T
 
@@ -25,7 +27,6 @@ class LinkedList<T extends { next?: T; prev?: T }> {
 
   /**
    * Return number of elements in the list
-   * @returns {number}
    */
   get size() {
     let counter = 0
@@ -38,7 +39,6 @@ class LinkedList<T extends { next?: T; prev?: T }> {
   /**
    * Return array of elements from start to end,
    * If start or end not defined, take first as start, last as end
-   * @returns {Array}
    */
   toArray(start = undefined, end = undefined) {
     let elements = []
@@ -55,10 +55,8 @@ class LinkedList<T extends { next?: T; prev?: T }> {
 
   /**
    * Append new element to the end of the list
-   * @param {LinkedListElement} element
-   * @returns {LinkedList}
    */
-  append(element) {
+  append(element: T) {
     if (this.isEmpty()) {
       this.first = element
     } else {
@@ -77,11 +75,8 @@ class LinkedList<T extends { next?: T; prev?: T }> {
 
   /**
    * Insert new element to the list after elementBefore
-   * @param {LinkedListElement} newElement
-   * @param {LinkedListElement} elementBefore
-   * @returns {LinkedList}
    */
-  insert(newElement, elementBefore) {
+  insert(newElement: T, elementBefore: T) {
     if (this.isEmpty()) {
       this.first = newElement
       this.last = newElement
@@ -110,10 +105,8 @@ class LinkedList<T extends { next?: T; prev?: T }> {
 
   /**
    * Remove element from the list
-   * @param {LinkedListElement} element
-   * @returns {LinkedList}
    */
-  remove(element) {
+  remove(element: T) {
     // special case if last edge removed
     if (element === this.first && element === this.last) {
       this.first = undefined
@@ -136,7 +129,6 @@ class LinkedList<T extends { next?: T; prev?: T }> {
 
   /**
    * Return true if list is empty
-   * @returns {boolean}
    */
   isEmpty() {
     return this.first === undefined
@@ -144,10 +136,10 @@ class LinkedList<T extends { next?: T; prev?: T }> {
 
   /**
    * Throw an error if circular loop detected in the linked list
-   * @param {LinkedListElement} first element to start iteration
+   * @param first element to start iteration
    * @throws {Errors.INFINITE_LOOP}
    */
-  static testInfiniteLoop(first) {
+  static testInfiniteLoop(first: LinkedListElement<any>) {
     let edge = first
     let controlEdge = first
     do {

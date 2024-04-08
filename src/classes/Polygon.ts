@@ -19,9 +19,11 @@ import { INSIDE, BOUNDARY } from '../utils/constants'
 import { PlanarSet } from '../data_structures/PlanarSet'
 import * as geom from '../classes'
 import type { Box } from '../classes/Box'
+import type { Face } from '../classes/Face'
+import type { Line } from '../classes/Line'
 import type { Point } from '../classes/Point'
 import type { Segment } from '../classes/Segment'
-import type { EdgeShape } from '../classes/Edge'
+import type { Edge, EdgeShape } from '../classes/Edge'
 import { Matrix } from '../classes/Matrix'
 import { Vector } from '../classes/Vector'
 import { Shape, ShapeTag } from './Shape'
@@ -117,7 +119,7 @@ export class Polygon extends Shape<Polygon> {
    * Returns bounding box of the polygon
    */
   get box(): Box {
-    return [...this.faces].reduce((acc, face) => acc.merge(face.box), new geom.Box())
+    return [...this.faces].reduce((acc, face) => acc.merge(face.box), geom.Box.EMPTY)
   }
 
   /**
@@ -189,11 +191,10 @@ export class Polygon extends Shape<Polygon> {
    * 3) circle - will be added as counterclockwise arc
    * 4) box - will be added as counterclockwise rectangle
    * You can chain method face.reverse() is you need to change direction of the creates face
-   * @returns {Face}
    */
-  addFace(...args) {
+  addFace(a: unknown, b?: unknown) {
     // @ts-ignore
-    let face = new geom.Face(this, ...args)
+    let face = new geom.Face(this, a, b)
     this.faces.add(face)
     return face
   }
@@ -244,11 +245,11 @@ export class Polygon extends Shape<Polygon> {
 
   /**
    * Delete chain of edges from the face.
-   * @param {Face} face Face to remove chain
-   * @param {Edge} edgeFrom Start of the chain of edges to be removed
-   * @param {Edge} edgeTo End of the chain of edges to be removed
+   * @param face Face to remove chain
+   * @param edgeFrom Start of the chain of edges to be removed
+   * @param edgeTo End of the chain of edges to be removed
    */
-  removeChain(face, edgeFrom, edgeTo) {
+  removeChain(face: Face, edgeFrom: Edge, edgeTo: Edge) {
     // Special case: all edges removed
     if (edgeTo.next === edgeFrom) {
       this.deleteFace(face)
@@ -270,11 +271,10 @@ export class Polygon extends Shape<Polygon> {
    * and inserted before current edge.
    * Current edge is trimmed and updated.
    * Method returns new edge added. If no edge added, it returns edge before vertex
-   * @param {Point} pt Point to be added as a new vertex
-   * @param {Edge} edge Edge to be split with new vertex and then trimmed from start
-   * @returns {Edge}
+   * @param pt Point to be added as a new vertex
+   * @param edge Edge to be split with new vertex and then trimmed from start
    */
-  addVertex(pt, edge) {
+  addVertex(pt: Point, edge: Edge) {
     let shapes = edge.shape.split(pt)
     // if (shapes.length < 2) return;
 
@@ -309,12 +309,11 @@ export class Polygon extends Shape<Polygon> {
 
   /**
    * Merge given edge with next edge and remove vertex between them
-   * @param {Edge} edge
    */
-  removeEndVertex(edge) {
+  removeEndVertex(edge: Edge) {
     const edge_next = edge.next
     if (edge_next === edge) return
-    edge.face.merge_with_next_edge(edge)
+    edge.face.mergeWithNextEdge(edge)
     this.edges.delete(edge_next)
   }
 
@@ -322,23 +321,21 @@ export class Polygon extends Shape<Polygon> {
    * Cut polygon with multiline and return array of new polygons
    * Multiline should be constructed from a line with intersection point, see notebook:
    * https://next.observablehq.com/@alexbol99/cut-polygon-with-line
-   * @param {Multiline} multiline
-   * @returns {Polygon[]}
    */
-  cut(multiline) {
+  cut(multiline: Multiline) {
     let cutPolygons = [this.clone()]
-    for (let edge of multiline) {
+    for (const edge of multiline) {
       if (edge.setInclusion(this) !== INSIDE) continue
 
-      let cut_edge_start = edge.shape.start
-      let cut_edge_end = edge.shape.end
+      const cut_edge_start = edge.shape.start
+      const cut_edge_end = edge.shape.end
 
-      let newCutPolygons = []
-      for (let polygon of cutPolygons) {
+      const newCutPolygons = []
+      for (const polygon of cutPolygons) {
         if (polygon.findEdgeByPoint(cut_edge_start) === undefined) {
           newCutPolygons.push(polygon)
         } else {
-          let [cutPoly1, cutPoly2] = polygon.cutFace(cut_edge_start, cut_edge_end)
+          const [cutPoly1, cutPoly2] = polygon.cutFace(cut_edge_start, cut_edge_end)
           newCutPolygons.push(cutPoly1, cutPoly2)
         }
       }
@@ -350,11 +347,10 @@ export class Polygon extends Shape<Polygon> {
   /**
    * Cut face of polygon with a segment between two points and create two new polygons
    * Supposed that a segments between points does not intersect any other edge
-   * @param {Point} pt1
-   * @param {Point} pt2
-   * @returns {Polygon[]}
+   * @param pt1
+   * @param pt2
    */
-  cutFace(pt1, pt2) {
+  cutFace(pt1: Point, pt2: Point) {
     let edge1 = this.findEdgeByPoint(pt1)
     let edge2 = this.findEdgeByPoint(pt2)
     if (edge1.face !== edge2.face) return []
@@ -397,10 +393,8 @@ export class Polygon extends Shape<Polygon> {
 
   /**
    * Return a result of cutting polygon with line
-   * @param {Line} line - cutting line
-   * @returns {Polygon} newPoly - resulted polygon
    */
-  cutWithLine(line) {
+  cutWithLine(line: Line) {
     let newPoly = this.clone()
 
     let multiline = new Multiline([line])
@@ -497,11 +491,9 @@ export class Polygon extends Shape<Polygon> {
   /**
    * Returns the first found edge of polygon that contains given point
    * If point is a vertex, return the edge where the point is an end vertex, not a start one
-   * @param {Point} pt
-   * @returns {Edge}
    */
-  findEdgeByPoint(pt) {
-    let edge
+  findEdgeByPoint(pt: Point) {
+    let edge: Edge
     for (let face of this.faces) {
       edge = face.findEdgeByPoint(pt)
       if (edge !== undefined) break
@@ -512,7 +504,6 @@ export class Polygon extends Shape<Polygon> {
   /**
    * Split polygon into array of polygons, where each polygon is an island with all
    * hole that it contains
-   * @returns {geom.Polygon[]}
    */
   splitToIslands() {
     if (this.isEmpty()) return [] // return empty array if polygon is empty
@@ -566,8 +557,6 @@ export class Polygon extends Shape<Polygon> {
    * Return distance and shortest segment between polygon and other shape as array [distance, shortest_segment]
    */
   distanceTo(shape: Shape): [number, Segment] {
-    // let {Distance} = Flatten;
-
     if (shape instanceof geom.Point) {
       let [dist, shortest_segment] = Distance.point2polygon(shape, this)
       shortest_segment = shortest_segment.reverse()
@@ -598,6 +587,8 @@ export class Polygon extends Shape<Polygon> {
       }
       return min_dist_and_segment
     }
+
+    throw new Error('unimplemented')
   }
 
   /**
@@ -632,6 +623,8 @@ export class Polygon extends Shape<Polygon> {
     if (shape instanceof geom.Polygon) {
       return Intersection.intersectPolygon2Polygon(shape, this)
     }
+
+    throw new Error('unimplemented')
   }
 
   /**

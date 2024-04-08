@@ -339,6 +339,4 @@ function getSegmentDistance(shape: Shape): (s: Segment, o: any) => [number, Segm
 /**
  * Shortcut method to create new bezier
  */
-export const bezier = (...args) =>
-  // @ts-ignore
-  new Bezier(...args)
+export const bezier = (a, b, c, d) => new Bezier(a, b, c, d)

@@ -3,7 +3,10 @@ import * as Utils from '../utils/utils'
 import { CCW, ORIENTATION } from '../utils/constants'
 import * as geom from './index'
 import { Box } from './Box'
+import type { Edge } from './Edge'
+import type { Point } from './Point'
 import type { Polygon } from './Polygon'
+import type { PlanarSet } from '../data_structures/PlanarSet'
 
 /**
  * Class representing a face (closed loop) in a [polygon]{@link geom.Polygon} object.
@@ -129,7 +132,6 @@ export class Face extends CircularLinkedList<any> {
 
   /**
    * Return array of edges from first to last
-   * @returns {Array}
    */
   get edges() {
     return this.toArray()
@@ -137,7 +139,6 @@ export class Face extends CircularLinkedList<any> {
 
   /**
    * Return array of shapes which comprise face
-   * @returns {Array}
    */
   get shapes() {
     return this.edges.map((edge) => edge.shape.clone())
@@ -145,7 +146,6 @@ export class Face extends CircularLinkedList<any> {
 
   /**
    * Return bounding box of the face
-   * @returns {Box}
    */
   get box() {
     if (this._box === undefined) {
@@ -160,7 +160,6 @@ export class Face extends CircularLinkedList<any> {
 
   /**
    * Get all edges length
-   * @returns {number}
    */
   get perimeter() {
     return this.last.arc_length + this.last.length
@@ -168,10 +167,9 @@ export class Face extends CircularLinkedList<any> {
 
   /**
    * Get point on face boundary at given length
-   * @param {number} length - The length along the face boundary
-   * @returns {Point}
+   * @param length - The length along the face boundary
    */
-  pointAtLength(length) {
+  pointAtLength(length: number) {
     if (length > this.perimeter || length < 0) return null
     let point = null
     for (let edge of this) {
@@ -183,7 +181,7 @@ export class Face extends CircularLinkedList<any> {
     return point
   }
 
-  static points2segments(points) {
+  static points2segments(points: Point[]) {
     let segments = []
     for (let i = 0; i < points.length; i++) {
       // skip zero length segment
@@ -205,10 +203,9 @@ export class Face extends CircularLinkedList<any> {
 
   /**
    * Append edge after the last edge of the face (and before the first edge). <br/>
-   * @param {Edge} edge - Edge to be appended to the linked list
-   * @returns {Face}
+   * @param edge - Edge to be appended to the linked list
    */
-  append(edge) {
+  append(edge: Edge) {
     super.append(edge)
     // set arc length
     this.setOneEdgeArcLength(edge)
@@ -219,11 +216,10 @@ export class Face extends CircularLinkedList<any> {
 
   /**
    * Insert edge newEdge into the linked list after the edge edgeBefore <br/>
-   * @param {Edge} newEdge - Edge to be inserted into linked list
-   * @param {Edge} edgeBefore - Edge to insert newEdge after it
-   * @returns {Face}
+   * @param newEdge - Edge to be inserted into linked list
+   * @param edgeBefore - Edge to insert newEdge after it
    */
-  insert(newEdge, edgeBefore) {
+  insert(newEdge: Edge, edgeBefore: Edge) {
     super.insert(newEdge, edgeBefore)
     // set arc length
     this.setOneEdgeArcLength(newEdge)
@@ -233,10 +229,9 @@ export class Face extends CircularLinkedList<any> {
 
   /**
    * Remove the given edge from the linked list of the face <br/>
-   * @param {Edge} edge - Edge to be removed
-   * @returns {Face}
+   * @param edge - Edge to be removed
    */
-  remove(edge) {
+  remove(edge: Edge) {
     super.remove(edge)
     // Recalculate arc length
     this.setArcLength()
@@ -247,10 +242,9 @@ export class Face extends CircularLinkedList<any> {
    * Merge current edge with the next edge. Given edge will be extended,
    * next edge after it will be removed. The distortion of the polygon
    * is on the responsibility of the user of this method
-   * @param {Edge} edge - edge to be extended
-   * @returns {Face}
+   * @param edge - edge to be extended
    */
-  merge_with_next_edge(edge) {
+  mergeWithNextEdge(edge: Edge) {
     edge.shape.end.x = edge.next.shape.end.x
     edge.shape.end.y = edge.next.shape.end.y
     this.remove(edge.next)
@@ -326,7 +320,6 @@ export class Face extends CircularLinkedList<any> {
 
   /**
    * Returns the absolute value of the area of the face
-   * @returns {number}
    */
   area() {
     return Math.abs(this.signedArea())
@@ -338,7 +331,6 @@ export class Face extends CircularLinkedList<any> {
    * Then the area will be positive if the orientation of the face is clockwise,
    * and negative if orientation is counterclockwise.
    * It may be zero if polygon is degenerated.
-   * @returns {number}
    */
   signedArea() {
     let sArea = 0
@@ -356,7 +348,6 @@ export class Face extends CircularLinkedList<any> {
    * When the integral ("signed area") will be negative, direction is counterclockwise,
    * when positive - clockwise and when it is zero, polygon is not orientable.
    * See {@link https://mathinsight.org/greens_theorem_find_area}
-   * @returns {number}
    */
   orientation() {
     if (this._orientation === undefined) {
@@ -376,12 +367,10 @@ export class Face extends CircularLinkedList<any> {
    * Returns true if face of the polygon is simple (no self-intersection points found)
    * NOTE: this method is incomplete because it does not exclude touching points.
    * Self intersection test should check if polygon change orientation in the test point.
-   * @param {PlanarSet} edges - reference to polygon edges to provide search index
-   * @returns {boolean}
+   * @param edges - reference to polygon edges to provide search index
    */
-  isSimple(edges) {
-    let ip = Face.getSelfIntersections(this, edges, true)
-    return ip.length === 0
+  isSimple(edges: PlanarSet<Edge>) {
+    return Face.getSelfIntersections(this, edges, true).length === 0
   }
 
   static getSelfIntersections(face, edges, exitOnFirst = false) {
@@ -432,14 +421,12 @@ export class Face extends CircularLinkedList<any> {
 
   /**
    * Returns edge which contains given point
-   * @param {Point} pt - test point
-   * @returns {Edge}
    */
-  findEdgeByPoint(pt) {
-    let edgeFound
+  findEdgeByPoint(p: Point) {
+    let edgeFound: Edge
     for (let edge of this) {
-      if (pt.equalTo(edge.shape.start)) continue
-      if (pt.equalTo(edge.shape.end) || edge.shape.contains(pt)) {
+      if (p.equalTo(edge.shape.start)) continue
+      if (p.equalTo(edge.shape.end) || edge.shape.contains(p)) {
         edgeFound = edge
         break
       }
