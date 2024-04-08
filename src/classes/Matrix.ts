@@ -139,14 +139,17 @@ export class Matrix {
    * Returns result of multiplication of this matrix by other matrix
    */
   multiply(other: Matrix) {
-    return new Matrix(
-      this.a * other.a + this.c * other.b,
-      this.b * other.a + this.d * other.b,
-      this.a * other.c + this.c * other.d,
-      this.b * other.c + this.d * other.d,
-      this.a * other.tx + this.c * other.ty + this.tx,
-      this.b * other.tx + this.d * other.ty + this.ty,
-    )
+    return this.clone().multiplyMut(other)
+  }
+
+  multiplyMut(other: Matrix) {
+    this.a = this.a * other.a + this.c * other.b
+    this.b = this.b * other.a + this.d * other.b
+    this.c = this.a * other.c + this.c * other.d
+    this.d = this.b * other.c + this.d * other.d
+    this.tx = this.a * other.tx + this.c * other.ty + this.tx
+    this.ty = this.b * other.tx + this.d * other.ty + this.ty
+    return this
   }
 
   /**

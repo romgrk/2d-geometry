@@ -13,41 +13,23 @@ import { Segment } from './Segment'
 export class Edge {
   static EMPTY = Object.freeze(new Edge(Segment.EMPTY))
 
-  /**
-   * Shape of the edge: Segment or Arc
-   */
+  /** Shape of the edge: Segment or Arc */
   shape: Segment | Arc
-  /**
-   * Pointer to the next edge in the face
-   */
+  /** Pointer to the next edge in the face */
   next: Edge
-  /**
-   * Pointer to the previous edge in the face
-   */
+  /** Pointer to the previous edge in the face */
   prev: Edge
-  /**
-   * Pointer to the face containing this edge
-   */
+  /** Pointer to the face containing this edge */
   face: Face
-  /**
-   * "Arc distance" from the face start
-   */
+  /** "Arc distance" from the face start */
   arc_length: number
-  /**
-   * Start inclusion flag (inside/outside/boundary)
-   */
+  /** Start inclusion flag (inside/outside/boundary) */
   bvStart: any
-  /**
-   * End inclusion flag (inside/outside/boundary)
-   */
+  /** End inclusion flag (inside/outside/boundary) */
   bvEnd: any
-  /**
-   * Edge inclusion flag (INSIDE, OUTSIDE, BOUNDARY)
-   */
+  /** Edge inclusion flag (INSIDE, OUTSIDE, BOUNDARY) */
   bv: any
-  /**
-   * Overlap flag for boundary edge (Overlap.SAME/Overlap.OPPOSITE)
-   */
+  /** Overlap flag for boundary edge (Overlap.SAME/Overlap.OPPOSITE) */
   overlap: any
 
   /**
@@ -66,30 +48,22 @@ export class Edge {
     this.overlap = undefined
   }
 
-  /**
-   * Get edge start point
-   */
+  /** Get edge start point */
   get start() {
     return this.shape.start
   }
 
-  /**
-   * Get edge end point
-   */
+  /** Get edge end point */
   get end() {
     return this.shape.end
   }
 
-  /**
-   * Get edge length
-   */
+  /** Get edge length */
   get length() {
     return this.shape.length
   }
 
-  /**
-   * Get bounding box of the edge
-   */
+  /** Get bounding box of the edge */
   get box() {
     return this.shape.box
   }
@@ -102,23 +76,17 @@ export class Edge {
     return this.shape instanceof Arc
   }
 
-  /**
-   * Get middle point of the edge
-   */
+  /** Get middle point of the edge */
   middle() {
     return this.shape.middle()
   }
 
-  /**
-   * Get point at given length
-   */
+  /** Get point at given length */
   pointAtLength(length: number) {
     return this.shape.pointAtLength(length)
   }
 
-  /**
-   * Returns true if point belongs to the edge, false otherwise
-   */
+  /** Returns true if point belongs to the edge, false otherwise */
   contains(pt: Point) {
     return this.shape.contains(pt)
   }
@@ -126,7 +94,6 @@ export class Edge {
   /**
    * Set inclusion flag of the edge with respect to another polygon
    * Inclusion flag is one of INSIDE, OUTSIDE, BOUNDARY
-   * @param polygon
    */
   setInclusion(polygon) {
     if (this.bv !== undefined) return this.bv
@@ -161,7 +128,6 @@ export class Edge {
   /**
    * Set overlapping between two coincident boundary edges
    * Overlapping flag is one of Overlap.SAME or Overlap.OPPOSITE
-   * @param edge
    */
   setOverlap(edge) {
     let flag = undefined

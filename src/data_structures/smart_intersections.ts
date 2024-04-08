@@ -4,8 +4,9 @@
  */
 import * as Utils from '../utils/utils'
 import * as Constants from '../utils/constants'
+import type { Edge, Point, Polygon } from '../classes'
 
-export function addToIntPoints(edge, pt, int_points) {
+export function addToIntPoints(edge: Edge, pt: Point, int_points) {
   let id = int_points.length
   let shapes = edge.shape.split(pt)
 
@@ -325,7 +326,7 @@ export function intPointsPoolCount(int_points, cur_int_point_num, cur_face) {
   return int_points_pool_num
 }
 
-export function splitByIntersections(polygon, int_points) {
+export function splitByIntersections(polygon: Polygon, int_points) {
   if (!int_points) return
   for (let int_point of int_points) {
     let edge = int_point.edge_before

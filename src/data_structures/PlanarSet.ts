@@ -80,11 +80,4 @@ export class PlanarSet extends Set {
     const box = new Box(point.x - 1, point.y - 1, point.x + 1, point.y + 1)
     return this.index.search(box as any).filter((shape) => point.on(shape))
   }
-
-  /**
-   * Returns svg string to draw all shapes in planar set
-   */
-  svg() {
-    return [...(this as any)].reduce<string>((acc, shape) => acc + shape.svg(), '')
-  }
 }

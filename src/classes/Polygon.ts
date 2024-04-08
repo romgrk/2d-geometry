@@ -29,9 +29,9 @@ const isPointLike = (n: any): n is [number, number] =>
 const isPoints = (e: any): e is [number, number][] => Array.isArray(e) && e.every(isPointLike)
 
 /**
- * Class representing a polygon.<br/>
- * Polygon in FlattenJS is a multipolygon comprised from a set of [faces]{@link geom.Face}. <br/>
- * Face, in turn, is a closed loop of [edges]{@link geom.Edge}, where edge may be segment or circular arc<br/>
+ * Class representing a polygon.
+ * Polygon in FlattenJS is a multipolygon comprised from a set of [faces]{@link geom.Face}.
+ * Face, in turn, is a closed loop of [edges]{@link geom.Edge}, where edge may be segment or circular arc
  * @type {Polygon}
  */
 export class Polygon extends Shape<Polygon> {
@@ -47,14 +47,14 @@ export class Polygon extends Shape<Polygon> {
   edges: PlanarSet
 
   /**
-   * Constructor creates new instance of polygon. With no arguments new polygon is empty.<br/>
+   * Constructor creates new instance of polygon. With no arguments new polygon is empty.
    * Constructor accepts as argument array that define loop of shapes
-   * or array of arrays in case of multi polygon <br/>
-   * Loop may be defined in different ways: <br/>
-   * - array of shapes of type Segment or Arc <br/>
-   * - array of points (geom.Point) <br/>
-   * - array of numeric pairs which represent points <br/>
-   * - box or circle object <br/>
+   * or array of arrays in case of multi polygon
+   * Loop may be defined in different ways:
+   * - array of shapes of type Segment or Arc
+   * - array of points (geom.Point)
+   * - array of numeric pairs which represent points
+   * - box or circle object
    * Alternatively, it is possible to use polygon.addFace method
    * @param {args} - array of shapes or array of arrays
    */
@@ -145,10 +145,10 @@ export class Polygon extends Shape<Polygon> {
 
   /**
    * Return true if polygon is valid for boolean operations
-   * Polygon is valid if <br/>
-   * 1. All faces are simple polygons (there are no self-intersected polygons) <br/>
-   * 2. All faces are orientable and there is no island inside island or hole inside hole - TODO <br/>
-   * 3. There is no intersections between faces (excluding touching) - TODO <br/>
+   * Polygon is valid if
+   * 1. All faces are simple polygons (there are no self-intersected polygons)
+   * 2. All faces are orientable and there is no island inside island or hole inside hole - TODO
+   * 3. There is no intersections between faces (excluding touching) - TODO
    */
   isValid() {
     let valid = true
@@ -174,11 +174,11 @@ export class Polygon extends Shape<Polygon> {
 
   /**
    * Add new face to polygon. Returns added face
-   * @param {Point[]|Segment[]|Arc[]|Circle|Box} args -  new face may be create with one of the following ways: <br/>
-   * 1) array of points that describe closed path (edges are segments) <br/>
-   * 2) array of shapes (segments and arcs) which describe closed path <br/>
-   * 3) circle - will be added as counterclockwise arc <br/>
-   * 4) box - will be added as counterclockwise rectangle <br/>
+   * @param {Point[]|Segment[]|Arc[]|Circle|Box} args -  new face may be create with one of the following ways:
+   * 1) array of points that describe closed path (edges are segments)
+   * 2) array of shapes (segments and arcs) which describe closed path
+   * 3) circle - will be added as counterclockwise arc
+   * 4) box - will be added as counterclockwise rectangle
    * You can chain method face.reverse() is you need to change direction of the creates face
    * @returns {Face}
    */
@@ -593,7 +593,7 @@ export class Polygon extends Shape<Polygon> {
 
   /**
    * Return array of intersection points between polygon and other shape
-   * @param shape Shape of the one of supported types <br/>
+   * @param shape Shape of the one of supported types
    */
   intersect(shape: Shape) {
     if (shape instanceof geom.Point) {
