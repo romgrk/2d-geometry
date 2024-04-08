@@ -2,10 +2,6 @@ import { Box } from '../classes/Box'
 import type { Point } from '../classes/Point'
 import { IntervalTree } from '../data_structures/interval-tree'
 
-type AnyShape = {
-  box: Box
-}
-
 /**
  * Class representing a planar set - a generic container with ability to keep and retrieve shapes and
  * perform spatial queries. Planar set is an extension of Set container, so it supports

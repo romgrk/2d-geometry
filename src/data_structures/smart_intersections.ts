@@ -4,9 +4,26 @@
  */
 import * as Utils from '../utils/utils'
 import * as Constants from '../utils/constants'
-import type { Edge, Point, Polygon, Multiline } from '../classes'
+import type { Face, Edge, Line, Point, Polygon, Multiline } from '../classes'
 
-export function addToIntPoints(edge: Edge, pt: Point, int_points) {
+export type Intersection = {
+  id: number,
+  pt: Point,
+  arc_length: number,
+  edge_before: Edge | undefined,
+  edge_after: Edge | undefined,
+  face: Face,
+  is_vertex: number,
+  faceId?: number,
+}
+export type Intersections = {
+  int_points1: Intersection[],
+  int_points2: Intersection[],
+  int_points1_sorted: Intersection[],
+  int_points2_sorted: Intersection[],
+}
+
+export function addToIntPoints(edge: Edge, pt: Point, int_points: Intersection[]) {
   let id = int_points.length
   let shapes = edge.shape.split(pt)
 
@@ -46,7 +63,7 @@ export function addToIntPoints(edge: Edge, pt: Point, int_points) {
   })
 }
 
-export function sortIntersections(intersections) {
+export function sortIntersections(intersections: Intersections) {
   // if (intersections.int_points1.length === 0) return;
 
   // augment intersections with new sorted arrays
@@ -56,7 +73,7 @@ export function sortIntersections(intersections) {
   intersections.int_points2_sorted = getSortedArray(intersections.int_points2)
 }
 
-export function getSortedArray(int_points) {
+export function getSortedArray(int_points: Intersection[]) {
   let faceMap = new Map()
   let id = 0
   // Create integer id's for faces
@@ -75,7 +92,7 @@ export function getSortedArray(int_points) {
   return int_points_sorted
 }
 
-function compareFn(ip1, ip2) {
+function compareFn(ip1: Intersection, ip2: Intersection) {
   // compare face id's
   if (ip1.faceId < ip2.faceId) {
     return -1
@@ -93,7 +110,7 @@ function compareFn(ip1, ip2) {
   return 0
 }
 
-export function getSortedArrayOnLine(line, int_points) {
+export function getSortedArrayOnLine(line: Line, int_points: Intersection[]) {
   return int_points.slice().sort((int_point1, int_point2) => {
     if (line.coord(int_point1.pt) < line.coord(int_point2.pt)) {
       return -1
@@ -105,7 +122,7 @@ export function getSortedArrayOnLine(line, int_points) {
   })
 }
 
-export function filterDuplicatedIntersections(intersections) {
+export function filterDuplicatedIntersections(intersections: Intersections) {
   if (intersections.int_points1.length < 2) return
 
   let do_squeeze = false
@@ -185,7 +202,7 @@ export function filterDuplicatedIntersections(intersections) {
   }
 }
 
-export function initializeInclusionFlags(int_points) {
+export function initializeInclusionFlags(int_points: Intersection[]) {
   for (let int_point of int_points) {
     int_point.edge_before.bvStart = undefined
     int_point.edge_before.bvEnd = undefined
@@ -204,14 +221,14 @@ export function initializeInclusionFlags(int_points) {
   }
 }
 
-export function calculateInclusionFlags(int_points, polygon) {
+export function calculateInclusionFlags(int_points: Intersection[], polygon: Polygon) {
   for (let int_point of int_points) {
     int_point.edge_before.setInclusion(polygon)
     int_point.edge_after.setInclusion(polygon)
   }
 }
 
-export function setOverlappingFlags(intersections) {
+export function setOverlappingFlags(intersections: Intersections) {
   let cur_face = undefined
   let first_int_point_in_face_id = undefined
   let next_int_point1 = undefined
@@ -293,7 +310,7 @@ export function setOverlappingFlags(intersections) {
   }
 }
 
-export function intPointsPoolCount(int_points, cur_int_point_num, cur_face) {
+export function intPointsPoolCount(int_points: Intersection[], cur_int_point_num: number, cur_face: Face) {
   let int_point_current
   let int_point_next
 
@@ -326,7 +343,7 @@ export function intPointsPoolCount(int_points, cur_int_point_num, cur_face) {
   return int_points_pool_num
 }
 
-export function splitByIntersections(polygon: Polygon | Multiline, int_points) {
+export function splitByIntersections(polygon: Polygon | Multiline, int_points: Intersection[]) {
   if (!int_points) return
   for (let int_point of int_points) {
     let edge = int_point.edge_before
@@ -360,7 +377,7 @@ export function splitByIntersections(polygon: Polygon | Multiline, int_points) {
   }
 }
 
-export function insertBetweenIntPoints(int_point1, int_point2, new_edge) {
+export function insertBetweenIntPoints(int_point1: Intersection, int_point2: Intersection, new_edge: Edge) {
   let edge_before = int_point1.edge_before
   let edge_after = int_point2.edge_after
 

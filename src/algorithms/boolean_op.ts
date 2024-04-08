@@ -11,23 +11,30 @@ import {
   setOverlappingFlags,
   intPointsPoolCount,
   splitByIntersections,
+  Intersections,
+  Intersection,
 } from '../data_structures/smart_intersections'
+import type { Point } from '../classes/Point'
 import type { Polygon } from '../classes/Polygon'
+import type { Segment } from '../classes/Segment'
 import type { Shape } from '../classes/Shape'
+import { Face } from '../classes'
 
 const { INSIDE, OUTSIDE, BOUNDARY, OVERLAP_SAME, OVERLAP_OPPOSITE } = Constants
 const { START_VERTEX, END_VERTEX } = Constants
 
-export const BOOLEAN_UNION = 1
-export const BOOLEAN_INTERSECT = 2
-export const BOOLEAN_SUBTRACT = 3
+export enum BooleanOp {
+  UNION = 1,
+  INTERSECT = 2,
+  SUBTRACT = 3,
+}
 
 /**
  * Unify two polygons polygons and returns new polygon. <br/>
  * Point belongs to the resulted polygon if it belongs to the first OR to the second polygon
  */
 export function unify(polygon1: Polygon, polygon2: Polygon): Polygon {
-  return booleanOpBinary(polygon1, polygon2, BOOLEAN_UNION, true)[0]
+  return booleanOpBinary(polygon1, polygon2, BooleanOp.UNION, true)[0]
 }
 
 /**
@@ -36,7 +43,7 @@ export function unify(polygon1: Polygon, polygon2: Polygon): Polygon {
  */
 export function subtract(polygon1: Polygon, polygon2: Polygon): Polygon {
   const polygon2_reversed = polygon2.clone().reverse()
-  return booleanOpBinary(polygon1, polygon2_reversed, BOOLEAN_SUBTRACT, true)[0]
+  return booleanOpBinary(polygon1, polygon2_reversed, BooleanOp.SUBTRACT, true)[0]
 }
 
 /**
@@ -44,7 +51,7 @@ export function subtract(polygon1: Polygon, polygon2: Polygon): Polygon {
  * Point belongs to the resulted polygon is it belongs to the first AND to the second polygon
  */
 export function intersect(polygon1: Polygon, polygon2: Polygon): Polygon {
-  return booleanOpBinary(polygon1, polygon2, BOOLEAN_INTERSECT, true)[0]
+  return booleanOpBinary(polygon1, polygon2, BooleanOp.INTERSECT, true)[0]
 }
 
 /**
@@ -52,7 +59,7 @@ export function intersect(polygon1: Polygon, polygon2: Polygon): Polygon {
  * The first array are shapes from the first polygon, the second array are shapes from the second
  */
 export function innerClip(polygon1: Polygon, polygon2: Polygon): Shape[][] {
-  let [res_poly, wrk_poly] = booleanOpBinary(polygon1, polygon2, BOOLEAN_INTERSECT, false)
+  let [res_poly, wrk_poly] = booleanOpBinary(polygon1, polygon2, BooleanOp.INTERSECT, false)
 
   let clip_shapes1 = []
   for (let face of res_poly.faces) {
@@ -69,7 +76,7 @@ export function innerClip(polygon1: Polygon, polygon2: Polygon): Shape[][] {
  * Returns boundary of subtraction of the second polygon from first polygon as array of shapes
  */
 export function outerClip(polygon1: Polygon, polygon2: Polygon): Shape[] {
-  const [res_poly] = booleanOpBinary(polygon1, polygon2, BOOLEAN_SUBTRACT, false)
+  const [res_poly] = booleanOpBinary(polygon1, polygon2, BooleanOp.SUBTRACT, false)
 
   let clip_shapes1 = []
   for (let face of res_poly.faces) {
@@ -83,11 +90,8 @@ export function outerClip(polygon1: Polygon, polygon2: Polygon): Shape[] {
  * Returns intersection points between boundaries of two polygons as two array of points <br/>
  * Points in the first array belong to first polygon, points from the second - to the second.
  * Points in each array are ordered according to the direction of the correspondent polygon
- * @param {Polygon} polygon1 - first operand
- * @param {Polygon} polygon2 - second operand
- * @returns {Point[][]}
  */
-export function calculateIntersections(polygon1, polygon2) {
+export function calculateIntersections(polygon1: Polygon, polygon2: Polygon): Point[][] {
   let res_poly = polygon1.clone()
   let wrk_poly = polygon2.clone()
 
@@ -112,7 +116,7 @@ export function calculateIntersections(polygon1, polygon2) {
   return [ip_sorted1, ip_sorted2]
 }
 
-function filterNotRelevantEdges(res_poly, wrk_poly, intersections, op) {
+function filterNotRelevantEdges(res_poly: Polygon, wrk_poly: Polygon, intersections: Intersections, op: BooleanOp) {
   // keep not intersected faces for further remove and merge
   let notIntersectedFacesRes = getNotIntersectedFaces(res_poly, intersections.int_points1)
   let notIntersectedFacesWrk = getNotIntersectedFaces(wrk_poly, intersections.int_points2)
@@ -156,7 +160,7 @@ function filterNotRelevantEdges(res_poly, wrk_poly, intersections, op) {
   removeNotRelevantNotIntersectedFaces(wrk_poly, notIntersectedFacesWrk, op, false)
 }
 
-function swapLinksAndRestore(res_poly, wrk_poly, intersections, op) {
+function swapLinksAndRestore(res_poly: Polygon, wrk_poly: Polygon, intersections: Intersections, op: BooleanOp) {
   // add edges of wrk_poly into the edge container of res_poly
   copyWrkToRes(res_poly, wrk_poly, op, intersections.int_points2)
 
@@ -175,7 +179,7 @@ function swapLinksAndRestore(res_poly, wrk_poly, intersections, op) {
   // mergeRelevantNotIntersectedFaces(res_poly, wrk_poly);
 }
 
-function booleanOpBinary(polygon1, polygon2, op, restore) {
+function booleanOpBinary(polygon1: Polygon, polygon2: Polygon, op: BooleanOp, restore: boolean) {
   let res_poly = polygon1.clone()
   let wrk_poly = polygon2.clone()
 
@@ -205,7 +209,7 @@ function booleanOpBinary(polygon1, polygon2, op, restore) {
   return [res_poly, wrk_poly]
 }
 
-function getIntersections(polygon1, polygon2) {
+function getIntersections(polygon1: Polygon, polygon2: Polygon) {
   let intersections = {
     int_points1: [],
     int_points2: [],
@@ -233,7 +237,7 @@ function getIntersections(polygon1, polygon2) {
   return intersections
 }
 
-function getNotIntersectedFaces(poly, int_points) {
+function getNotIntersectedFaces(poly: Polygon, int_points: Intersection[]) {
   let notIntersected = []
   for (let face of poly.faces) {
     if (!int_points.find((ip) => ip.face === face)) {
@@ -243,14 +247,21 @@ function getNotIntersectedFaces(poly, int_points) {
   return notIntersected
 }
 
-function calcInclusionForNotIntersectedFaces(notIntersectedFaces, poly2) {
+function calcInclusionForNotIntersectedFaces(notIntersectedFaces: Face[], poly2: Polygon) {
   for (let face of notIntersectedFaces) {
     face.first.bv = face.first.bvStart = face.first.bvEnd = undefined
     face.first.setInclusion(poly2)
   }
 }
 
-function fixBoundaryConflicts(poly1, poly2, int_points1, int_points1_sorted, int_points2, intersections) {
+function fixBoundaryConflicts(
+  poly1: Polygon,
+  poly2: Polygon,
+  int_points1: Intersection[],
+  int_points1_sorted: Intersection[],
+  int_points2: Intersection[],
+  intersections: Intersections
+) {
   let cur_face
   let first_int_point_in_face_id
   let next_int_point1
@@ -364,12 +375,12 @@ function fixBoundaryConflicts(poly1, poly2, int_points1, int_points1_sorted, int
       // Find missing intersection point
       while (edge_tmp != edge_to1) {
         if (edge_tmp.bvStart === edge_from1.bv && edge_tmp.bvEnd === edge_to1.bv) {
-          let [dist, segment] = edge_tmp.shape.distanceTo(poly2)
+          let [dist, segment] = edge_tmp.shape.distanceTo(poly2) as [number, Segment]
           if (dist < 10 * Utils.getTolerance()) {
             // it should be very close
             // let pt = edge_tmp.end;
             // add to the list of intersections of poly1
-            addToIntPoints(edge_tmp, segment.ps, int_points1)
+            addToIntPoints(edge_tmp, segment.start, int_points1)
 
             // split edge_tmp in poly1 if need
             let int_point1 = int_points1[int_points1.length - 1]
@@ -401,8 +412,8 @@ function fixBoundaryConflicts(poly1, poly2, int_points1, int_points1_sorted, int
             }
 
             // add to the list of intersections of poly2
-            let edge2 = poly2.findEdgeByPoint(segment.pe)
-            addToIntPoints(edge2, segment.pe, int_points2)
+            let edge2 = poly2.findEdgeByPoint(segment.end)
+            addToIntPoints(edge2, segment.end, int_points2)
             // split edge2 in poly2 if need
             let int_point2 = int_points2[int_points2.length - 1]
             if (int_point2.is_vertex & START_VERTEX) {
@@ -454,12 +465,17 @@ function fixBoundaryConflicts(poly1, poly2, int_points1, int_points1_sorted, int
   return iterate_more
 }
 
-export function removeNotRelevantChains(polygon, op, int_points, is_res_polygon) {
+export function removeNotRelevantChains(
+  polygon: Polygon,
+  op: BooleanOp,
+  int_points: Intersection[],
+  is_res_polygon: boolean,
+) {
   if (!int_points) return
   let cur_face = undefined
   let first_int_point_in_face_num = undefined
-  let int_point_current
-  let int_point_next
+  let int_point_current: Intersection
+  let int_point_next: Intersection
 
   for (let i = 0; i < int_points.length; i++) {
     int_point_current = int_points[i]
@@ -499,10 +515,10 @@ export function removeNotRelevantChains(polygon, op, int_points, is_res_polygon)
     let edge_to = int_point_next.edge_before
 
     if (
-      (edge_from.bv === INSIDE && edge_to.bv === INSIDE && op === BOOLEAN_UNION) ||
-      (edge_from.bv === OUTSIDE && edge_to.bv === OUTSIDE && op === BOOLEAN_INTERSECT) ||
-      ((edge_from.bv === OUTSIDE || edge_to.bv === OUTSIDE) && op === BOOLEAN_SUBTRACT && !is_res_polygon) ||
-      ((edge_from.bv === INSIDE || edge_to.bv === INSIDE) && op === BOOLEAN_SUBTRACT && is_res_polygon) ||
+      (edge_from.bv === INSIDE && edge_to.bv === INSIDE && op === BooleanOp.UNION) ||
+      (edge_from.bv === OUTSIDE && edge_to.bv === OUTSIDE && op === BooleanOp.INTERSECT) ||
+      ((edge_from.bv === OUTSIDE || edge_to.bv === OUTSIDE) && op === BooleanOp.SUBTRACT && !is_res_polygon) ||
+      ((edge_from.bv === INSIDE || edge_to.bv === INSIDE) && op === BooleanOp.SUBTRACT && is_res_polygon) ||
       (edge_from.bv === BOUNDARY && edge_to.bv === BOUNDARY && edge_from.overlap & OVERLAP_SAME && is_res_polygon) ||
       (edge_from.bv === BOUNDARY && edge_to.bv === BOUNDARY && edge_from.overlap & OVERLAP_OPPOSITE)
     ) {
@@ -524,14 +540,14 @@ export function removeNotRelevantChains(polygon, op, int_points, is_res_polygon)
   }
 }
 
-function copyWrkToRes(res_polygon, wrk_polygon, op, int_points) {
+function copyWrkToRes(res_polygon: Polygon, wrk_polygon: Polygon, op: BooleanOp, int_points: Intersection[]) {
   for (let face of wrk_polygon.faces) {
     for (let edge of face) {
       res_polygon.edges.add(edge)
     }
     // If union - add face from wrk_polygon that is not intersected with res_polygon
     if (
-      /*(op === BOOLEAN_UNION || op == BOOLEAN_SUBTRACT) &&*/
+      /*(op === BooleanOp.UNION || op == BooleanOp.SUBTRACT) &&*/
       int_points.find((ip) => ip.face === face) === undefined
     ) {
       res_polygon.addFace(face.first, face.last)
@@ -539,7 +555,7 @@ function copyWrkToRes(res_polygon, wrk_polygon, op, int_points) {
   }
 }
 
-function swapLinks(res_polygon, wrk_polygon, intersections) {
+function swapLinks(res_polygon: Polygon, wrk_polygon: Polygon, intersections: Intersections) {
   if (intersections.int_points1.length === 0) return
 
   for (let i = 0; i < intersections.int_points1.length; i++) {
@@ -620,7 +636,7 @@ function swapLinks(res_polygon, wrk_polygon, intersections) {
   // Sanity check that no dead ends left
 }
 
-export function removeOldFaces(polygon, int_points) {
+export function removeOldFaces(polygon: Polygon, int_points: Intersection[]) {
   for (let int_point of int_points) {
     polygon.faces.delete(int_point.face)
     int_point.face = undefined
@@ -629,7 +645,7 @@ export function removeOldFaces(polygon, int_points) {
   }
 }
 
-export function restoreFaces(polygon, int_points, other_int_points) {
+export function restoreFaces(polygon: Polygon, int_points: Intersection[], other_int_points: Intersection[]) {
   // For each intersection point - create new face
   for (let int_point of int_points) {
     if (int_point.edge_before === undefined || int_point.edge_after === undefined)
@@ -677,21 +693,21 @@ export function restoreFaces(polygon, int_points, other_int_points) {
   }
 }
 
-function removeNotRelevantNotIntersectedFaces(polygon, notIntersectedFaces, op, is_res_polygon) {
+function removeNotRelevantNotIntersectedFaces(polygon: Polygon, notIntersectedFaces: Face[], op: BooleanOp, is_res_polygon: boolean) {
   for (let face of notIntersectedFaces) {
     let rel = face.first.bv
     if (
-      (op === BOOLEAN_UNION && rel === INSIDE) ||
-      (op === BOOLEAN_SUBTRACT && rel === INSIDE && is_res_polygon) ||
-      (op === BOOLEAN_SUBTRACT && rel === OUTSIDE && !is_res_polygon) ||
-      (op === BOOLEAN_INTERSECT && rel === OUTSIDE)
+      (op === BooleanOp.UNION && rel === INSIDE) ||
+      (op === BooleanOp.SUBTRACT && rel === INSIDE && is_res_polygon) ||
+      (op === BooleanOp.SUBTRACT && rel === OUTSIDE && !is_res_polygon) ||
+      (op === BooleanOp.INTERSECT && rel === OUTSIDE)
     ) {
       polygon.deleteFace(face)
     }
   }
 }
 
-function mergeRelevantNotIntersectedFaces(res_polygon, wrk_polygon) {
+function mergeRelevantNotIntersectedFaces(res_polygon: Polygon, wrk_polygon: Polygon) {
   // All not relevant faces should be already deleted from wrk_polygon
   for (let face of wrk_polygon.faces) {
     res_polygon.addFace(face)
