@@ -11,18 +11,38 @@ type AnyShape = {
  * perform spatial queries. Planar set is an extension of Set container, so it supports
  * Set properties and methods
  */
-export class PlanarSet extends Set {
+export class PlanarSet<T extends { box: Box }> {
+  set: Set<T>
   index: IntervalTree
 
   /**
    * Create new instance of PlanarSet
    * @param shapes - array or set of geometric objects to store in planar set
-   * Each object should have a <b>box</b> property
    */
-  constructor(shapes?: AnyShape[]) {
-    super(shapes)
+  constructor(shapes?: T[]) {
+    this.set = new Set<T>(shapes)
     this.index = new IntervalTree()
-    this.forEach((shape) => this.index.insert(shape))
+    this.set.forEach((shape) => this.index.insert(shape))
+  }
+
+  [Symbol.iterator]() {
+    return this.set[Symbol.iterator]()
+  }
+
+  get size() {
+    return this.set.size
+  }
+
+  has(shape: T) {
+    return this.set.has(shape)
+  }
+
+  forEach(fn: (shape: T) => void) {
+    this.set.forEach(fn)
+  }
+
+  asArray() {
+    return Array.from(this.set)
   }
 
   /**
@@ -31,13 +51,12 @@ export class PlanarSet extends Set {
    * This happens with no error, it is possible to use <i>size</i> property to check if
    * a shape was actually added.<br/>
    * Method returns planar set object updated and may be chained
-   * @param shape - shape to be added, should have valid <i>box</i> property
    */
-  add(shape: AnyShape) {
-    const size = this.size
-    super.add(shape)
+  add(shape: T) {
+    const size = this.set.size
+    this.set.add(shape)
     // size not changed - item not added, probably trying to add same item twice
-    if (this.size > size) {
+    if (this.set.size > size) {
       this.index.insert(shape.box as any, shape)
     }
     return this // in accordance to Set.add interface
@@ -45,10 +64,9 @@ export class PlanarSet extends Set {
 
   /**
    * Delete shape from planar set. Returns true if shape was actually deleted, false otherwise
-   * @param shape - shape to be deleted
    */
-  delete(shape: AnyShape) {
-    const deleted = super.delete(shape)
+  delete(shape: T) {
+    const deleted = this.set.delete(shape)
     if (deleted) {
       this.index.remove(shape.box, shape)
     }
@@ -59,7 +77,7 @@ export class PlanarSet extends Set {
    * Clear planar set
    */
   clear() {
-    super.clear()
+    this.set.clear()
     this.index = new IntervalTree()
   }
 

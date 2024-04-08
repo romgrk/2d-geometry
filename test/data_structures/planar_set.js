@@ -54,8 +54,8 @@ describe('#Data_structures.PlanarSet', function () {
 
     // Update == delete and add
     planarSet.delete(segment)
-    segment.pe.x = 3
-    segment.pe.y = 4
+    segment.end.x = 3
+    segment.end.y = 4
     planarSet.add(segment)
 
     expect(planarSet.has(segment)).to.equal(true)
@@ -122,7 +122,7 @@ describe('#Data_structures.PlanarSet', function () {
 
     let pt = point(300, 200)
 
-    let [dist, shortest_segment] = Flatten.Distance.shape2planarSet(pt, set)
+    let [dist, _] = Distance.shape2planarSet(pt, set)
     expect(dist).to.equal(20)
   })
   it('May clean planar set', function () {

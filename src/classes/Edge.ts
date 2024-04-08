@@ -1,20 +1,20 @@
 import { Position, Overlap } from '../utils/constants'
 import { ray_shoot } from '../algorithms/ray_shooting'
-import { Arc, Face, Line, Ray } from './index'
+import { Arc, Face, Line, Ray, Quadratic, Bezier } from './index'
 import type { Point } from './Point'
 import { Segment } from './Segment'
+
+export type EdgeShape = Segment | Arc | Quadratic | Bezier
 
 /**
  * Class representing an edge of polygon. Edge shape may be Segment or Arc.
  * Each edge contains references to the next and previous edges in the face of the polygon.
- *
- * @type {Edge}
  */
 export class Edge {
   static EMPTY = Object.freeze(new Edge(Segment.EMPTY))
 
   /** Shape of the edge: Segment or Arc */
-  shape: Segment | Arc
+  shape: EdgeShape
   /** Pointer to the next edge in the face */
   next: Edge
   /** Pointer to the previous edge in the face */
@@ -36,7 +36,7 @@ export class Edge {
    * Construct new instance of edge
    * @param shape Shape of type Segment or Arc
    */
-  constructor(shape: Segment | Arc) {
+  constructor(shape: EdgeShape) {
     this.shape = shape
     this.next = undefined
     this.prev = undefined

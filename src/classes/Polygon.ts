@@ -19,20 +19,24 @@ import { INSIDE, BOUNDARY } from '../utils/constants'
 import { PlanarSet } from '../data_structures/PlanarSet'
 import * as geom from '../classes'
 import type { Box } from '../classes/Box'
+import type { Point } from '../classes/Point'
 import type { Segment } from '../classes/Segment'
+import type { EdgeShape } from '../classes/Edge'
+import { Matrix } from '../classes/Matrix'
 import { Vector } from '../classes/Vector'
 import { Shape, ShapeTag } from './Shape'
 
 const isPointLike = (n: any): n is [number, number] =>
   Array.isArray(n) && n.length === 2 && typeof n[0] === 'number' && typeof n[1] === 'number'
 
-const isPoints = (e: any): e is [number, number][] => Array.isArray(e) && e.every(isPointLike)
+const isPoints = (e: any): e is (Point | [number, number])[] =>
+  Array.isArray(e) && (e.length === 0 || e[0] instanceof geom.Point || isPointLike(e[0]))
 
 /**
  * Class representing a polygon.
  * Polygon in FlattenJS is a multipolygon comprised from a set of [faces]{@link geom.Face}.
- * Face, in turn, is a closed loop of [edges]{@link geom.Edge}, where edge may be segment or circular arc
- * @type {Polygon}
+ * Face, in turn, is a closed loop of [edges]{@link geom.Edge}, where edge may be segment
+ * or circular arc
  */
 export class Polygon extends Shape<Polygon> {
   static EMPTY = Object.freeze(new Polygon([]))
@@ -40,11 +44,11 @@ export class Polygon extends Shape<Polygon> {
   /**
    * Container of faces (closed loops), may be empty
    */
-  faces: PlanarSet
+  faces: PlanarSet<geom.Face>
   /**
    * Container of edges
    */
-  edges: PlanarSet
+  edges: PlanarSet<geom.Edge>
 
   /**
    * Constructor creates new instance of polygon. With no arguments new polygon is empty.
@@ -58,24 +62,27 @@ export class Polygon extends Shape<Polygon> {
    * Alternatively, it is possible to use polygon.addFace method
    * @param {args} - array of shapes or array of arrays
    */
-  constructor(arg?: any) {
+  constructor()
+  constructor(edges: EdgeShape[])
+  constructor(points: Point[])
+  constructor(points: number[][])
+  constructor(shape: geom.Box | geom.Circle)
+  constructor(arg?: unknown) {
     super()
     this.faces = new PlanarSet()
     this.edges = new PlanarSet()
 
-    /* It may be array of something that may represent one loop (face) or
-         array of arrays that represent multiple loops
-         */
-
-    if (Array.isArray(arg) && arg.every(Array.isArray)) {
-      const inputs = arg as any
-
-      if (isPoints(inputs)) {
-        // one-loop polygon as array of pairs of numbers
-        this.faces.add(new geom.Face(this, inputs))
+    /*
+     * It may be array of something that may represent one loop (face) or
+     * array of arrays that represent multiple loops
+     */
+    if (Array.isArray(arg)) {
+      if (isPoints(arg)) {
+        /* one-loop polygon as array of pairs of numbers */
+        this.faces.add(new geom.Face(this, arg as any))
       } else {
-        // multi-loop polygon
-        for (let loop of inputs) {
+        /* multi-loop polygon */
+        for (let loop of arg) {
           /* Check extra level of nesting for GeoJSON-style multi polygons */
           if (Array.isArray(loop) && isPoints(loop[0])) {
             for (let subloop of loop) {
@@ -87,11 +94,13 @@ export class Polygon extends Shape<Polygon> {
         }
       }
     }
-
-    if (arg instanceof geom.Box) {
+    else if (arg instanceof geom.Box) {
       this.faces.add(new geom.Face(this, arg))
     }
-    if (arg instanceof geom.Path) {
+    else if (arg instanceof geom.Circle) {
+      this.faces.add(new geom.Face(this, arg))
+    }
+    else if (arg instanceof geom.Path) {
       this.faces.add(new geom.Face(this, arg))
     }
   }
@@ -641,9 +650,8 @@ export class Polygon extends Shape<Polygon> {
    * Return new polygon rotated by given angle around given point
    * If point omitted, rotate around origin (0,0)
    * Positive value of angle defines rotation counterclockwise, negative - clockwise
-   * @param {number} angle - rotation angle in radians
-   * @param {Point} center - rotation center, default is (0,0)
-   * @returns {Polygon} - new rotated polygon
+   * @param angle - rotation angle in radians
+   * @param center - rotation center, default is (0,0)
    */
   rotate(angle = 0, center = new geom.Point()) {
     let newPolygon = new Polygon()
@@ -655,12 +663,11 @@ export class Polygon extends Shape<Polygon> {
 
   /**
    * Return new polygon with coordinates multiplied by scaling factor
-   * @param {number} sx - x-axis scaling factor
-   * @param {number} sy - y-axis scaling factor
-   * @returns {Polygon}
+   * @param sx - x-axis scaling factor
+   * @param sy - y-axis scaling factor
    */
-  scale(sx: unknown, sy?: unknown) {
-    let newPolygon = new Polygon()
+  scale(sx: number, sy?: number) {
+    const newPolygon = new Polygon()
     for (let face of this.faces) {
       newPolygon.addFace(face.shapes.map((shape) => shape.scale(sx, sy)))
     }
@@ -669,11 +676,9 @@ export class Polygon extends Shape<Polygon> {
 
   /**
    * Return new polygon transformed using affine transformation matrix
-   * @param {Matrix} matrix - affine transformation matrix
-   * @returns {Polygon} - new polygon
    */
-  transform(matrix = new geom.Matrix()) {
-    let newPolygon = new Polygon()
+  transform(matrix = Matrix.IDENTITY) {
+    const newPolygon = new Polygon()
     for (let face of this.faces) {
       newPolygon.addFace(face.shapes.map((shape) => shape.transform(matrix)))
     }
@@ -690,7 +695,6 @@ export class Polygon extends Shape<Polygon> {
 
   /**
    * Transform all faces into array of polygons
-   * @returns {geom.Polygon[]}
    */
   toArray() {
     return [...this.faces].map((face) => face.toPolygon())
@@ -700,4 +704,4 @@ export class Polygon extends Shape<Polygon> {
 /**
  * Shortcut method to create new polygon
  */
-export const polygon = (...args) => new geom.Polygon(...args)
+export const polygon = (a) => new geom.Polygon(a)
