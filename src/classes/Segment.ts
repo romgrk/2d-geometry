@@ -119,6 +119,10 @@ export class Segment extends Shape<Segment> {
     return new geom.Vector(this.start, this.end).slope
   }
 
+  get vector() {
+    return new geom.Vector(this.start, this.end)
+  }
+
   /**
    * Returns true if equals to query segment, false otherwise
    */

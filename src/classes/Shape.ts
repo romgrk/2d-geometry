@@ -14,12 +14,15 @@ ORIGIN_POINT.x = 0
 ORIGIN_POINT.y = 0
 
 export enum ShapeTag {
-  Box,
-  Circle,
+  // Edge shapes
   Segment,
   Arc,
   Bezier,
   Quadratic,
+
+  // Non-edge shapes
+  Box,
+  Circle,
   Path,
   Ray,
   Line,
@@ -28,6 +31,7 @@ export enum ShapeTag {
   Polygon,
   Vector,
 }
+export const MAX_EDGE_SHAPE_TAG = ShapeTag.Quadratic
 
 /**
  * Base class representing shape
@@ -43,6 +47,16 @@ export abstract class Shape<T = unknown> {
   abstract get center(): Point
 
   abstract clone(): Shape
+
+  /**
+   * Data field for rendering engines, can be used to store cached data.
+   * e.g. Path2D when rendering to the canvas
+   */
+  _data: any
+
+  constructor() {
+    this._data = null
+  }
 
   /**
    * Returns new shape translated by given vector.

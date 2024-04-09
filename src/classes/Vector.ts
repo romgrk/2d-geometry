@@ -52,6 +52,12 @@ export class Vector extends Shape<Vector> {
       return
     }
 
+    if (args.length === 1 && typeof args[0] === 'number') {
+      this.x = Math.cos(args[0])
+      this.y = Math.sin(args[0])
+      return
+    }
+
     if (args.length === 2) {
       let a1 = args[0]
       let a2 = args[1]
@@ -172,10 +178,9 @@ export class Vector extends Shape<Vector> {
    * positive angle defines rotation in counterclockwise direction,
    * negative - in clockwise direction
    * Vector only can be rotated around (0,0) point!
-   * @param {number} angle - Angle in radians
-   * @returns {Vector}
+   * @param angle - Angle in radians
    */
-  rotate(angle, center = new geom.Point()) {
+  rotate(angle: number, center = geom.Point.EMPTY) {
     if (center.x === 0 && center.y === 0) {
       return this.transform(new Matrix().rotate(angle))
     }

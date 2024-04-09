@@ -8,7 +8,7 @@ import {
   intersectShape2Polygon,
 } from './intersection'
 import { ray_shoot } from './ray_shooting'
-import * as BooleanOperations from './boolean_op'
+import * as BooleanOperations from './booleanOperations'
 import type { Box } from '../classes/Box'
 import type { Line } from '../classes/Line'
 import type { Circle } from '../classes/Circle'

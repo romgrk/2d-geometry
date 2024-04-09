@@ -14,7 +14,7 @@ import Flatten from '../../index'
 import { Polygon } from '../../index'
 import { point, circle, segment, arc } from '../../index'
 
-import * as BooleanOperations from '../../dist/algorithms/boolean_op'
+import * as BooleanOperations from '../../dist/algorithms/booleanOperations'
 let { unify, subtract, intersect } = BooleanOperations
 
 let { equal } = Flatten.Relations

@@ -79,8 +79,12 @@ export class Polygon extends Shape<Polygon> {
      * array of arrays that represent multiple loops
      */
     if (Array.isArray(arg)) {
-      if (isPoints(arg)) {
+      if (arg.length === 0) {
+      } else if (isPoints(arg)) {
         /* one-loop polygon as array of pairs of numbers */
+        this.faces.add(new geom.Face(this, arg as any))
+      } else if (arg[0].tag <= geom.MAX_EDGE_SHAPE_TAG) {
+        /* one-loop polygon as array of edges */
         this.faces.add(new geom.Face(this, arg as any))
       } else {
         /* multi-loop polygon */
@@ -113,6 +117,10 @@ export class Polygon extends Shape<Polygon> {
 
   get name() {
     return 'polygon'
+  }
+
+  get parts() {
+    return this.edges.asArray().map(e => e.shape)
   }
 
   /**

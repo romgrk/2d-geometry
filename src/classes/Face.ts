@@ -53,9 +53,9 @@ export class Face extends CircularLinkedList<any> {
     }
 
     /* If passed an array it supposed to be:
-         1) array of shapes that performs close loop or
-         2) array of points that performs set of vertices
-         */
+     * 1) array of shapes that performs close loop or
+     * 2) array of points that performs set of vertices
+     */
     if (a !== undefined && b === undefined) {
       if (a instanceof Array) {
         const shapes = a
@@ -70,8 +70,8 @@ export class Face extends CircularLinkedList<any> {
           const points = shapes.map((shape) => new geom.Point(shape[0], shape[1]))
           const segments = Face.points2segments(points)
           this.shapes2face(polygon.edges, segments)
-        } else if (shapes.every((shape) => shape instanceof geom.Segment || shape instanceof geom.Arc)) {
-        /* array of segments ot arcs */
+        } else if (shapes[0] instanceof geom.Segment || shapes[0] instanceof geom.Arc || shapes[0] instanceof geom.Bezier || shapes[0] instanceof geom.Quadratic) {
+        /* array of edges */
           this.shapes2face(polygon.edges, shapes)
         }
         // this is from JSON.parse object
@@ -86,7 +86,8 @@ export class Face extends CircularLinkedList<any> {
           }
           this.shapes2face(polygon.edges, flattenShapes)
         }
-      } else if (a instanceof Face) {
+      }
+      else if (a instanceof Face) {
       /* Create new face and copy edges into polygon.edges set */
         const face = a
         this.first = face.first

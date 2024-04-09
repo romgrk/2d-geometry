@@ -24,6 +24,17 @@ export class Matrix {
   static EMPTY = Object.freeze(new Matrix(0, 0, 0, 0, 0, 0))
   static IDENTITY = Object.freeze(new Matrix(1, 0, 0, 1, 0, 0))
 
+  static fromTransform(x: number, y: number, rotation: number, scale: number) {
+    return new Matrix(
+      +scale * Math.cos(rotation),
+      +scale * Math.sin(rotation),
+      -scale * Math.sin(rotation),
+      +scale * Math.cos(rotation),
+      x,
+      y,
+    )
+  }
+
   /**
    * Construct new instance of affine transformation matrix <br/>
    * If parameters omitted, construct identity matrix a = 1, d = 1
@@ -92,11 +103,11 @@ export class Matrix {
     //     det(d, e, g, g) / D, -det(a, b, g, h) / D,  det(a, b, d, e) / D,
     // ]
 
-    const ai = det(e, f, h, i) / D
-    const ci = -det(b, c, h, i) / D
-    const txi = det(b, c, e, f) / D
-    const bi = -det(d, f, g, i) / D
-    const di = det(a, c, g, i) / D
+    const ai  =  det(e, f, h, i) / D
+    const ci  = -det(b, c, h, i) / D
+    const txi =  det(b, c, e, f) / D
+    const bi  = -det(d, f, g, i) / D
+    const di  =  det(a, c, g, i) / D
     const tyi = -det(a, c, d, f) / D
 
     return new Matrix(ai, bi, ci, di, txi, tyi)
@@ -170,7 +181,7 @@ export class Matrix {
     } else {
       throw ILLEGAL_PARAMETERS()
     }
-    return this.multiply(new Matrix(1, 0, 0, 1, tx, ty))
+    return this.clone().multiplyMut(new Matrix(1, 0, 0, 1, tx, ty))
   }
 
   /**
@@ -182,8 +193,8 @@ export class Matrix {
    * @param centerY - center of rotation
    */
   rotate(angle: number, centerX: number = 0.0, centerY: number = 0.0) {
-    let cos = Math.cos(angle)
-    let sin = Math.sin(angle)
+    const cos = Math.cos(angle)
+    const sin = Math.sin(angle)
     return this.translate(centerX, centerY)
       .multiply(new Matrix(cos, sin, -sin, cos, 0, 0))
       .translate(-centerX, -centerY)

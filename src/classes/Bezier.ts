@@ -16,7 +16,13 @@ const EMPTY = Object.freeze([]) as any[]
  * @type {Bezier}
  */
 export class Bezier extends Shape<Bezier> {
-  static EMPTY = Object.seal(new Bezier(Point.EMPTY, Point.EMPTY, Point.EMPTY, Point.EMPTY))
+  static EMPTY = Object.seal((() => {
+    const b = new Bezier(Point.EMPTY, Point.EMPTY, Point.EMPTY, Point.EMPTY)
+    b.vertices
+    b.segments
+    b.lut
+    return b
+  })())
 
   /** Start point */
   start: Point
@@ -339,4 +345,4 @@ function getSegmentDistance(shape: Shape): (s: Segment, o: any) => [number, Segm
 /**
  * Shortcut method to create new bezier
  */
-export const bezier = (a, b, c, d) => new Bezier(a, b, c, d)
+export const bezier = (a: any, b: any, c: any, d: any) => new Bezier(a, b, c, d)

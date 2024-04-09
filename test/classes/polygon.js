@@ -12,7 +12,7 @@ import {
   intersectPolygon2Polygon,
   intersectMultiline2Polygon,
 } from '../../dist/algorithms/intersection'
-import * as BooleanOperations from '../../dist/algorithms/boolean_op'
+import * as BooleanOperations from '../../dist/algorithms/booleanOperations'
 let { unify } = BooleanOperations
 
 describe('#Flatten.Polygon', function () {

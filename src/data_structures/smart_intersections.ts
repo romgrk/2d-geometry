@@ -13,8 +13,8 @@ export type Intersection = {
   edge_before: Edge | undefined,
   edge_after: Edge | undefined,
   face: Face,
+  faceId: number,
   is_vertex: number,
-  faceId?: number,
 }
 export type Intersections = {
   int_points1: Intersection[],
@@ -59,6 +59,7 @@ export function addToIntPoints(edge: Edge, pt: Point, int_points: Intersection[]
     edge_before: edge,
     edge_after: undefined,
     face: edge.face,
+    faceId: -1,
     is_vertex: is_vertex,
   })
 }
