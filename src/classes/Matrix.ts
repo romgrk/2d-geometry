@@ -1,5 +1,6 @@
 import { ILLEGAL_PARAMETERS } from '../utils/errors'
 import { EQ } from '../utils/utils'
+import type { PointLike } from './Point'
 import type { Vector } from './Vector'
 
 const det = (a: number, b: number, c: number, d: number) => a * d - b * c
@@ -20,6 +21,8 @@ export class Matrix {
   d: number
   tx: number
   ty: number
+
+  _inverse: Matrix | null
 
   static EMPTY = Object.freeze(new Matrix(0, 0, 0, 0, 0, 0))
   static IDENTITY = Object.freeze(new Matrix(1, 0, 0, 1, 0, 0))
@@ -52,6 +55,7 @@ export class Matrix {
     this.d = NaN
     this.tx = NaN
     this.ty = NaN
+    this._inverse = null
 
     this.a = a
     this.b = b
@@ -68,10 +72,25 @@ export class Matrix {
     return new Matrix(this.a, this.b, this.c, this.d, this.tx, this.ty)
   }
 
+  get inverse() {
+    const inverse = this._inverse ??= this.invert()
+    inverse._inverse = this
+    return inverse
+  }
+
   /**
    * Return the matrix inverse
    */
   invert() {
+    return this.clone().invertMut()
+  }
+
+  /**
+   * Return this matrix, inverted
+   */
+  invertMut() {
+    this._inverse = null
+
     const a = this.a
     const b = this.c
     const c = this.tx
@@ -110,7 +129,14 @@ export class Matrix {
     const di  =  det(a, c, g, i) / D
     const tyi = -det(a, c, d, f) / D
 
-    return new Matrix(ai, bi, ci, di, txi, tyi)
+    this.a = ai
+    this.b = bi
+    this.c = ci
+    this.d = di
+    this.tx = txi
+    this.ty = tyi
+
+    return this
   }
 
   /**
@@ -139,11 +165,15 @@ export class Matrix {
    *  y'   =     cx + dy + ty
    *  1]                    1 ]
    * </code>
-   * @param vector - array[2] of numbers
-   * @returns transformation result - array[2] of numbers
    */
-  transform(vector: number[]): [number, number] {
-    return [vector[0] * this.a + vector[1] * this.c + this.tx, vector[0] * this.b + vector[1] * this.d + this.ty]
+  transform(x: number, y: number): [number, number] {
+    return [x * this.a + y * this.c + this.tx, x * this.b + y * this.d + this.ty]
+  }
+
+  transformMut(p: PointLike): PointLike {
+    p.x = p.x * this.a + p.y * this.c + this.tx
+    p.y = p.x * this.b + p.y * this.d + this.ty
+    return p
   }
 
   /**
@@ -154,6 +184,7 @@ export class Matrix {
   }
 
   multiplyMut(other: Matrix) {
+    this._inverse = null
     this.a = this.a * other.a + this.c * other.b
     this.b = this.b * other.a + this.d * other.b
     this.c = this.a * other.c + this.c * other.d
@@ -231,4 +262,4 @@ export class Matrix {
 /**
  * Function to create matrix equivalent to "new" constructor
  */
-export const matrix = (...args) => new Matrix(...args)
+export const matrix = (a: number, b: number, c: number, d: number, tx: number, ty: number) => new Matrix(a, b, c, d, tx, ty)

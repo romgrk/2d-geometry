@@ -126,7 +126,7 @@ export class Point extends Shape<Point> {
    * Return new point transformed by affine transformation matrix
    */
   transform(m: Matrix) {
-    return new Point(m.transform([this.x, this.y]))
+    return new Point(m.transform(this.x, this.y))
   }
 
   /**

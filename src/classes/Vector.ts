@@ -176,7 +176,7 @@ export class Vector extends Shape<Vector> {
    * Return new vector transformed by affine transformation matrix.
    */
   transform(m: Matrix) {
-    return new Vector(m.transform([this.x, this.y]))
+    return new Vector(m.transform(this.x, this.y))
   }
 
   /**

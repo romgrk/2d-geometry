@@ -2,11 +2,11 @@
 
 **2d-geometry** is a fork of [flatten-js](https://github.com/alexbol99/flatten-js) focused on performance, ergonomics and Typescript.
 
-This library is meant to be a complete solution for manipulating abstract geometrical shapes like point, vector and circles. It also provides a lot of useful methods and algorithms like finding intersections, checking inclusion, calculating distance, applying affine transformations, performing boolean operations and more. It does not concern itself too much with visualization, but all classes implement a `svg()` method that returns a SVG string.
+This library is meant to be a complete solution for manipulating abstract geometrical shapes like point, vector and circles. It also provides a lot of useful methods and algorithms like finding intersections, checking inclusion, calculating distance, applying affine transformations, performing boolean operations and more.
 
 ### Why fork?
 
-The original library is **great** from a feature-set and mathematical point of view, but Typescript support is mediocre, and some very useful primitives are not available. This library also adds the very needed `Bezier` (cubic bezier curves) and `Path` (sequence of `Arc`, `Segment` and `Bezier`), which make working with SVG and Canvas a breeze.
+The original library is **great** from a feature-set and mathematical point of view, but Typescript support is mediocre, and some very useful primitives are not available. This library also adds the very needed `Quadratic`, `Bezier` and `Path` (sequence of `Arc`, `Segment`, `Quadratic` and `Bezier`), which make working with SVG and Canvas a breeze.
 
 The original is also written in a way that's impossible to tree-shake for bundlers, so you pay for all the advanced mathematical features even if you don't use them. This fork will break API with a new major at some point to split some features (notably intersection & distance algorithms) and optimize bundle size.
 
@@ -21,18 +21,20 @@ pnpm install --save 2d-geometry
 ```javascript
 import {
     Point,
-    Vector, // Oriented vector starting at (0, 0)
-    Line, // Infinite line
-    Ray, // Semi-infinite line (starts at a point, doesn't end)
-    Segment, // Finite line (starts and ends at a point)
-    Arc,
+    Vector,      // Oriented vector starting at (0, 0)
+    Line,        // Infinite line
+    Ray,         // Semi-infinite line (starts at a point, doesn't end)
+    Segment,     // Finite line (starts and ends at a point)
+    Arc,         // Circular arc only, no ellipses
     Circle,
-    Box,
-    Bezier, // Cubic bezier
-    Path, // Sequence of Arc, Segment and Bezier
+    Box,         // A bounding box, not a Rect!
+    Bezier,      // Cubic bezier
+    Quadratic,   // Quadratic bezier
+    Path,        // Sequence of Arc, Segment, Quadratic and Bezier
     Polygon,
-    Matrix,
-    PlanarSet,
+    Rect,        // Child class of Polygon
+    RoundedRect, // Child class of Polygon
+    Matrix,      // 2d affine transformation matrix
 } from '2d-geometry';
 ```
 
@@ -45,12 +47,21 @@ const s2 = segment(10, 160, 200, 30);
 const c = circle(point(200, 110), 50);
 ```
 
-The methods are immutable by default, and create new copies of their content:
+The objects are immutable by default, and create new copies of their content:
 ```javascript
 import { Point } from '2d-geometry';
 
 const a = Point.EMPTY // contains a frozen `new Point(0, 0)`
 const b = a.translate(50, 100)
+```
+
+Some methods are mutable however, they will be marked with the `Mut` suffix:
+```javascript
+import { Matrix } from '2d-geometry';
+
+const a = new Matrix()
+const b = Matrix.fromTransform(0, 0, 0, 2) // x, y, rotation, scale
+a.multiplyMut(b) // compose a and b into a
 ```
 
 You may test the code above also in [NPM RunKit](https://npm.runkit.com/2d-geometry)
