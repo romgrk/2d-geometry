@@ -8,7 +8,6 @@ import { TAU } from '../utils/constants'
 
 /**
  * Class representing a vector
- * @type {Vector}
  */
 export class Vector extends Shape<Vector> {
   static EMPTY = Object.freeze(new Vector(0, 0))
@@ -21,56 +20,52 @@ export class Vector extends Shape<Vector> {
   /**
    * Vector may be constructed by two points, or by two float numbers,
    * or by array of two numbers
-   * @param {Point} start - start point
-   * @param {Point} end - end point
    */
-  constructor(...args) {
+  constructor(a?: unknown, b?: unknown) {
     super()
     this.x = NaN
     this.y = NaN
     this.x = 0
     this.y = 0
 
+    const argsLength = +(a !== undefined) + +(b !== undefined)
+
     /* return zero vector */
-    if (args.length === 0) {
+    if (argsLength === 0) {
       return
     }
 
-    if (args.length === 1 && args[0] instanceof Array && args[0].length === 2) {
-      let arr = args[0]
-      if (typeof arr[0] == 'number' && typeof arr[1] == 'number') {
-        this.x = arr[0]
-        this.y = arr[1]
+    if (argsLength === 1 && a instanceof Array && a.length === 2) {
+      if (typeof a[0] == 'number' && typeof a[1] == 'number') {
+        this.x = a[0]
+        this.y = a[1]
         return
       }
     }
 
-    if (args.length === 1 && args[0] instanceof Object && args[0].name === 'vector') {
-      let { x, y } = args[0]
+    if (argsLength === 1 && a instanceof Object && (a as any).name === 'vector') {
+      let { x, y } = a as Vector
       this.x = x
       this.y = y
       return
     }
 
-    if (args.length === 1 && typeof args[0] === 'number') {
-      this.x = Math.cos(args[0])
-      this.y = Math.sin(args[0])
+    if (argsLength === 1 && typeof a === 'number') {
+      this.x = Math.cos(a)
+      this.y = Math.sin(a)
       return
     }
 
-    if (args.length === 2) {
-      let a1 = args[0]
-      let a2 = args[1]
-
-      if (typeof a1 == 'number' && typeof a2 == 'number') {
-        this.x = a1
-        this.y = a2
+    if (argsLength === 2) {
+      if (typeof a == 'number' && typeof b == 'number') {
+        this.x = a
+        this.y = b
         return
       }
 
-      if (a1 instanceof geom.Point && a2 instanceof geom.Point) {
-        this.x = a2.x - a1.x
-        this.y = a2.y - a1.y
+      if (a instanceof geom.Point && b instanceof geom.Point) {
+        this.x = b.x - a.x
+        this.y = b.y - a.y
         return
       }
     }
@@ -85,7 +80,7 @@ export class Vector extends Shape<Vector> {
     return new Vector(this.x, this.y)
   }
 
-  contains(other: Shape<unknown>): boolean {
+  contains(_other: Shape<unknown>): boolean {
     throw new Error('unimplemented')
   }
 
@@ -116,7 +111,6 @@ export class Vector extends Shape<Vector> {
 
   /**
    * Length of vector
-   * @returns {number}
    */
   get length() {
     return Math.sqrt(this.dot(this))
@@ -125,46 +119,37 @@ export class Vector extends Shape<Vector> {
   /**
    * Returns true if vectors are equal up to [DP_TOL]{@link http://localhost:63342/flatten-js/docs/global.html#DP_TOL}
    * tolerance
-   * @param {Vector} v
-   * @returns {boolean}
    */
-  equalTo(v) {
+  equalTo(v: Vector) {
     return Utils.EQ(this.x, v.x) && Utils.EQ(this.y, v.y)
   }
 
   /**
    * Returns new vector multiplied by scalar
-   * @param {number} scalar
-   * @returns {Vector}
    */
-  multiply(scalar) {
+  multiply(scalar: number) {
     return new Vector(scalar * this.x, scalar * this.y)
   }
 
   /**
    * Returns scalar product (dot product) of two vectors <br/>
    * <code>dot_product = (this * v)</code>
-   * @param {Vector} v Other vector
-   * @returns {number}
    */
-  dot(v) {
+  dot(v: Vector) {
     return this.x * v.x + this.y * v.y
   }
 
   /**
    * Returns vector product (cross product) of two vectors <br/>
    * <code>cross_product = (this x v)</code>
-   * @param {Vector} v Other vector
-   * @returns {number}
    */
-  cross(v) {
+  cross(v: Vector) {
     return this.x * v.y - this.y * v.x
   }
 
   /**
    * Returns unit vector.<br/>
    * Throw error if given vector has zero length
-   * @returns {Vector}
    */
   normalize() {
     if (!Utils.EQ_0(this.length)) {
@@ -188,11 +173,9 @@ export class Vector extends Shape<Vector> {
   }
 
   /**
-   * Return new vector transformed by affine transformation matrix m
-   * @param {Matrix} m - affine transformation matrix (a,b,c,d,tx,ty)
-   * @returns {Vector}
+   * Return new vector transformed by affine transformation matrix.
    */
-  transform(m) {
+  transform(m: Matrix) {
     return new Vector(m.transform([this.x, this.y]))
   }
 
@@ -235,10 +218,8 @@ export class Vector extends Shape<Vector> {
    * Return angle between this vector and other vector. <br/>
    * Angle is measured from 0 to 2*PI in the counterclockwise direction
    * from current vector to  another.
-   * @param {Vector} v Another vector
-   * @returns {number}
    */
-  angleTo(v) {
+  angleTo(v: Vector) {
     let norm1 = this.normalize()
     let norm2 = v.normalize()
     let angle = Math.atan2(norm1.cross(norm2), norm1.dot(norm2))
@@ -248,10 +229,8 @@ export class Vector extends Shape<Vector> {
 
   /**
    * Return vector projection of the current vector on another vector
-   * @param {Vector} v Another vector
-   * @returns {Vector}
    */
-  projectionOn(v) {
+  projectionOn(v: Vector) {
     let n = v.normalize()
     let d = this.dot(n)
     return n.multiply(d)
@@ -260,6 +239,5 @@ export class Vector extends Shape<Vector> {
 
 /**
  * Function to create vector equivalent to "new" constructor
- * @param args
  */
-export const vector = (...args) => new Vector(...args)
+export const vector = (a: any, b: any) => new Vector(a, b)
