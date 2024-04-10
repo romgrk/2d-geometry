@@ -6,9 +6,9 @@ This library is meant to be a complete solution for manipulating abstract geomet
 
 ### Why fork?
 
-The original library is **great** from a feature-set and mathematical point of view, but Typescript support is mediocre, and some very useful primitives are not available. This library also adds the very needed `Quadratic`, `Bezier` and `Path` (sequence of `Arc`, `Segment`, `Quadratic` and `Bezier`), which make working with SVG and Canvas a breeze.
+The original library is **great** from a feature-set and mathematical point of view, but Typescript support is mediocre, and some very useful primitives are not available. This library adds the very needed `Quadratic`, `Bezier` and `Path` (sequence of `Arc`, `Segment`, `Quadratic` and `Bezier`), which make working with SVG and Canvas a breeze.
 
-The original is also written in a way that's impossible to tree-shake for bundlers, so you pay for all the advanced mathematical features even if you don't use them. This fork will break API with a new major at some point to split some features (notably intersection & distance algorithms) and optimize bundle size.
+The original is also written in a way that's hard to optimize for JS engines, and impossible to tree-shake for bundlers. This fork will break API with a new major at some point to split some features (notably intersection & distance algorithms) and optimize bundle size.
 
 ## Installation
 
@@ -75,7 +75,7 @@ const svgString = stringify(new Circle(100, 100, 50), { fill: 'red' })
 const path = parsePath('M0,0 L100,0 L100,100 L0,100 Z') // returns a `Path` instance
 ```
 
-This project also adheres to the [Tau manifesto](https://tauday.com/tau-manifesto) and exports the circle constant as `TAU`, which is equivalent to `2 * Math.PI`:
+This project adheres to the [Tau manifesto](https://tauday.com/tau-manifesto) and exports the circle constant as `TAU`, which is equivalent to `2 * Math.PI`:
 ```javascript
 import { TAU } from '2d-geometry'
 ```
@@ -100,10 +100,10 @@ if (shape instanceof Segment) {
 // YES
 switch (shape.tag) {
   case ShapeTag.Segment: {
-    drawSegment(shape as Segment)
+    drawSegment(shape as Segment); break
   }
   case ShapeTag.Circle: {
-    drawCircle(shape as Circle)
+    drawCircle(shape as Circle); break
   }
   // ...
 }
@@ -308,30 +308,3 @@ let str = JSON.stringify(l);
 let l_json = JSON.parse(str);
 let l_parsed = line(l_json);
 ```
-
-### Visualization
-
-All classes provide `svg()` method, that create svg string that may be inserted into svg container element
-in a very straightforward way:
-
-```html
-<body>
-    <svg id="stage" width="500" height="500"></svg>
-<script>
-    import { point, circle, segment } from '2d-geometry'
-
-    const s1 = segment(10, 10, 200, 200)
-    const s2 = segment(10, 160, 200, 30)
-    const c = circle(point(200, 110), 50)
-    const ip = s1.intersect(s2)
-
-    document.getElementById("stage").innerHTML = s1.svg() + s2.svg() + c.svg() + ip[0].svg();
-</script>
-</body>
-```
-
-Method `svg()` may accept as a parameter an object that enables to define
-several basic attributes of svg element:
- `stroke`, `strokeWidth`, `fill`, `fillRule`, `fillOpacity`, `id` and `className`.
- If attributes not provided, method `svg()` use default values.
- 
