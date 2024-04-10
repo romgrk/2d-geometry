@@ -1,52 +1,52 @@
 import * as Utils from '../utils/utils'
 import * as Intersection from '../algorithms/intersection'
-import * as geom from '../classes'
+import * as g from '../classes'
 import { PlanarSet } from '../data_structures/PlanarSet'
 import { IntervalTree } from '../data_structures/interval-tree'
 
 /**
  * Calculate distance and shortest segment between points
  */
-export function point2point(a: geom.Point, b: geom.Point): [number, geom.Segment] {
+export function point2point(a: g.Point, b: g.Point): [number, g.Segment] {
   return a.distanceTo(b)
 }
 
 /**
  * Calculate distance and shortest segment between point and line
  */
-export function point2line(pt: geom.Point, line: geom.Line): [number, geom.Segment] {
+export function point2line(pt: g.Point, line: g.Line): [number, g.Segment] {
   let closest_point = pt.projectionOn(line)
-  let vec = new geom.Vector(pt, closest_point)
-  return [vec.length, new geom.Segment(pt, closest_point)]
+  let vec = new g.Vector(pt, closest_point)
+  return [vec.length, new g.Segment(pt, closest_point)]
 }
 
 /**
  * Calculate distance and shortest segment between point and circle
  */
-export function point2circle(pt: geom.Point, circle: geom.Circle): [number, geom.Segment] {
+export function point2circle(pt: g.Point, circle: g.Circle): [number, g.Segment] {
   let [dist2center, shortest_dist] = pt.distanceTo(circle.center)
   if (Utils.EQ_0(dist2center)) {
-    return [circle.r, new geom.Segment(pt, circle.toArc().start)]
+    return [circle.r, new g.Segment(pt, circle.toArc().start)]
   } else {
     let dist = Math.abs(dist2center - circle.r)
-    let v = new geom.Vector(circle.pc, pt).normalize().multiply(circle.r)
+    let v = new g.Vector(circle.pc, pt).normalize().multiply(circle.r)
     let closest_point = circle.pc.translate(v)
-    return [dist, new geom.Segment(pt, closest_point)]
+    return [dist, new g.Segment(pt, closest_point)]
   }
 }
 
 /**
  * Calculate distance and shortest segment between point and segment
  */
-export function point2segment(pt: geom.Point, segment: geom.Segment): [number, geom.Segment] {
+export function point2segment(pt: g.Point, segment: g.Segment): [number, g.Segment] {
   /* Degenerated case of zero-length segment */
   if (segment.start.equalTo(segment.end)) {
     return point2point(pt, segment.start)
   }
 
-  let v_seg = new geom.Vector(segment.start, segment.end)
-  let v_ps2pt = new geom.Vector(segment.start, pt)
-  let v_pe2pt = new geom.Vector(segment.end, pt)
+  let v_seg = new g.Vector(segment.start, segment.end)
+  let v_ps2pt = new g.Vector(segment.start, pt)
+  let v_pe2pt = new g.Vector(segment.end, pt)
   let start_sp = v_seg.dot(v_ps2pt)
   /* dot product v_seg * v_ps2pt */
   let end_sp = -v_seg.dot(v_pe2pt)
@@ -56,12 +56,12 @@ export function point2segment(pt: geom.Point, segment: geom.Segment): [number, g
   let closest_point
   if (Utils.GE(start_sp, 0) && Utils.GE(end_sp, 0)) {
     /* point inside segment scope */
-    let v_unit = segment.tangentInStart() // new geom.Vector(v_seg.x / this.length, v_seg.y / this.length);
+    let v_unit = segment.tangentInStart() // new g.Vector(v_seg.x / this.length, v_seg.y / this.length);
     /* unit vector ||v_unit|| = 1 */
     dist = Math.abs(v_unit.cross(v_ps2pt))
     /* dist = abs(v_unit x v_ps2pt) */
     closest_point = segment.start.translate(v_unit.multiply(v_unit.dot(v_ps2pt)))
-    return [dist, new geom.Segment(pt, closest_point)]
+    return [dist, new g.Segment(pt, closest_point)]
   } else if (start_sp < 0) {
     /* point is out of scope closer to ps */
     return pt.distanceTo(segment.start)
@@ -74,8 +74,8 @@ export function point2segment(pt: geom.Point, segment: geom.Segment): [number, g
 /**
  * Calculate distance and shortest segment between point and arc
  */
-export function point2arc(pt: geom.Point, arc: geom.Arc): [number, geom.Segment] {
-  let circle = new geom.Circle(arc.pc, arc.r)
+export function point2arc(pt: g.Point, arc: g.Arc): [number, g.Segment] {
+  let circle = new g.Circle(arc.pc, arc.r)
   let dist_and_segment = []
   let dist, shortest_segment
   ;[dist, shortest_segment] = point2circle(pt, circle)
@@ -93,7 +93,7 @@ export function point2arc(pt: geom.Point, arc: geom.Arc): [number, geom.Segment]
 /**
  * Calculate distance and shortest segment between segment and point
  */
-export function segment2point(segment: geom.Segment, point: geom.Point): [number, geom.Segment] {
+export function segment2point(segment: g.Segment, point: g.Point): [number, g.Segment] {
   const result = point2segment(point, segment)
   result[1] = result[1].reverse()
   return result
@@ -102,10 +102,10 @@ export function segment2point(segment: geom.Segment, point: geom.Point): [number
 /**
  * Calculate distance and shortest segment between segment and line
  */
-export function segment2line(seg: geom.Segment, line: geom.Line): [number, geom.Segment] {
+export function segment2line(seg: g.Segment, line: g.Line): [number, g.Segment] {
   let ip = seg.intersect(line)
   if (ip.length > 0) {
-    return [0, new geom.Segment(ip[0], ip[0])] // distance = 0, closest point is the first point
+    return [0, new g.Segment(ip[0], ip[0])] // distance = 0, closest point is the first point
   }
   let dist_and_segment = []
   dist_and_segment.push(point2line(seg.start, line))
@@ -121,10 +121,10 @@ export function segment2line(seg: geom.Segment, line: geom.Line): [number, geom.
  * @param seg2
  * @returns {Number | Segment} - distance and shortest segment
  */
-export function segment2segment(seg1, seg2): [number, geom.Segment] {
+export function segment2segment(seg1, seg2): [number, g.Segment] {
   let ip = Intersection.intersectSegment2Segment(seg1, seg2)
   if (ip.length > 0) {
-    return [0, new geom.Segment(ip[0], ip[0])] // distance = 0, closest point is the first point
+    return [0, new g.Segment(ip[0], ip[0])] // distance = 0, closest point is the first point
   }
 
   // Seg1 and seg2 not intersected
@@ -147,11 +147,11 @@ export function segment2segment(seg1, seg2): [number, geom.Segment] {
  * @param circle
  * @returns {Number | Segment} - distance and shortest segment
  */
-export function segment2circle(seg, circle): [number, geom.Segment] {
+export function segment2circle(seg, circle): [number, g.Segment] {
   /* Case 1 Segment and circle intersected. Return the first point and zero distance */
   let ip = seg.intersect(circle)
   if (ip.length > 0) {
-    return [0, new geom.Segment(ip[0], ip[0])]
+    return [0, new g.Segment(ip[0], ip[0])]
   }
 
   // No intersection between segment and circle
@@ -159,7 +159,7 @@ export function segment2circle(seg, circle): [number, geom.Segment] {
   /* Case 2. Distance to projection of center point to line bigger than radius
    * And projection point belong to segment
    * Then measure again distance from projection to circle and return it */
-  let line = new geom.Line(seg.ps, seg.pe)
+  let line = new g.Line(seg.ps, seg.pe)
   let [dist, shortest_segment] = point2line(circle.center, line)
   if (Utils.GE(dist, circle.r) && shortest_segment.end.on(seg)) {
     return point2circle(shortest_segment.end, circle)
@@ -179,16 +179,16 @@ export function segment2circle(seg, circle): [number, geom.Segment] {
  * @param arc
  * @returns {Number | Segment} - distance and shortest segment
  */
-export function segment2arc(seg, arc): [number, geom.Segment] {
+export function segment2arc(seg, arc): [number, g.Segment] {
   /* Case 1 Segment and arc intersected. Return the first point and zero distance */
   let ip = seg.intersect(arc)
   if (ip.length > 0) {
-    return [0, new geom.Segment(ip[0], ip[0])]
+    return [0, new g.Segment(ip[0], ip[0])]
   }
 
   // No intersection between segment and arc
-  let line = new geom.Line(seg.ps, seg.pe)
-  let circle = new geom.Circle(arc.pc, arc.r)
+  let line = new g.Line(seg.ps, seg.pe)
+  let circle = new g.Circle(arc.pc, arc.r)
 
   /* Case 2. Distance to projection of center point to line bigger than radius AND
    * projection point belongs to segment AND
@@ -226,10 +226,10 @@ export function segment2arc(seg, arc): [number, geom.Segment] {
  * @param circle2
  * @returns {Number | Segment} - distance and shortest segment
  */
-export function circle2circle(circle1, circle2): [number, geom.Segment] {
+export function circle2circle(circle1, circle2): [number, g.Segment] {
   let ip = circle1.intersect(circle2)
   if (ip.length > 0) {
-    return [0, new geom.Segment(ip[0], ip[0])]
+    return [0, new g.Segment(ip[0], ip[0])]
   }
 
   // Case 1. Concentric circles. Convert to arcs and take distance between two arc starts
@@ -239,7 +239,7 @@ export function circle2circle(circle1, circle2): [number, geom.Segment] {
     return point2point(arc1.start, arc2.start)
   } else {
     // Case 2. Not concentric circles
-    let line = new geom.Line(circle1.center, circle2.center)
+    let line = new g.Line(circle1.center, circle2.center)
     let ip1 = line.intersect(circle1)
     let ip2 = line.intersect(circle2)
 
@@ -261,10 +261,10 @@ export function circle2circle(circle1, circle2): [number, geom.Segment] {
  * @param line
  * @returns {Number | Segment} - distance and shortest segment
  */
-export function circle2line(circle, line): [number, geom.Segment] {
+export function circle2line(circle, line): [number, g.Segment] {
   let ip = circle.intersect(line)
   if (ip.length > 0) {
-    return [0, new geom.Segment(ip[0], ip[0])]
+    return [0, new g.Segment(ip[0], ip[0])]
   }
 
   let [dist_from_center, shortest_segment_from_center] = point2line(circle.center, line)
@@ -279,14 +279,14 @@ export function circle2line(circle, line): [number, geom.Segment] {
  * @param line
  * @returns {Number | Segment} - distance and shortest segment
  */
-export function arc2line(arc, line): [number, geom.Segment] {
+export function arc2line(arc, line): [number, g.Segment] {
   /* Case 1 Line and arc intersected. Return the first point and zero distance */
   let ip = line.intersect(arc)
   if (ip.length > 0) {
-    return [0, new geom.Segment(ip[0], ip[0])]
+    return [0, new g.Segment(ip[0], ip[0])]
   }
 
-  let circle = new geom.Circle(arc.center, arc.r)
+  let circle = new g.Circle(arc.center, arc.r)
 
   /* Case 2. Distance to projection of center point to line bigger than radius AND
    * projection point belongs to segment AND
@@ -317,13 +317,13 @@ export function arc2line(arc, line): [number, geom.Segment] {
  * @param circle2
  * @returns {Number | Segment} - distance and shortest segment
  */
-export function arc2circle(arc, circle2): [number, geom.Segment] {
+export function arc2circle(arc, circle2): [number, g.Segment] {
   let ip = arc.intersect(circle2)
   if (ip.length > 0) {
-    return [0, new geom.Segment(ip[0], ip[0])]
+    return [0, new g.Segment(ip[0], ip[0])]
   }
 
-  let circle1 = new geom.Circle(arc.center, arc.r)
+  let circle1 = new g.Circle(arc.center, arc.r)
 
   let [dist, shortest_segment] = circle2circle(circle1, circle2)
   if (shortest_segment.start.on(arc)) {
@@ -346,14 +346,14 @@ export function arc2circle(arc, circle2): [number, geom.Segment] {
  * @param arc2
  * @returns {Number | Segment} - distance and shortest segment
  */
-export function arc2arc(arc1, arc2): [number, geom.Segment] {
+export function arc2arc(arc1, arc2): [number, g.Segment] {
   let ip = arc1.intersect(arc2)
   if (ip.length > 0) {
-    return [0, new geom.Segment(ip[0], ip[0])]
+    return [0, new g.Segment(ip[0], ip[0])]
   }
 
-  let circle1 = new geom.Circle(arc1.center, arc1.r)
-  let circle2 = new geom.Circle(arc2.center, arc2.r)
+  let circle1 = new g.Circle(arc1.center, arc1.r)
+  let circle2 = new g.Circle(arc2.center, arc2.r)
 
   let [dist, shortest_segment] = circle2circle(circle1, circle2)
   if (shortest_segment.start.on(arc1) && shortest_segment.end.on(arc2)) {
@@ -407,24 +407,24 @@ export function arc2arc(arc1, arc2): [number, geom.Segment] {
  * @param polygon
  * @returns {Number | Segment} - distance and shortest segment
  */
-export function point2polygon(point, polygon): [number, geom.Segment] {
-  let min_dist_and_segment = [Number.POSITIVE_INFINITY, new geom.Segment()] as [number, geom.Segment]
+export function point2polygon(point, polygon): [number, g.Segment] {
+  let min_dist_and_segment = [Number.POSITIVE_INFINITY, new g.Segment()] as [number, g.Segment]
   for (let edge of polygon.edges) {
     let [dist, shortest_segment] =
-      edge.shape instanceof geom.Segment ? point2segment(point, edge.shape) : point2arc(point, edge.shape)
+      edge.shape instanceof g.Segment ? point2segment(point, edge.shape) : point2arc(point, edge.shape)
     if (Utils.LT(dist, min_dist_and_segment[0])) {
-      min_dist_and_segment = [dist, shortest_segment] as [number, geom.Segment]
+      min_dist_and_segment = [dist, shortest_segment] as [number, g.Segment]
     }
   }
   return min_dist_and_segment
 }
 
-export function shape2polygon(shape, polygon): [number, geom.Segment] {
-  let min_dist_and_segment = [Number.POSITIVE_INFINITY, new geom.Segment()] as [number, geom.Segment]
+export function shape2polygon(shape, polygon): [number, g.Segment] {
+  let min_dist_and_segment = [Number.POSITIVE_INFINITY, new g.Segment()] as [number, g.Segment]
   for (let edge of polygon.edges) {
     let [dist, shortest_segment] = shape.distanceTo(edge.shape)
     if (Utils.LT(dist, min_dist_and_segment[0])) {
-      min_dist_and_segment = [dist, shortest_segment] as [number, geom.Segment]
+      min_dist_and_segment = [dist, shortest_segment] as [number, g.Segment]
     }
   }
   return min_dist_and_segment
@@ -436,13 +436,13 @@ export function shape2polygon(shape, polygon): [number, geom.Segment] {
  * @param polygon2
  * @returns {Number | Segment} - distance and shortest segment
  */
-export function polygon2polygon(polygon1, polygon2): [number, geom.Segment] {
-  let min_dist_and_segment = [Number.POSITIVE_INFINITY, new geom.Segment()] as [number, geom.Segment]
+export function polygon2polygon(polygon1, polygon2): [number, g.Segment] {
+  let min_dist_and_segment = [Number.POSITIVE_INFINITY, new g.Segment()] as [number, g.Segment]
   for (let edge1 of polygon1.edges) {
     for (let edge2 of polygon2.edges) {
       let [dist, shortest_segment] = edge1.shape.distanceTo(edge2.shape)
       if (Utils.LT(dist, min_dist_and_segment[0])) {
-        min_dist_and_segment = [dist, shortest_segment] as [number, geom.Segment]
+        min_dist_and_segment = [dist, shortest_segment] as [number, g.Segment]
       }
     }
   }
@@ -487,7 +487,7 @@ export function minmax_tree_process_level(shape, level, min_stop, tree) {
 
     // Estimate min-max dist to the shape stored in the node.item, using node.item.key which is shape's box
     ;[mindist, maxdist] = box2box_minmax(shape.box, node.item.key)
-    if (node.item.value instanceof geom.Edge) {
+    if (node.item.value instanceof g.Edge) {
       tree.insert([mindist, maxdist], node.item.value.shape)
     } else {
       tree.insert([mindist, maxdist], node.item.value)
@@ -565,7 +565,7 @@ export function minmax_tree_calc_distance(shape, node, min_dist_and_segment) {
  * @param {Number} min_stop
  */
 export function shape2planarSet(shape, set, min_stop = Number.POSITIVE_INFINITY) {
-  let min_dist_and_segment = [min_stop, new geom.Segment()] as const
+  let min_dist_and_segment = [min_stop, new g.Segment()] as const
   let stop = false
   if (set instanceof PlanarSet) {
     let tree = minmax_tree(shape, set, min_stop)

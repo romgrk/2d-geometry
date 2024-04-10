@@ -4,19 +4,18 @@ import { PlanarSet } from '../data_structures/PlanarSet'
 import * as Utils from '../utils/utils'
 import * as Intersection from '../algorithms/intersection'
 import * as geom from './index'
-import { Point } from './Point'
 import { Shape, ShapeTag } from './Shape'
 
 /**
  * Class representing a circular arc
  */
 export class Arc extends Shape<Arc> {
-  static EMPTY = Object.freeze(new Arc(Point.EMPTY, 0, 0, 0, CCW))
+  static EMPTY = Object.freeze(new Arc(geom.Point.EMPTY, 0, 0, 0, CCW))
 
   /**
    * Arc center
    */
-  pc: Point
+  pc: geom.Point
   /**
    * Arc X radius
    */
@@ -34,14 +33,14 @@ export class Arc extends Shape<Arc> {
    */
   counterClockwise: boolean
 
-  _start: Point | null
-  _end: Point | null
+  _start: geom.Point | null
+  _end: geom.Point | null
 
   constructor(arc: Arc)
-  constructor(pc: Point, r: number, startAngle: number, endAngle: number, ccw?: boolean)
+  constructor(pc: geom.Point, r: number, startAngle: number, endAngle: number, ccw?: boolean)
   constructor(a?: unknown, b?: unknown, c?: unknown, d?: unknown, e?: unknown) {
     super()
-    this.pc = Point.EMPTY
+    this.pc = geom.Point.EMPTY
     this.r = NaN
     this.startAngle = NaN
     this.endAngle = NaN
@@ -57,13 +56,13 @@ export class Arc extends Shape<Arc> {
 
     if (a instanceof Object && (a as any).name === 'arc') {
       const { pc, r, startAngle, endAngle, counterClockwise } = a as Arc
-      this.pc = new Point(pc.x, pc.y)
+      this.pc = new geom.Point(pc.x, pc.y)
       this.r = r
       this.startAngle = startAngle
       this.endAngle = endAngle
       this.counterClockwise = counterClockwise
     } else {
-      if (a !== undefined) this.pc = a as Point
+      if (a !== undefined) this.pc = a as geom.Point
       if (b !== undefined) this.r = b as number
       if (c !== undefined) this.startAngle = c as number
       if (d !== undefined) this.endAngle = d as number
@@ -125,10 +124,10 @@ export class Arc extends Shape<Arc> {
   /**
    * Get start point of arc
    */
-  get start(): Point {
-    return (this._start ??= new Point(this.pc.x + this.r, this.pc.y).rotate(this.startAngle, this.pc))
+  get start(): geom.Point {
+    return (this._start ??= new geom.Point(this.pc.x + this.r, this.pc.y).rotate(this.startAngle, this.pc))
   }
-  set start(p: Point) {
+  set start(p: geom.Point) {
     this._start = p
   }
 
@@ -136,9 +135,9 @@ export class Arc extends Shape<Arc> {
    * Get end point of arc
    */
   get end() {
-    return (this._end ??= new Point(this.pc.x + this.r, this.pc.y).rotate(this.endAngle, this.pc))
+    return (this._end ??= new geom.Point(this.pc.x + this.r, this.pc.y).rotate(this.endAngle, this.pc))
   }
-  set end(p: Point) {
+  set end(p: geom.Point) {
     this._end = p
   }
 
@@ -156,7 +155,7 @@ export class Arc extends Shape<Arc> {
   /**
    * Returns true if arc contains point, false otherwise
    */
-  contains(pt: Point) {
+  contains(pt: geom.Point) {
     // first check if  point on circle (pc,r)
     if (!Utils.EQ(this.pc.distanceTo(pt)[0], this.r)) return false
 
@@ -165,7 +164,7 @@ export class Arc extends Shape<Arc> {
     if (pt.equalTo(this.start)) return true
 
     let angle = new geom.Vector(this.pc, pt).slope
-    let test_arc = new geom.Arc(this.pc, this.r, this.startAngle, angle, this.counterClockwise)
+    let test_arc = new Arc(this.pc, this.r, this.startAngle, angle, this.counterClockwise)
     return Utils.LE(test_arc.length, this.length)
   }
 
@@ -174,7 +173,7 @@ export class Arc extends Shape<Arc> {
    * to start or end point of the arc, return clone of the arc. If point does not belong to the arcs, return
    * empty array.
    */
-  split(pt: Point): (Arc | null)[] {
+  split(pt: geom.Point): (Arc | null)[] {
     if (this.start.equalTo(pt)) return [null, this.clone()]
 
     if (this.end.equalTo(pt)) return [this.clone(), null]
@@ -225,7 +224,6 @@ export class Arc extends Shape<Arc> {
 
   /**
    * Returns chord height ("sagitta") of the arc
-   * @returns {number}
    */
   chordHeight() {
     return (1.0 - Math.cos(Math.abs(this.sweep / 2.0))) * this.r
@@ -233,11 +231,10 @@ export class Arc extends Shape<Arc> {
 
   /**
    * Returns array of intersection points between arc and other shape
-   * @param {Shape} shape Shape of the one of supported types <br/>
-   * @returns {Point[]}
+   * @param shape Shape of the one of supported types <br/>
    */
-  intersect(shape) {
-    if (shape instanceof Point) {
+  intersect(shape: Shape) {
+    if (shape instanceof geom.Point) {
       return this.contains(shape) ? [shape] : []
     }
     if (shape instanceof geom.Line) {
@@ -261,15 +258,16 @@ export class Arc extends Shape<Arc> {
     if (shape instanceof geom.Polygon) {
       return Intersection.intersectArc2Polygon(this, shape)
     }
+    throw new Error('unimplemented')
   }
 
   /**
    * Calculate distance and shortest segment from arc to shape and return array [distance, shortest segment]
-   * @param {Shape} shape Shape of the one of supported types Point, Line, Circle, Segment, Arc, Polygon or Planar Set
-   * @returns {number} distance from arc to shape
-   * @returns {Segment} shortest segment between arc and shape (started at arc, ended at shape)
+   * @param shape Shape of the one of supported types geom.Point, Line, Circle, Segment, Arc, Polygon or Planar Set
+   * @returns distance from arc to shape
+   * @returns shortest segment between arc and shape (started at arc, ended at shape)
    */
-  distanceTo(shape) {
+  distanceTo(shape: Shape): [number, geom.Segment] {
     if (shape instanceof geom.Point) {
       let [dist, shortest_segment] = Distance.point2arc(shape, this)
       shortest_segment = shortest_segment.reverse()
@@ -425,7 +423,7 @@ export class Arc extends Shape<Arc> {
     return area
   }
 
-  circularSegmentDefiniteIntegral(ymin) {
+  circularSegmentDefiniteIntegral(ymin: number) {
     let line = new geom.Line(this.start, this.end)
     let onLeftSide = this.pc.leftTo(line)
     let segment = new geom.Segment(this.start, this.end)
@@ -442,7 +440,7 @@ export class Arc extends Shape<Arc> {
   /**
    * Sort given array of points from arc start to end, assuming all points lay on the arc
    */
-  sortPoints(pts: Point[]) {
+  sortPoints(pts: geom.Point[]) {
     const { vector } = geom
     return pts.slice().sort((pt1, pt2) => {
       let slope1 = vector(this.pc, pt1).slope
@@ -465,5 +463,5 @@ export class Arc extends Shape<Arc> {
 /**
  * Function to create arc equivalent to "new" constructor
  */
-export const arc = (pc: Point, r: number, startAngle: number, endAngle: number, ccw?: boolean) =>
+export const arc = (pc: geom.Point, r: number, startAngle: number, endAngle: number, ccw?: boolean) =>
   new Arc(pc, r, startAngle, endAngle, ccw)

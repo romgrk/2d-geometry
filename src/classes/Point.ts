@@ -14,7 +14,6 @@ export type PointLike = {
 
 /**
  * Class representing a point
- * @type {Point}
  */
 export class Point extends Shape<Point> {
   static EMPTY = Object.freeze(new Point(0, 0))

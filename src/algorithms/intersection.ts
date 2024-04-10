@@ -1,20 +1,7 @@
 import * as Utils from '../utils/utils'
-import {
-  Edge,
-  Circle,
-  Point,
-  Polygon,
-  Line,
-  Multiline,
-  Segment,
-  Box,
-  Arc,
-  Ray,
-  Shape,
-  Vector
-} from '../classes'
+import * as g from '../classes'
 
-export function intersectLine2Line(line1: Line, line2: Line): Point[] {
+export function intersectLine2Line(line1: g.Line, line2: g.Line): g.Point[] {
   let ip = []
 
   let [A1, B1, C1] = line1.standard
@@ -49,13 +36,13 @@ export function intersectLine2Line(line1: Line, line2: Line): Point[] {
       y = detY / det
     }
 
-    ip.push(new Point(x, y))
+    ip.push(new g.Point(x, y))
   }
 
   return ip
 }
 
-export function intersectLine2Circle(line: Line, circle: Circle): Point[] {
+export function intersectLine2Circle(line: g.Line, circle: g.Circle): g.Point[] {
   let ip = []
   let prj = circle.pc.projectionOn(line) // projection of circle center on a line
   let dist = circle.pc.distanceTo(prj)[0] // distance from circle center to projection
@@ -66,7 +53,7 @@ export function intersectLine2Circle(line: Line, circle: Circle): Point[] {
   } else if (Utils.LT(dist, circle.r)) {
     // return two intersection points
     let delta = Math.sqrt(circle.r * circle.r - dist * dist)
-    let v_trans: Vector, pt: Point
+    let v_trans: g.Vector, pt: g.Point
 
     v_trans = line.norm.rotate90CCW().multiply(delta)
     pt = prj.translate(v_trans)
@@ -79,7 +66,7 @@ export function intersectLine2Circle(line: Line, circle: Circle): Point[] {
   return ip
 }
 
-export function intersectLine2Box(line: Line, box: Box): Point[] {
+export function intersectLine2Box(line: g.Line, box: g.Box): g.Point[] {
   let ips = []
   for (let seg of box.toSegments()) {
     let ips_tmp = intersectSegment2Line(seg, line)
@@ -92,14 +79,14 @@ export function intersectLine2Box(line: Line, box: Box): Point[] {
   return ips
 }
 
-export function intersectLine2Arc(line: Line, arc: Arc): Point[] {
+export function intersectLine2Arc(line: g.Line, arc: g.Arc): g.Point[] {
   let ip = []
 
   if (intersectLine2Box(line, arc.box).length === 0) {
     return ip
   }
 
-  let circle = new Circle(arc.pc, arc.r)
+  let circle = new g.Circle(arc.pc, arc.r)
   let ip_tmp = intersectLine2Circle(line, circle)
   for (let pt of ip_tmp) {
     if (arc.contains(pt)) {
@@ -110,7 +97,7 @@ export function intersectLine2Arc(line: Line, arc: Arc): Point[] {
   return ip
 }
 
-export function intersectSegment2Line(seg: Segment, line: Line): Point[] {
+export function intersectSegment2Line(seg: g.Segment, line: g.Line): g.Point[] {
   let ip = []
 
   // Boundary cases
@@ -138,11 +125,11 @@ export function intersectSegment2Line(seg: Segment, line: Line): Point[] {
   }
 
   // Calculate intersection between lines
-  let line1 = new Line(seg.start, seg.end)
+  let line1 = new g.Line(seg.start, seg.end)
   return intersectLine2Line(line1, line)
 }
 
-export function intersectSegment2Segment(seg1: Segment, seg2: Segment): Point[] {
+export function intersectSegment2Segment(seg1: g.Segment, seg2: g.Segment): g.Point[] {
   let ip = []
 
   // quick reject
@@ -167,8 +154,8 @@ export function intersectSegment2Segment(seg1: Segment, seg2: Segment): Point[] 
   }
 
   // Neither seg1 nor seg2 is zero length
-  let line1 = new Line(seg1.start, seg1.end)
-  let line2 = new Line(seg2.start, seg2.end)
+  let line1 = new g.Line(seg1.start, seg1.end)
+  let line2 = new g.Line(seg2.start, seg2.end)
 
   // Check overlapping between segments in case of incidence
   // If segments touching, add one point. If overlapping, add two points
@@ -198,7 +185,7 @@ export function intersectSegment2Segment(seg1: Segment, seg2: Segment): Point[] 
   return ip
 }
 
-function isPointInSegmentBox(point: Point, segment: Segment) {
+function isPointInSegmentBox(point: g.Point, segment: g.Segment) {
   const box = segment.box
   return (
     Utils.LE(point.x, box.xmax) &&
@@ -208,7 +195,7 @@ function isPointInSegmentBox(point: Point, segment: Segment) {
   )
 }
 
-export function intersectSegment2Circle(segment: Segment, circle: Circle): Point[] {
+export function intersectSegment2Circle(segment: g.Segment, circle: g.Circle): g.Point[] {
   let ips = []
 
   if (segment.box.notIntersect(circle.box)) {
@@ -225,7 +212,7 @@ export function intersectSegment2Circle(segment: Segment, circle: Circle): Point
   }
 
   // Non zero-length segment
-  let line = new Line(segment.start, segment.end)
+  let line = new g.Line(segment.start, segment.end)
 
   let ips_tmp = intersectLine2Circle(line, circle)
 
@@ -238,7 +225,7 @@ export function intersectSegment2Circle(segment: Segment, circle: Circle): Point
   return ips
 }
 
-export function intersectSegment2Arc(segment: Segment, arc: Arc): Point[] {
+export function intersectSegment2Arc(segment: g.Segment, arc: g.Arc): g.Point[] {
   let ip = []
 
   if (segment.box.notIntersect(arc.box)) {
@@ -254,8 +241,8 @@ export function intersectSegment2Arc(segment: Segment, arc: Arc): Point[] {
   }
 
   // Non-zero length segment
-  let line = new Line(segment.start, segment.end)
-  let circle = new Circle(arc.pc, arc.r)
+  let line = new g.Line(segment.start, segment.end)
+  let circle = new g.Circle(arc.pc, arc.r)
 
   let ip_tmp = intersectLine2Circle(line, circle)
 
@@ -267,7 +254,7 @@ export function intersectSegment2Arc(segment: Segment, arc: Arc): Point[] {
   return ip
 }
 
-export function intersectSegment2Box(segment: Segment, box: Box): Point[] {
+export function intersectSegment2Box(segment: g.Segment, box: g.Box): g.Point[] {
   let ips = []
   for (let seg of box.toSegments()) {
     let ips_tmp = intersectSegment2Segment(seg, segment)
@@ -278,14 +265,14 @@ export function intersectSegment2Box(segment: Segment, box: Box): Point[] {
   return ips
 }
 
-export function intersectCircle2Circle(circle1: Circle, circle2: Circle): Point[] {
+export function intersectCircle2Circle(circle1: g.Circle, circle2: g.Circle): g.Point[] {
   let ip = []
 
   if (circle1.box.notIntersect(circle2.box)) {
     return ip
   }
 
-  let vec = new Vector(circle1.pc, circle2.pc)
+  let vec = new g.Vector(circle1.pc, circle2.pc)
 
   let r1 = circle1.r
   let r2 = circle2.r
@@ -313,7 +300,7 @@ export function intersectCircle2Circle(circle1: Circle, circle2: Circle): Point[
   vec.x /= dist
   vec.y /= dist
 
-  let pt: Point
+  let pt: g.Point
 
   // Case of touching from outside or from inside - single intersection point
   // TODO: check this specifically not sure if correct
@@ -345,7 +332,7 @@ export function intersectCircle2Circle(circle1: Circle, circle2: Circle): Point[
   return ip
 }
 
-export function intersectCircle2Box(circle: Circle, box: Box): Point[] {
+export function intersectCircle2Box(circle: g.Circle, box: g.Box): g.Point[] {
   let ips = []
   for (let seg of box.toSegments()) {
     let ips_tmp = intersectSegment2Circle(seg, circle)
@@ -356,7 +343,7 @@ export function intersectCircle2Box(circle: Circle, box: Box): Point[] {
   return ips
 }
 
-export function intersectArc2Arc(arc1: Arc, arc2: Arc): Point[] {
+export function intersectArc2Arc(arc1: g.Arc, arc2: g.Arc): g.Point[] {
   let ip = []
 
   if (arc1.box.notIntersect(arc2.box)) {
@@ -366,7 +353,7 @@ export function intersectArc2Arc(arc1: Arc, arc2: Arc): Point[] {
   // Special case: overlapping arcs
   // May return up to 4 intersection points
   if (arc1.pc.equalTo(arc2.pc) && Utils.EQ(arc1.r, arc2.r)) {
-    let pt: Point
+    let pt: g.Point
 
     pt = arc1.start
     if (pt.on(arc2)) ip.push(pt)
@@ -384,8 +371,8 @@ export function intersectArc2Arc(arc1: Arc, arc2: Arc): Point[] {
   }
 
   // Common case
-  let circle1 = new Circle(arc1.pc, arc1.r)
-  let circle2 = new Circle(arc2.pc, arc2.r)
+  let circle1 = new g.Circle(arc1.pc, arc1.r)
+  let circle2 = new g.Circle(arc2.pc, arc2.r)
   let ip_tmp = circle1.intersect(circle2)
   for (let pt of ip_tmp) {
     if (pt.on(arc1) && pt.on(arc2)) {
@@ -395,7 +382,7 @@ export function intersectArc2Arc(arc1: Arc, arc2: Arc): Point[] {
   return ip
 }
 
-export function intersectArc2Circle(arc: Arc, circle: Circle): Point[] {
+export function intersectArc2Circle(arc: g.Arc, circle: g.Circle): g.Point[] {
   let ip = []
 
   if (arc.box.notIntersect(circle.box)) {
@@ -412,7 +399,7 @@ export function intersectArc2Circle(arc: Arc, circle: Circle): Point[] {
 
   // Common case
   let circle1 = circle
-  let circle2 = new Circle(arc.pc, arc.r)
+  let circle2 = new g.Circle(arc.pc, arc.r)
   let ip_tmp = intersectCircle2Circle(circle1, circle2)
   for (let pt of ip_tmp) {
     if (pt.on(arc)) {
@@ -422,7 +409,7 @@ export function intersectArc2Circle(arc: Arc, circle: Circle): Point[] {
   return ip
 }
 
-export function intersectArc2Box(arc: Arc, box: Box): Point[] {
+export function intersectArc2Box(arc: g.Arc, box: g.Box): g.Point[] {
   let ips = []
   for (let seg of box.toSegments()) {
     let ips_tmp = intersectSegment2Arc(seg, arc)
@@ -433,7 +420,7 @@ export function intersectArc2Box(arc: Arc, box: Box): Point[] {
   return ips
 }
 
-export function intersectEdge2Segment(edge: Edge, segment: Segment): Point[] {
+export function intersectEdge2Segment(edge: g.Edge, segment: g.Segment): g.Point[] {
   if (edge.isSegment())
     return intersectSegment2Segment(edge.shape, segment)
   if (edge.isArc())
@@ -441,7 +428,7 @@ export function intersectEdge2Segment(edge: Edge, segment: Segment): Point[] {
   throw new Error('unimplemented')
 }
 
-export function intersectEdge2Arc(edge: Edge, arc: Arc): Point[] {
+export function intersectEdge2Arc(edge: g.Edge, arc: g.Arc): g.Point[] {
   if (edge.isSegment())
     return intersectSegment2Arc(edge.shape, arc)
   if (edge.isArc())
@@ -449,7 +436,7 @@ export function intersectEdge2Arc(edge: Edge, arc: Arc): Point[] {
   throw new Error('unimplemented')
 }
 
-export function intersectEdge2Line(edge: Edge, line: Line): Point[] {
+export function intersectEdge2Line(edge: g.Edge, line: g.Line): g.Point[] {
   if (edge.isSegment())
     return intersectSegment2Line(edge.shape, line)
   if (edge.isArc())
@@ -457,7 +444,7 @@ export function intersectEdge2Line(edge: Edge, line: Line): Point[] {
   throw new Error('unimplemented')
 }
 
-export function intersectEdge2Circle(edge: Edge, circle: Circle): Point[] {
+export function intersectEdge2Circle(edge: g.Edge, circle: g.Circle): g.Point[] {
   if (edge.isSegment())
     return intersectSegment2Circle(edge.shape, circle)
   if (edge.isArc())
@@ -465,7 +452,7 @@ export function intersectEdge2Circle(edge: Edge, circle: Circle): Point[] {
   throw new Error('unimplemented')
 }
 
-export function intersectSegment2Polygon(segment: Segment, polygon: Polygon): Point[] {
+export function intersectSegment2Polygon(segment: g.Segment, polygon: g.Polygon): g.Point[] {
   let ip = []
 
   for (let edge of polygon.edges) {
@@ -477,7 +464,7 @@ export function intersectSegment2Polygon(segment: Segment, polygon: Polygon): Po
   return ip
 }
 
-export function intersectArc2Polygon(arc: Arc, polygon: Polygon): Point[] {
+export function intersectArc2Polygon(arc: g.Arc, polygon: g.Polygon): g.Point[] {
   let ip = []
 
   for (let edge of polygon.edges) {
@@ -489,7 +476,7 @@ export function intersectArc2Polygon(arc: Arc, polygon: Polygon): Point[] {
   return ip
 }
 
-export function intersectLine2Polygon(line: Line, polygon: Polygon): Point[] {
+export function intersectLine2Polygon(line: g.Line, polygon: g.Polygon): g.Point[] {
   let ip = []
 
   if (polygon.isEmpty()) {
@@ -507,7 +494,7 @@ export function intersectLine2Polygon(line: Line, polygon: Polygon): Point[] {
   return line.sortPoints(ip)
 }
 
-export function intersectCircle2Polygon(circle: Circle, polygon: Polygon): Point[] {
+export function intersectCircle2Polygon(circle: g.Circle, polygon: g.Polygon): g.Point[] {
   let ip = []
 
   if (polygon.isEmpty()) {
@@ -523,7 +510,7 @@ export function intersectCircle2Polygon(circle: Circle, polygon: Polygon): Point
   return ip
 }
 
-export function intersectEdge2Edge(edge1: Edge, edge2: Edge): Point[] {
+export function intersectEdge2Edge(edge1: g.Edge, edge2: g.Edge): g.Point[] {
   if (edge1.isSegment() && edge2.isSegment())
     return intersectSegment2Segment(edge1.shape, edge2.shape)
   if (edge1.isSegment() && edge2.isArc())
@@ -535,8 +522,8 @@ export function intersectEdge2Edge(edge1: Edge, edge2: Edge): Point[] {
   throw new Error('unimplemented')
 }
 
-export function intersectEdge2Polygon(edge: Edge, polygon: Polygon) {
-  let ip = [] as Point[]
+export function intersectEdge2Polygon(edge: g.Edge, polygon: g.Polygon) {
+  let ip = [] as g.Point[]
   if (polygon.isEmpty() || edge.shape.box.notIntersect(polygon.box)) {
     return ip
   }
@@ -549,7 +536,7 @@ export function intersectEdge2Polygon(edge: Edge, polygon: Polygon) {
   return ip
 }
 
-export function intersectMultiline2Polygon(multiline: Multiline, polygon: Polygon): Point[] {
+export function intersectMultiline2Polygon(multiline: g.Multiline, polygon: g.Polygon): g.Point[] {
   let ip = []
 
   if (polygon.isEmpty() || multiline.size === 0) {
@@ -563,7 +550,7 @@ export function intersectMultiline2Polygon(multiline: Multiline, polygon: Polygo
   return ip
 }
 
-export function intersectPolygon2Polygon(polygon1: Polygon, polygon2: Polygon): Point[] {
+export function intersectPolygon2Polygon(polygon1: g.Polygon, polygon2: g.Polygon): g.Point[] {
   if (polygon1.isEmpty() || polygon2.isEmpty()) {
     return []
   }
@@ -578,7 +565,7 @@ export function intersectPolygon2Polygon(polygon1: Polygon, polygon2: Polygon): 
   return ip
 }
 
-export function intersectBox2Box(box1: Box, box2: Box): Point[] {
+export function intersectBox2Box(box1: g.Box, box2: g.Box): g.Point[] {
   let ip = []
   for (let segment1 of box1.toSegments()) {
     for (let segment2 of box2.toSegments()) {
@@ -590,51 +577,51 @@ export function intersectBox2Box(box1: Box, box2: Box): Point[] {
   return ip
 }
 
-export function intersectShape2Polygon(shape: Shape<any>, polygon: Polygon): Point[] {
-  if (shape instanceof Line) {
+export function intersectShape2Polygon(shape: g.Shape<any>, polygon: g.Polygon): g.Point[] {
+  if (shape instanceof g.Line) {
     return intersectLine2Polygon(shape, polygon)
-  } else if (shape instanceof Segment) {
+  } else if (shape instanceof g.Segment) {
     return intersectSegment2Polygon(shape, polygon)
-  } else if (shape instanceof Arc) {
+  } else if (shape instanceof g.Arc) {
     return intersectArc2Polygon(shape, polygon)
   } else {
     return []
   }
 }
 
-function ptInIntPoints(new_pt: Point, ip: Point[]) {
+function ptInIntPoints(new_pt: g.Point, ip: g.Point[]) {
   return ip.some((pt) => pt.equalTo(new_pt))
 }
 
-function createLineFromRay(ray: Ray) {
-  return new Line(ray.start, ray.norm)
+function createLineFromRay(ray: g.Ray) {
+  return new g.Line(ray.start, ray.norm)
 }
-export function intersectRay2Segment(ray: Ray, segment: Segment): Point[] {
+export function intersectRay2Segment(ray: g.Ray, segment: g.Segment): g.Point[] {
   return intersectSegment2Line(segment, createLineFromRay(ray)).filter((pt) => ray.contains(pt))
 }
 
-export function intersectRay2Arc(ray: Ray, arc: Arc): Point[] {
+export function intersectRay2Arc(ray: g.Ray, arc: g.Arc): g.Point[] {
   return intersectLine2Arc(createLineFromRay(ray), arc).filter((pt) => ray.contains(pt))
 }
 
-export function intersectRay2Circle(ray: Ray, circle: Circle): Point[] {
+export function intersectRay2Circle(ray: g.Ray, circle: g.Circle): g.Point[] {
   return intersectLine2Circle(createLineFromRay(ray), circle).filter((pt) => ray.contains(pt))
 }
 
-export function intersectRay2Box(ray: Ray, box: Box): Point[] {
+export function intersectRay2Box(ray: g.Ray, box: g.Box): g.Point[] {
   return intersectLine2Box(createLineFromRay(ray), box).filter((pt) => ray.contains(pt))
 }
 
-export function intersectRay2Line(ray: Ray, line: Line): Point[] {
+export function intersectRay2Line(ray: g.Ray, line: g.Line): g.Point[] {
   return intersectLine2Line(createLineFromRay(ray), line).filter((pt) => ray.contains(pt))
 }
 
-export function intersectRay2Ray(ray1: Ray, ray2: Ray): Point[] {
+export function intersectRay2Ray(ray1: g.Ray, ray2: g.Ray): g.Point[] {
   return intersectLine2Line(createLineFromRay(ray1), createLineFromRay(ray2))
     .filter((pt) => ray1.contains(pt))
     .filter((pt) => ray2.contains(pt))
 }
 
-export function intersectRay2Polygon(ray: Ray, polygon: Polygon): Point[] {
+export function intersectRay2Polygon(ray: g.Ray, polygon: g.Polygon): g.Point[] {
   return intersectLine2Polygon(createLineFromRay(ray), polygon).filter((pt) => ray.contains(pt))
 }
