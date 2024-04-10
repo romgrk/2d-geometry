@@ -38,6 +38,8 @@ import {
 } from '2d-geometry';
 ```
 
+Every shape is a child class of the abstract `Shape` class, which contains props like `.box` and `.center`, and methods like `.translate()` or `.rotate()`.
+
 Some classes have shortcuts to avoid calling with `new`, for example:
 ```javascript
 import { point, circle, segment } from '2d-geometry';
@@ -55,16 +57,59 @@ const a = Point.EMPTY // contains a frozen `new Point(0, 0)`
 const b = a.translate(50, 100)
 ```
 
-Some methods are mutable however, they will be marked with the `Mut` suffix:
+Some methods have mutable equivalents however, for high-performance cases where avoiding allocations is desirable. They will be marked with the `Mut` suffix:
 ```javascript
 import { Matrix } from '2d-geometry';
 
 const a = new Matrix()
 const b = Matrix.fromTransform(0, 0, 0, 2) // x, y, rotation, scale
-a.multiplyMut(b) // compose a and b into a
+a.multiplyMut(b) // a is mutated directly
 ```
 
-You may test the code above also in [NPM RunKit](https://npm.runkit.com/2d-geometry)
+The core library is abstract, but some SVG utils are exported separately (to avoid the bundle size cost). You may use them as such:
+```javascript
+import { Circle } from '2d-geometry'
+import { parsePath, stringify } from '2d-geometry/svg'
+
+const svgString = stringify(new Circle(100, 100, 50), { fill: 'red' })
+const path = parsePath('M0,0 L100,0 L100,100 L0,100 Z') // returns a `Path` instance
+```
+
+This project also adheres to the [Tau manifesto](https://tauday.com/tau-manifesto) and exports the circle constant as `TAU`, which is equivalent to `2 * Math.PI`:
+```javascript
+import { TAU } from '2d-geometry'
+```
+
+## High-performance use-cases
+
+If you're rendering with this library, you may need to match on the type of object. You may use the `shape.tag` discriminant for that, which is an integer enum.
+
+```javascript
+import { ShapeTag, Segment, Circle } from '2d-geometry'
+
+const shape = graphicNode.shape
+
+// NO
+if (shape instanceof Segment) {
+  drawSegment(shape as Segment)
+} else if (shape instanceof Circle) {
+  drawCircle(shape as Circle)
+}
+// ...
+
+// YES
+switch (shape.tag) {
+  case ShapeTag.Segment: {
+    drawSegment(shape as Segment)
+  }
+  case ShapeTag.Circle: {
+    drawCircle(shape as Circle)
+  }
+  // ...
+}
+```
+
+You can also use the `shape._data` field for your own purposes, for examples caching rendered data.
 
 ## Content of the library
 
