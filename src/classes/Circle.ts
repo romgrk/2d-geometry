@@ -3,7 +3,13 @@ import { PlanarSet } from '../data_structures/PlanarSet'
 import * as Utils from '../utils/utils'
 import * as Distance from '../algorithms/distance'
 import * as Intersection from '../algorithms/intersection'
-import * as geom from './index'
+import { Arc } from './Arc'
+import { Box } from './Box'
+import { Line } from './Line'
+import { Matrix } from './Matrix'
+import { Ray } from './Ray'
+import { Segment } from './Segment'
+import { Polygon } from './Polygon'
 import { Point, PointLike } from './Point'
 import { Shape, ShapeTag } from './Shape'
 
@@ -14,7 +20,7 @@ export class Circle extends Shape<Circle> {
   static EMPTY = Object.freeze(new Circle(Point.EMPTY, 0))
 
   /** Circle center */
-  pc: geom.Point
+  pc: Point
   /** Circle radius */
   r: number
 
@@ -61,7 +67,7 @@ export class Circle extends Shape<Circle> {
   }
 
   get box() {
-    return new geom.Box(this.pc.x - this.r, this.pc.y - this.r, this.pc.x + this.r, this.pc.y + this.r)
+    return new Box(this.pc.x - this.r, this.pc.y - this.r, this.pc.x + this.r, this.pc.y + this.r)
   }
 
   get center() {
@@ -72,18 +78,18 @@ export class Circle extends Shape<Circle> {
    * Return true if circle contains shape: no point of shape lies outside of the circle
    */
   contains(shape: Shape): boolean {
-    if (shape instanceof geom.Point) {
+    if (shape instanceof Point) {
       return Utils.LE(shape.distanceTo(this.center)[0], this.r)
     }
 
-    if (shape instanceof geom.Segment) {
+    if (shape instanceof Segment) {
       return (
         Utils.LE(shape.start.distanceTo(this.center)[0], this.r) &&
         Utils.LE(shape.end.distanceTo(this.center)[0], this.r)
       )
     }
 
-    if (shape instanceof geom.Arc) {
+    if (shape instanceof Arc) {
       return (
         this.intersect(shape).length === 0 &&
         Utils.LE(shape.start.distanceTo(this.center)[0], this.r) &&
@@ -91,7 +97,7 @@ export class Circle extends Shape<Circle> {
       )
     }
 
-    if (shape instanceof geom.Circle) {
+    if (shape instanceof Circle) {
       return (
         this.intersect(shape).length === 0 &&
         Utils.LE(shape.r, this.r) &&
@@ -107,7 +113,7 @@ export class Circle extends Shape<Circle> {
    * Transform circle to closed arc
    */
   toArc(counterclockwise = true) {
-    return new geom.Arc(this.center, this.r, Math.PI, -Math.PI, counterclockwise)
+    return new Arc(this.center, this.r, Math.PI, -Math.PI, counterclockwise)
   }
 
   /**
@@ -117,47 +123,29 @@ export class Circle extends Shape<Circle> {
   scale(sx: number, sy: number): Circle
   scale(a: number, b?: number): Circle {
     if (b !== undefined && a !== b) throw Errors.OPERATION_IS_NOT_SUPPORTED
-    return new geom.Circle(this.pc, this.r * a)
+    return new Circle(this.pc, this.r * a)
   }
 
   /**
    * Return new circle transformed using affine transformation matrix
    */
-  transform(matrix = new geom.Matrix()) {
-    return new geom.Circle(this.pc.transform(matrix), this.r)
+  transform(matrix = new Matrix()) {
+    return new Circle(this.pc.transform(matrix), this.r)
   }
 
   /**
    * Returns array of intersection points between circle and other shape
    */
-  intersect(shape: geom.Shape<any>): geom.Point[] {
-    if (shape instanceof geom.Point) {
-      return this.contains(shape) ? [shape] : []
-    }
-    if (shape instanceof geom.Line) {
-      return Intersection.intersectLine2Circle(shape, this)
-    }
-    if (shape instanceof geom.Ray) {
-      return Intersection.intersectRay2Circle(shape, this)
-    }
-    if (shape instanceof geom.Segment) {
-      return Intersection.intersectSegment2Circle(shape, this)
-    }
-
-    if (shape instanceof geom.Circle) {
-      return Intersection.intersectCircle2Circle(shape, this)
-    }
-
-    if (shape instanceof geom.Box) {
-      return Intersection.intersectCircle2Box(this, shape)
-    }
-
-    if (shape instanceof geom.Arc) {
-      return Intersection.intersectArc2Circle(shape, this)
-    }
-    if (shape instanceof geom.Polygon) {
-      return Intersection.intersectCircle2Polygon(this, shape)
-    }
+  intersect(shape: Shape<any>): Point[] {
+    if (shape instanceof Point) { return this.contains(shape) ? [shape] : [] }
+    if (shape instanceof Line) { return Intersection.intersectLine2Circle(shape, this) }
+    if (shape instanceof Ray) { return Intersection.intersectRay2Circle(shape, this) }
+    if (shape instanceof Segment) { return Intersection.intersectSegment2Circle(shape, this) }
+    if (shape instanceof Circle) { return Intersection.intersectCircle2Circle(shape, this) }
+    if (shape instanceof Box) { return Intersection.intersectCircle2Box(this, shape) }
+    if (shape instanceof Arc) { return Intersection.intersectArc2Circle(shape, this) }
+    if (shape instanceof Polygon) { return Intersection.intersectCircle2Polygon(this, shape) }
+    throw new Error('unimplemented')
   }
 
   /**
@@ -166,51 +154,19 @@ export class Circle extends Shape<Circle> {
    * @returns {number} distance from circle to shape
    * @returns {Segment} shortest segment between circle and shape (started at circle, ended at shape)
    */
-  distanceTo(shape: Shape): [number, geom.Segment] {
-    if (shape instanceof geom.Point) {
-      let [distance, shortest_segment] = Distance.point2circle(shape, this)
-      shortest_segment = shortest_segment.reverse()
-      return [distance, shortest_segment]
-    }
-
-    if (shape instanceof geom.Circle) {
-      let [distance, shortest_segment] = Distance.circle2circle(this, shape)
-      return [distance, shortest_segment]
-    }
-
-    if (shape instanceof geom.Line) {
-      let [distance, shortest_segment] = Distance.circle2line(this, shape)
-      return [distance, shortest_segment]
-    }
-
-    if (shape instanceof geom.Segment) {
-      let [distance, shortest_segment] = Distance.segment2circle(shape, this)
-      shortest_segment = shortest_segment.reverse()
-      return [distance, shortest_segment]
-    }
-
-    if (shape instanceof geom.Arc) {
-      let [distance, shortest_segment] = Distance.arc2circle(shape, this)
-      shortest_segment = shortest_segment.reverse()
-      return [distance, shortest_segment]
-    }
-
-    if (shape instanceof geom.Polygon) {
-      let [distance, shortest_segment] = Distance.shape2polygon(this, shape)
-      return [distance, shortest_segment]
-    }
-
-    if (shape instanceof PlanarSet) {
-      let [dist, shortest_segment] = Distance.shape2planarSet(this, shape)
-      return [dist, shortest_segment]
-    }
+  distanceTo(shape: Shape): [number, Segment] {
+    if (shape instanceof Point) { return Distance.reverse(Distance.point2circle(shape, this)) }
+    if (shape instanceof Circle) { return Distance.circle2circle(this, shape) }
+    if (shape instanceof Line) { return Distance.circle2line(this, shape) }
+    if (shape instanceof Segment) { return Distance.reverse(Distance.segment2circle(shape, this)) }
+    if (shape instanceof Arc) { return Distance.reverse(Distance.arc2circle(shape, this)) }
+    if (shape instanceof Polygon) { return Distance.shape2polygon(this, shape) }
+    if (shape instanceof PlanarSet) { return Distance.shape2planarSet(this, shape) }
+    throw new Error('unimplemented')
   }
 }
 
 /**
  * Shortcut to create new circle
- * @param args
  */
-export const circle = (...args: any[]) =>
-  // @ts-ignore
-  new geom.Circle(...args)
+export const circle = (a: any, b: any, c: any) => new Circle(a, b, c)

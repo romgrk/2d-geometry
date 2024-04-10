@@ -4,6 +4,11 @@ import * as g from '../classes'
 import { PlanarSet } from '../data_structures/PlanarSet'
 import { IntervalTree } from '../data_structures/interval-tree'
 
+export function reverse(result: [number, g.Segment]): [number, g.Segment] {
+  result[1] = result[1].reverse()
+  return result
+}
+
 /**
  * Calculate distance and shortest segment between points
  */
@@ -271,6 +276,20 @@ export function circle2line(circle, line): [number, g.Segment] {
   let [dist, shortest_segment] = point2circle(shortest_segment_from_center.end, circle)
   shortest_segment = shortest_segment.reverse()
   return [dist, shortest_segment]
+}
+
+/**
+ * Calculate distance and shortest segment between an arc and a point
+ */
+export function arc2point(arc: g.Arc, point: g.Point) {
+  return reverse(point2arc(point, arc))
+}
+
+/**
+ * Calculate distance and shortest segment between an arc and a point
+ */
+export function arc2segment(arc: g.Arc, segment: g.Segment) {
+  return reverse(segment2arc(segment, arc))
 }
 
 /**
@@ -565,7 +584,7 @@ export function minmax_tree_calc_distance(shape, node, min_dist_and_segment) {
  * @param {Number} min_stop
  */
 export function shape2planarSet(shape, set, min_stop = Number.POSITIVE_INFINITY) {
-  let min_dist_and_segment = [min_stop, new g.Segment()] as const
+  let min_dist_and_segment = [min_stop, new g.Segment()] as [number, g.Segment]
   let stop = false
   if (set instanceof PlanarSet) {
     let tree = minmax_tree(shape, set, min_stop)

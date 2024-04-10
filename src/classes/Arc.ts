@@ -3,19 +3,27 @@ import * as Distance from '../algorithms/distance'
 import { PlanarSet } from '../data_structures/PlanarSet'
 import * as Utils from '../utils/utils'
 import * as Intersection from '../algorithms/intersection'
-import * as geom from './index'
+import { Box } from './Box'
+import { Line } from './Line'
+import { Point } from './Point'
+import { Matrix } from './Matrix'
+import { Ray } from './Ray'
+import { Circle } from './Circle'
+import { Segment } from './Segment'
+import { Polygon } from './Polygon'
+import { Vector } from './Vector'
 import { Shape, ShapeTag } from './Shape'
 
 /**
  * Class representing a circular arc
  */
 export class Arc extends Shape<Arc> {
-  static EMPTY = Object.freeze(new Arc(geom.Point.EMPTY, 0, 0, 0, CCW))
+  static EMPTY = Object.freeze(new Arc(Point.EMPTY, 0, 0, 0, CCW))
 
   /**
    * Arc center
    */
-  pc: geom.Point
+  pc: Point
   /**
    * Arc X radius
    */
@@ -33,14 +41,14 @@ export class Arc extends Shape<Arc> {
    */
   counterClockwise: boolean
 
-  _start: geom.Point | null
-  _end: geom.Point | null
+  _start: Point | null
+  _end: Point | null
 
   constructor(arc: Arc)
-  constructor(pc: geom.Point, r: number, startAngle: number, endAngle: number, ccw?: boolean)
+  constructor(pc: Point, r: number, startAngle: number, endAngle: number, ccw?: boolean)
   constructor(a?: unknown, b?: unknown, c?: unknown, d?: unknown, e?: unknown) {
     super()
-    this.pc = geom.Point.EMPTY
+    this.pc = Point.EMPTY
     this.r = NaN
     this.startAngle = NaN
     this.endAngle = NaN
@@ -56,13 +64,13 @@ export class Arc extends Shape<Arc> {
 
     if (a instanceof Object && (a as any).name === 'arc') {
       const { pc, r, startAngle, endAngle, counterClockwise } = a as Arc
-      this.pc = new geom.Point(pc.x, pc.y)
+      this.pc = new Point(pc.x, pc.y)
       this.r = r
       this.startAngle = startAngle
       this.endAngle = endAngle
       this.counterClockwise = counterClockwise
     } else {
-      if (a !== undefined) this.pc = a as geom.Point
+      if (a !== undefined) this.pc = a as Point
       if (b !== undefined) this.r = b as number
       if (c !== undefined) this.startAngle = c as number
       if (d !== undefined) this.endAngle = d as number
@@ -86,7 +94,7 @@ export class Arc extends Shape<Arc> {
    */
   get box() {
     let func_arcs = this.breakToFunctional()
-    let box = func_arcs.reduce((acc, arc) => acc.merge(arc.start.box), new geom.Box())
+    let box = func_arcs.reduce((acc, arc) => acc.merge(arc.start.box), new Box())
     box = box.merge(this.end.box)
     return box
   }
@@ -124,10 +132,10 @@ export class Arc extends Shape<Arc> {
   /**
    * Get start point of arc
    */
-  get start(): geom.Point {
-    return (this._start ??= new geom.Point(this.pc.x + this.r, this.pc.y).rotate(this.startAngle, this.pc))
+  get start(): Point {
+    return (this._start ??= new Point(this.pc.x + this.r, this.pc.y).rotate(this.startAngle, this.pc))
   }
-  set start(p: geom.Point) {
+  set start(p: Point) {
     this._start = p
   }
 
@@ -135,9 +143,9 @@ export class Arc extends Shape<Arc> {
    * Get end point of arc
    */
   get end() {
-    return (this._end ??= new geom.Point(this.pc.x + this.r, this.pc.y).rotate(this.endAngle, this.pc))
+    return (this._end ??= new Point(this.pc.x + this.r, this.pc.y).rotate(this.endAngle, this.pc))
   }
-  set end(p: geom.Point) {
+  set end(p: Point) {
     this._end = p
   }
 
@@ -155,7 +163,7 @@ export class Arc extends Shape<Arc> {
   /**
    * Returns true if arc contains point, false otherwise
    */
-  contains(pt: geom.Point) {
+  contains(pt: Point) {
     // first check if  point on circle (pc,r)
     if (!Utils.EQ(this.pc.distanceTo(pt)[0], this.r)) return false
 
@@ -163,7 +171,7 @@ export class Arc extends Shape<Arc> {
 
     if (pt.equalTo(this.start)) return true
 
-    let angle = new geom.Vector(this.pc, pt).slope
+    let angle = new Vector(this.pc, pt).slope
     let test_arc = new Arc(this.pc, this.r, this.startAngle, angle, this.counterClockwise)
     return Utils.LE(test_arc.length, this.length)
   }
@@ -173,12 +181,12 @@ export class Arc extends Shape<Arc> {
    * to start or end point of the arc, return clone of the arc. If point does not belong to the arcs, return
    * empty array.
    */
-  split(pt: geom.Point): (Arc | null)[] {
+  split(pt: Point): (Arc | null)[] {
     if (this.start.equalTo(pt)) return [null, this.clone()]
 
     if (this.end.equalTo(pt)) return [this.clone(), null]
 
-    let angle = new geom.Vector(this.pc, pt).slope
+    let angle = new Vector(this.pc, pt).slope
 
     return [
       new Arc(this.pc, this.r, this.startAngle, angle, this.counterClockwise),
@@ -234,76 +242,31 @@ export class Arc extends Shape<Arc> {
    * @param shape Shape of the one of supported types <br/>
    */
   intersect(shape: Shape) {
-    if (shape instanceof geom.Point) {
-      return this.contains(shape) ? [shape] : []
-    }
-    if (shape instanceof geom.Line) {
-      return Intersection.intersectLine2Arc(shape, this)
-    }
-    if (shape instanceof geom.Ray) {
-      return Intersection.intersectRay2Arc(shape, this)
-    }
-    if (shape instanceof geom.Circle) {
-      return Intersection.intersectArc2Circle(this, shape)
-    }
-    if (shape instanceof geom.Segment) {
-      return Intersection.intersectSegment2Arc(shape, this)
-    }
-    if (shape instanceof geom.Box) {
-      return Intersection.intersectArc2Box(this, shape)
-    }
-    if (shape instanceof geom.Arc) {
-      return Intersection.intersectArc2Arc(this, shape)
-    }
-    if (shape instanceof geom.Polygon) {
-      return Intersection.intersectArc2Polygon(this, shape)
-    }
+    if (shape instanceof Point) { return this.contains(shape) ? [shape] : [] }
+    if (shape instanceof Line) { return Intersection.intersectLine2Arc(shape, this) }
+    if (shape instanceof Ray) { return Intersection.intersectRay2Arc(shape, this) }
+    if (shape instanceof Circle) { return Intersection.intersectArc2Circle(this, shape) }
+    if (shape instanceof Segment) { return Intersection.intersectSegment2Arc(shape, this) }
+    if (shape instanceof Box) { return Intersection.intersectArc2Box(this, shape) }
+    if (shape instanceof Arc) { return Intersection.intersectArc2Arc(this, shape) }
+    if (shape instanceof Polygon) { return Intersection.intersectArc2Polygon(this, shape) }
     throw new Error('unimplemented')
   }
 
   /**
    * Calculate distance and shortest segment from arc to shape and return array [distance, shortest segment]
-   * @param shape Shape of the one of supported types geom.Point, Line, Circle, Segment, Arc, Polygon or Planar Set
+   * @param shape Shape of the one of supported types Point, Line, Circle, Segment, Arc, Polygon or Planar Set
    * @returns distance from arc to shape
    * @returns shortest segment between arc and shape (started at arc, ended at shape)
    */
-  distanceTo(shape: Shape): [number, geom.Segment] {
-    if (shape instanceof geom.Point) {
-      let [dist, shortest_segment] = Distance.point2arc(shape, this)
-      shortest_segment = shortest_segment.reverse()
-      return [dist, shortest_segment]
-    }
-
-    if (shape instanceof geom.Circle) {
-      let [dist, shortest_segment] = Distance.arc2circle(this, shape)
-      return [dist, shortest_segment]
-    }
-
-    if (shape instanceof geom.Line) {
-      let [dist, shortest_segment] = Distance.arc2line(this, shape)
-      return [dist, shortest_segment]
-    }
-
-    if (shape instanceof geom.Segment) {
-      let [dist, shortest_segment] = Distance.segment2arc(shape, this)
-      shortest_segment = shortest_segment.reverse()
-      return [dist, shortest_segment]
-    }
-
-    if (shape instanceof geom.Arc) {
-      let [dist, shortest_segment] = Distance.arc2arc(this, shape)
-      return [dist, shortest_segment]
-    }
-
-    if (shape instanceof geom.Polygon) {
-      let [dist, shortest_segment] = Distance.shape2polygon(this, shape)
-      return [dist, shortest_segment]
-    }
-
-    if (shape instanceof PlanarSet) {
-      let [dist, shortest_segment] = Distance.shape2planarSet(this, shape)
-      return [dist, shortest_segment]
-    }
+  distanceTo(shape: Shape): [number, Segment] {
+    if (shape instanceof Point) { return Distance.arc2point(this, shape) }
+    if (shape instanceof Circle) { return Distance.arc2circle(this, shape) }
+    if (shape instanceof Line) { return Distance.arc2line(this, shape) }
+    if (shape instanceof Segment) { return Distance.arc2segment(this, shape) }
+    if (shape instanceof Arc) { return Distance.arc2arc(this, shape) }
+    if (shape instanceof Polygon) { return Distance.shape2polygon(this, shape) }
+    if (shape instanceof PlanarSet) { return Distance.shape2planarSet(this, shape) }
   }
 
   /**
@@ -324,7 +287,7 @@ export class Arc extends Shape<Arc> {
     let test_arcs = []
     for (let i = 0; i < 4; i++) {
       if (pts[i].on(this)) {
-        test_arcs.push(new geom.Arc(this.pc, this.r, this.startAngle, angles[i], this.counterClockwise))
+        test_arcs.push(new Arc(this.pc, this.r, this.startAngle, angles[i], this.counterClockwise))
       }
     }
 
@@ -340,9 +303,9 @@ export class Arc extends Shape<Arc> {
         let prev_arc = func_arcs_array.length > 0 ? func_arcs_array[func_arcs_array.length - 1] : undefined
         let new_arc
         if (prev_arc) {
-          new_arc = new geom.Arc(this.pc, this.r, prev_arc.endAngle, test_arcs[i].endAngle, this.counterClockwise)
+          new_arc = new Arc(this.pc, this.r, prev_arc.endAngle, test_arcs[i].endAngle, this.counterClockwise)
         } else {
-          new_arc = new geom.Arc(this.pc, this.r, this.startAngle, test_arcs[i].endAngle, this.counterClockwise)
+          new_arc = new Arc(this.pc, this.r, this.startAngle, test_arcs[i].endAngle, this.counterClockwise)
         }
         if (!Utils.EQ_0(new_arc.length)) {
           func_arcs_array.push(new_arc.clone())
@@ -353,9 +316,9 @@ export class Arc extends Shape<Arc> {
       let prev_arc = func_arcs_array.length > 0 ? func_arcs_array[func_arcs_array.length - 1] : undefined
       let new_arc
       if (prev_arc) {
-        new_arc = new geom.Arc(this.pc, this.r, prev_arc.endAngle, this.endAngle, this.counterClockwise)
+        new_arc = new Arc(this.pc, this.r, prev_arc.endAngle, this.endAngle, this.counterClockwise)
       } else {
-        new_arc = new geom.Arc(this.pc, this.r, this.startAngle, this.endAngle, this.counterClockwise)
+        new_arc = new Arc(this.pc, this.r, this.startAngle, this.endAngle, this.counterClockwise)
       }
       // It could be TAU when occasionally start = 0 and end = TAU but this is not valid for breakToFunctional
       if (!Utils.EQ_0(new_arc.length) && !Utils.EQ(new_arc.sweep, 2 * Math.PI)) {
@@ -369,7 +332,7 @@ export class Arc extends Shape<Arc> {
    * Return tangent unit vector in the start point in the direction from start to end
    */
   tangentInStart() {
-    let vec = new geom.Vector(this.pc, this.start)
+    let vec = new Vector(this.pc, this.start)
     let angle = this.counterClockwise ? Math.PI / 2 : -Math.PI / 2
     return vec.rotate(angle).normalize()
   }
@@ -378,7 +341,7 @@ export class Arc extends Shape<Arc> {
    * Return tangent unit vector in the end point in the direction from end to start
    */
   tangentInEnd() {
-    let vec = new geom.Vector(this.pc, this.end)
+    let vec = new Vector(this.pc, this.end)
     let angle = this.counterClockwise ? -Math.PI / 2 : Math.PI / 2
     return vec.rotate(angle).normalize()
   }
@@ -393,7 +356,7 @@ export class Arc extends Shape<Arc> {
   /**
    * Return new arc transformed using affine transformation matrix <br/>
    */
-  transform(matrix = new geom.Matrix()) {
+  transform(matrix = new Matrix()) {
     let newStart = this.start.transform(matrix)
     let newEnd = this.end.transform(matrix)
     let newCenter = this.pc.transform(matrix)
@@ -401,20 +364,19 @@ export class Arc extends Shape<Arc> {
     if (matrix.a * matrix.d < 0) {
       newDirection = !newDirection
     }
-    return geom.Arc.arcSE(newCenter, newStart, newEnd, newDirection)
+    return Arc.arcSE(newCenter, newStart, newEnd, newDirection)
   }
 
   static arcSE(center, start, end, counterClockwise) {
-    let { vector } = geom
-    let startAngle = vector(center, start).slope
-    let endAngle = vector(center, end).slope
+    let startAngle = new Vector(center, start).slope
+    let endAngle = new Vector(center, end).slope
     if (Utils.EQ(startAngle, endAngle)) {
       endAngle += TAU
       counterClockwise = true
     }
-    let r = vector(center, start).length
+    let r = new Vector(center, start).length
 
-    return new geom.Arc(center, r, startAngle, endAngle, counterClockwise)
+    return new Arc(center, r, startAngle, endAngle, counterClockwise)
   }
 
   definiteIntegral(ymin = 0) {
@@ -424,9 +386,9 @@ export class Arc extends Shape<Arc> {
   }
 
   circularSegmentDefiniteIntegral(ymin: number) {
-    let line = new geom.Line(this.start, this.end)
+    let line = new Line(this.start, this.end)
     let onLeftSide = this.pc.leftTo(line)
-    let segment = new geom.Segment(this.start, this.end)
+    let segment = new Segment(this.start, this.end)
     let areaTrapez = segment.definiteIntegral(ymin)
     let areaCircularSegment = this.circularSegmentArea()
     let area = onLeftSide ? areaTrapez - areaCircularSegment : areaTrapez + areaCircularSegment
@@ -440,11 +402,10 @@ export class Arc extends Shape<Arc> {
   /**
    * Sort given array of points from arc start to end, assuming all points lay on the arc
    */
-  sortPoints(pts: geom.Point[]) {
-    const { vector } = geom
+  sortPoints(pts: Point[]) {
     return pts.slice().sort((pt1, pt2) => {
-      let slope1 = vector(this.pc, pt1).slope
-      let slope2 = vector(this.pc, pt2).slope
+      let slope1 = new Vector(this.pc, pt1).slope
+      let slope2 = new Vector(this.pc, pt2).slope
       if (slope1 < slope2) {
         return -1
       }
@@ -463,5 +424,5 @@ export class Arc extends Shape<Arc> {
 /**
  * Function to create arc equivalent to "new" constructor
  */
-export const arc = (pc: geom.Point, r: number, startAngle: number, endAngle: number, ccw?: boolean) =>
+export const arc = (pc: Point, r: number, startAngle: number, endAngle: number, ccw?: boolean) =>
   new Arc(pc, r, startAngle, endAngle, ccw)
