@@ -150,7 +150,7 @@ export class Face extends CircularLinkedList<any> {
    */
   get box() {
     if (this._box === undefined) {
-      let box = new geom.Box()
+      let box = geom.Box.VOID
       for (let edge of this) {
         box = box.merge(edge.box)
       }

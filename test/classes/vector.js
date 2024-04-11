@@ -88,13 +88,13 @@ describe('Vector', function () {
     let vector = new Vector(1, 1)
     let angle = TAU / 4
     let rotated_vector = vector.rotate(angle)
-    expect(rotated_vector).to.equal(new Vector(-1, 1))
+    expect(rotated_vector.equalTo(new Vector(-1, 1))).to.equal(true)
   })
   it('.rotate() rotates counterclockwise when angle is negative', function () {
     let vector = new Vector(1, 1)
     let angle = -(TAU / 2) / 2
     let rotated_vector = vector.rotate(angle)
-    expect(rotated_vector).to.equal(new Vector(1, -1))
+    expect(rotated_vector.equalTo(new Vector(1, -1))).to.equal(true)
   })
   it('.add() return sum of two vectors', function () {
     let v1 = vector(2, 1)

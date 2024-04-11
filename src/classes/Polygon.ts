@@ -127,7 +127,7 @@ export class Polygon extends Shape<Polygon> {
    * Returns bounding box of the polygon
    */
   get box(): Box {
-    return [...this.faces].reduce((acc, face) => acc.merge(face.box), geom.Box.EMPTY)
+    return [...this.faces].reduce((acc, face) => acc.merge(face.box), geom.Box.VOID)
   }
 
   /**

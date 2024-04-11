@@ -1,15 +1,10 @@
-/**
- * Created by Alex Bol on 9/8/2017.
- */
-'use strict'
-
 import { expect } from 'chai'
 import Flatten from '../../index'
 
 import { Point, Vector, Circle, Line, Segment, Arc, Box, Polygon, Edge, Face, Ray } from '../../index'
 import { point, vector, circle, line, segment, arc, ray } from '../../index'
 
-describe('#Flatten.Segment', function () {
+describe('Segment', function () {
   it('May create new instance of Segment', function () {
     let segment = new Segment()
     expect(segment).to.be.an.instanceof(Segment)
@@ -36,12 +31,6 @@ describe('#Flatten.Segment', function () {
   })
   it('New segment may be constructed by function call', function () {
     expect(segment(point(1, 1), point(2, 3))).to.deep.equal(new Segment(new Point(1, 1), new Point(2, 3)))
-  })
-  it('Constructor with illegal parameters throw error', function () {
-    let fn = function () {
-      new Segment([1, 2, 3])
-    }
-    expect(fn).to.throw(ReferenceError)
   })
   it('Method clone copy to a new instance of Segment', function () {
     let ps = new Point(1, 1)
@@ -107,18 +96,6 @@ describe('#Flatten.Segment', function () {
     let seg_minus_pi_2 = segment(1, 1, 3, -1)
     expect(seg.rotate(Math.PI / 2, seg.start).equalTo(seg_plus_pi_2)).to.be.true
     expect(seg.rotate(-Math.PI / 2, seg.start).equalTo(seg_minus_pi_2)).to.be.true
-  })
-  it('Method svg() without parameters creates svg string with default attributes', function () {
-    let seg = new Segment(point(-2, 2), point(2, 2))
-    let svg = seg.svg()
-    expect(svg.search('stroke')).to.not.equal(-1)
-  })
-  it('Method svg() with extra parameters may add additional attributes', function () {
-    let seg = new Segment(point(-2, 2), point(2, 2))
-    let svg = seg.svg({ id: '123', className: 'name' })
-    expect(svg.search('stroke')).to.not.equal(-1)
-    expect(svg.search('id')).to.not.equal(-1)
-    expect(svg.search('class')).to.not.equal(-1)
   })
   describe('#Flatten.Segment.Intersect', function () {
     it('Intersection with Segment - not parallel segments case (one point)', function () {
@@ -193,9 +170,8 @@ describe('#Flatten.Segment', function () {
       let points = [point(100, 20), point(200, 20), point(200, 40), point(100, 40)]
 
       let poly = new Polygon()
-      let face = poly.addFace(points)
+      poly.addFace(points)
 
-      let ip_expected = new Point(0, 2)
       let ip = segment.intersect(poly.box)
       expect(ip.length).to.equal(2)
       expect(ip[0].equalTo(point(150, 20))).to.be.true

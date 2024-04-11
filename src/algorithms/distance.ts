@@ -152,7 +152,7 @@ export function segment2segment(seg1, seg2): [number, g.Segment] {
  * @param circle
  * @returns {Number | Segment} - distance and shortest segment
  */
-export function segment2circle(seg, circle): [number, g.Segment] {
+export function segment2circle(seg: g.Segment, circle: g.Circle): [number, g.Segment] {
   /* Case 1 Segment and circle intersected. Return the first point and zero distance */
   let ip = seg.intersect(circle)
   if (ip.length > 0) {
@@ -164,7 +164,7 @@ export function segment2circle(seg, circle): [number, g.Segment] {
   /* Case 2. Distance to projection of center point to line bigger than radius
    * And projection point belong to segment
    * Then measure again distance from projection to circle and return it */
-  let line = new g.Line(seg.ps, seg.pe)
+  let line = new g.Line(seg.start, seg.end)
   let [dist, shortest_segment] = point2line(circle.center, line)
   if (Utils.GE(dist, circle.r) && shortest_segment.end.on(seg)) {
     return point2circle(shortest_segment.end, circle)
@@ -192,7 +192,7 @@ export function segment2arc(seg, arc): [number, g.Segment] {
   }
 
   // No intersection between segment and arc
-  let line = new g.Line(seg.ps, seg.pe)
+  let line = new g.Line(seg.start, seg.end)
   let circle = new g.Circle(arc.pc, arc.r)
 
   /* Case 2. Distance to projection of center point to line bigger than radius AND
