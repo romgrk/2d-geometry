@@ -54,9 +54,7 @@ export abstract class Shape<T = unknown> {
    */
   _data: any
 
-  constructor() {
-    this._data = null
-  }
+  constructor() {}
 
   /**
    * Returns new shape translated by given vector.
