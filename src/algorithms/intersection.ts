@@ -133,7 +133,7 @@ export function intersectSegment2Segment(seg1: g.Segment, seg2: g.Segment): g.Po
   let ip = []
 
   // quick reject
-  if (seg1.box.notIntersect(seg2.box)) {
+  if (!seg1.box.intersect(seg2.box)) {
     return ip
   }
 
@@ -198,7 +198,7 @@ function isPointInSegmentBox(point: g.Point, segment: g.Segment) {
 export function intersectSegment2Circle(segment: g.Segment, circle: g.Circle): g.Point[] {
   let ips = []
 
-  if (segment.box.notIntersect(circle.box)) {
+  if (!segment.box.intersect(circle.box)) {
     return ips
   }
 
@@ -228,7 +228,7 @@ export function intersectSegment2Circle(segment: g.Segment, circle: g.Circle): g
 export function intersectSegment2Arc(segment: g.Segment, arc: g.Arc): g.Point[] {
   let ip = []
 
-  if (segment.box.notIntersect(arc.box)) {
+  if (!segment.box.intersect(arc.box)) {
     return ip
   }
 
@@ -268,7 +268,7 @@ export function intersectSegment2Box(segment: g.Segment, box: g.Box): g.Point[] 
 export function intersectCircle2Circle(circle1: g.Circle, circle2: g.Circle): g.Point[] {
   let ip = []
 
-  if (circle1.box.notIntersect(circle2.box)) {
+  if (!circle1.box.intersect(circle2.box)) {
     return ip
   }
 
@@ -346,7 +346,7 @@ export function intersectCircle2Box(circle: g.Circle, box: g.Box): g.Point[] {
 export function intersectArc2Arc(arc1: g.Arc, arc2: g.Arc): g.Point[] {
   let ip = []
 
-  if (arc1.box.notIntersect(arc2.box)) {
+  if (!arc1.box.intersect(arc2.box)) {
     return ip
   }
 
@@ -385,7 +385,7 @@ export function intersectArc2Arc(arc1: g.Arc, arc2: g.Arc): g.Point[] {
 export function intersectArc2Circle(arc: g.Arc, circle: g.Circle): g.Point[] {
   let ip = []
 
-  if (arc.box.notIntersect(circle.box)) {
+  if (!arc.box.intersect(circle.box)) {
     return ip
   }
 
@@ -524,7 +524,7 @@ export function intersectEdge2Edge(edge1: g.Edge, edge2: g.Edge): g.Point[] {
 
 export function intersectEdge2Polygon(edge: g.Edge, polygon: g.Polygon) {
   let ip = [] as g.Point[]
-  if (polygon.isEmpty() || edge.shape.box.notIntersect(polygon.box)) {
+  if (polygon.isEmpty() || !edge.shape.box.intersect(polygon.box)) {
     return ip
   }
   let resp_edges = polygon.edges.search(edge.shape.box)
@@ -554,7 +554,7 @@ export function intersectPolygon2Polygon(polygon1: g.Polygon, polygon2: g.Polygo
   if (polygon1.isEmpty() || polygon2.isEmpty()) {
     return []
   }
-  if (polygon1.box.notIntersect(polygon2.box)) {
+  if (!polygon1.box.intersect(polygon2.box)) {
     return []
   }
 

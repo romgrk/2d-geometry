@@ -10,8 +10,7 @@ import { Polygon } from './Polygon'
 export class RoundedRect extends Polygon {
   constructor(x: number, y: number, width: number, height: number, r: number) {
     const edges = [
-      segment(x + r, y,
-              x + width - r, y),
+      segment(x + r, y, x + width - r, y),
       arc(point(x + width - r, y + r), r, TAU * 0.75, TAU, false),
 
       segment(x + width, y + r, x + width, y + height - r),

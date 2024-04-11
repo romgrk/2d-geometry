@@ -5,12 +5,14 @@ import { Segment } from './Segment'
 import { Shape, ShapeTag } from './Shape'
 
 /**
- * Class Box represents bounding box of the shape.
- * It may also represent axis-aligned rectangle
- * @type {Box}
+ * WARNING: Does not represent a rectangle.
+ * Box represents the bounding box of a shape. You can think of it as an
+ * axis-aligned rectangle.
  */
 export class Box extends Shape<Box> {
   static EMPTY = Object.freeze(new Box(0, 0, 0, 0))
+  /** Abstract box that has no dimensions (xmin is Infinity, xmax is -Infinity, etc) */
+  static VOID = Object.freeze(new Box(Infinity, Infinity, -Infinity, -Infinity))
 
   /** Minimal x coordinate */
   xmin: number
@@ -21,8 +23,12 @@ export class Box extends Shape<Box> {
   /** Maximal y coordinate */
   ymax: number
 
-  constructor(xmin?: number, ymin?: number, xmax?: number, ymax?: number) {
+  constructor(xmin: number = 0, ymin: number = 0, xmax: number = 0, ymax: number = 0) {
     super()
+    this.xmin = NaN
+    this.ymin = NaN
+    this.xmax = NaN
+    this.ymax = NaN
     this.xmin = xmin
     this.ymin = ymin
     this.xmax = xmax
@@ -59,6 +65,95 @@ export class Box extends Shape<Box> {
   }
 
   /**
+   * Return the width of the box
+   */
+  get width() {
+    return Math.abs(this.xmax - this.xmin)
+  }
+
+  /**
+   * Return the height of the box
+   */
+  get height() {
+    return Math.abs(this.ymax - this.ymin)
+  }
+
+  /**
+   * Returns true if point is contained in box.
+   */
+  contains(other: Point): boolean {
+    return other.x >= this.xmin && other.x <= this.xmax && other.y >= this.ymin && other.y <= this.ymax
+  }
+
+  /**
+   * Returns true if intersected with other box
+   */
+  intersect(otherBox: Box) {
+    return !(
+      this.xmax < otherBox.xmin || this.xmin > otherBox.xmax || this.ymax < otherBox.ymin || this.ymin > otherBox.ymax
+    )
+  }
+
+  /**
+   * Returns new box merged with other box
+   */
+  merge(otherBox: Box) {
+    return new Box(
+      Math.min(this.xmin, otherBox.xmin),
+      Math.min(this.ymin, otherBox.ymin),
+      Math.max(this.xmax, otherBox.xmax),
+      Math.max(this.ymax, otherBox.ymax),
+    )
+  }
+
+  /**
+   * Returns true if this box is equal to other box, false otherwise
+   */
+  equalTo(otherBox: Box) {
+    return this.low.equalTo(otherBox.low) && this.high.equalTo(otherBox.high)
+  }
+
+  /**
+   * Transform box into array of points from low left corner in counterclockwise
+   */
+  toPoints() {
+    return [
+      new Point(this.xmin, this.ymin),
+      new Point(this.xmax, this.ymin),
+      new Point(this.xmax, this.ymax),
+      new Point(this.xmin, this.ymax),
+    ]
+  }
+
+  /**
+   * Transform box into array of segments from low left corner in counterclockwise
+   */
+  toSegments() {
+    const pts = this.toPoints()
+    return [
+      new Segment(pts[0], pts[1]),
+      new Segment(pts[1], pts[2]),
+      new Segment(pts[2], pts[3]),
+      new Segment(pts[3], pts[0]),
+    ]
+  }
+
+  /**
+   * This method _will_ throw. Box rotation is not supported.
+   */
+  rotate(_angle: number, _center = Point.EMPTY): Box {
+    throw Errors.OPERATION_IS_NOT_SUPPORTED
+  }
+
+  /**
+   * Return new box transformed using affine transformation matrix
+   * New box is a bounding box of transformed corner points.
+   */
+  transform(m = Matrix.IDENTITY) {
+    return this.toPoints().map(p => p.transform(m)).reduce((new_box, pt) => new_box.merge(pt.box), Box.VOID)
+  }
+
+  /**
    * Property low need for interval tree interface
    */
   get low() {
@@ -80,77 +175,7 @@ export class Box extends Shape<Box> {
   }
 
   /**
-   * Return the width of the box
-   */
-  get width() {
-    return Math.abs(this.xmax - this.xmin)
-  }
-
-  /**
-   * Return the height of the box
-   */
-  get height() {
-    return Math.abs(this.ymax - this.ymin)
-  }
-
-  contains(other: Shape<unknown>): boolean {
-    if (other instanceof Point) {
-      return other.x >= this.xmin && other.x <= this.xmax && other.y >= this.ymin && other.y <= this.ymax
-    }
-
-    throw new Error('unimplemented')
-  }
-
-  /**
-   * Snap the point to a grid.
-   */
-  snapToGrid(grid: number): Box
-  snapToGrid(xGrid: number, yGrid: number): Box
-  snapToGrid(a: number = 1, b?: unknown) {
-    const xGrid = a
-    const yGrid = b === undefined ? a : (b as number)
-    return new Box(
-      Math.round(this.xmin / xGrid) * xGrid,
-      Math.round(this.ymin / yGrid) * yGrid,
-      Math.round(this.xmax / xGrid) * xGrid,
-      Math.round(this.ymax / yGrid) * yGrid,
-    )
-  }
-
-  /**
-   * Returns true if not intersected with other box
-   * @param otherBox - other box to test
-   */
-  notIntersect(otherBox: Box) {
-    return (
-      this.xmax < otherBox.xmin || this.xmin > otherBox.xmax || this.ymax < otherBox.ymin || this.ymin > otherBox.ymax
-    )
-  }
-
-  /**
-   * Returns true if intersected with other box
-   * @param otherBox - Query box
-   */
-  intersect(otherBox: Box) {
-    return !this.notIntersect(otherBox)
-  }
-
-  /**
-   * Returns new box merged with other box
-   * @param otherBox - Other box to merge with
-   */
-  merge(otherBox: Box) {
-    return new Box(
-      this.xmin === undefined ? otherBox.xmin : Math.min(this.xmin, otherBox.xmin),
-      this.ymin === undefined ? otherBox.ymin : Math.min(this.ymin, otherBox.ymin),
-      this.xmax === undefined ? otherBox.xmax : Math.max(this.xmax, otherBox.xmax),
-      this.ymax === undefined ? otherBox.ymax : Math.max(this.ymax, otherBox.ymax),
-    )
-  }
-
-  /**
    * Defines predicate "less than" between two boxes. Need for interval index
-   * @param otherBox - other box
    */
   lessThan(otherBox: Box) {
     if (this.low.lessThan(otherBox.low)) return true
@@ -158,79 +183,16 @@ export class Box extends Shape<Box> {
     return false
   }
 
-  /**
-   * Returns true if this box is equal to other box, false otherwise
-   * @param otherBox - query box
-   */
-  equalTo(otherBox: Box) {
-    return this.low.equalTo(otherBox.low) && this.high.equalTo(otherBox.high)
-  }
-
   output() {
     return this.clone()
   }
 
-  static comparableMax(box1: Box, box2: Box) {
-    // return pt1.lessThan(pt2) ? pt2.clone() : pt1.clone();
-    return box1.merge(box2)
+  static comparableMax(a: Box, b: Box) {
+    return a.merge(b)
   }
 
-  static comparableLessThan(pt1: Point, pt2: Point) {
-    return pt1.lessThan(pt2)
-  }
-
-  /**
-   * Set new values to the box object
-   */
-  set(xmin: number, ymin: number, xmax: number, ymax: number) {
-    this.xmin = xmin
-    this.ymin = ymin
-    this.xmax = xmax
-    this.ymax = ymax
-  }
-
-  /**
-   * Transform box into array of points from low left corner in counterclockwise
-   */
-  toPoints() {
-    return [
-      new Point(this.xmin, this.ymin),
-      new Point(this.xmax, this.ymin),
-      new Point(this.xmax, this.ymax),
-      new Point(this.xmin, this.ymax),
-    ]
-  }
-
-  /**
-   * Transform box into array of segments from low left corner in counterclockwise
-   */
-  toSegments() {
-    let pts = this.toPoints()
-    return [
-      new Segment(pts[0], pts[1]),
-      new Segment(pts[1], pts[2]),
-      new Segment(pts[2], pts[3]),
-      new Segment(pts[3], pts[0]),
-    ]
-  }
-
-  /**
-   * Box rotation is not supported
-   * Attempt to rotate box throws error
-   * @param angle - angle in radians
-   * @param [center=(0,0)] center
-   */
-  rotate(_angle: number, _center = Point.EMPTY): Box {
-    throw Errors.OPERATION_IS_NOT_SUPPORTED
-  }
-
-  /**
-   * Return new box transformed using affine transformation matrix
-   * New box is a bounding box of transformed corner points
-   */
-  transform(m = Matrix.IDENTITY) {
-    const transformed_points = this.toPoints().map((pt) => pt.transform(m))
-    return transformed_points.reduce((new_box, pt) => new_box.merge(pt.box), new Box())
+  static comparableLessThan(a: Point, b: Point) {
+    return a.lessThan(b)
   }
 }
 

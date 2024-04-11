@@ -12,7 +12,7 @@ export function ray_shoot(polygon, point) {
   let contains = undefined
 
   // 1. Quick reject
-  // if (polygon.box.notIntersect(point.box)) {
+  // if (!polygon.box.intersect(point.box)) {
   //     return geom.OUTSIDE;
   // }
 
@@ -27,7 +27,7 @@ export function ray_shoot(polygon, point) {
     ray.box.ymax + Utils.getTolerance(),
   )
 
-  if (polygon.box.notIntersect(searchBox)) {
+  if (!polygon.box.intersect(searchBox)) {
     return k.OUTSIDE
   }
 
