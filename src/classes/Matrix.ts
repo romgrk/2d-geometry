@@ -1,4 +1,4 @@
-import { ILLEGAL_PARAMETERS } from '../utils/errors'
+import Errors from '../utils/errors'
 import { EQ } from '../utils/utils'
 import type { PointLike } from './Point'
 import type { Vector } from './Vector'
@@ -184,13 +184,19 @@ export class Matrix {
   }
 
   multiplyMut(other: Matrix) {
+    const a = this.a
+    const b = this.b
+    const c = this.c
+    const d = this.d
+    const tx = this.tx
+    const ty = this.ty
+    this.a  = a * other.a  + c * other.b
+    this.b  = b * other.a  + d * other.b
+    this.c  = a * other.c  + c * other.d
+    this.d  = b * other.c  + d * other.d
+    this.tx = a * other.tx + c * other.ty + tx
+    this.ty = b * other.tx + d * other.ty + ty
     this._inverse = null
-    this.a = this.a * other.a + this.c * other.b
-    this.b = this.b * other.a + this.d * other.b
-    this.c = this.a * other.c + this.c * other.d
-    this.d = this.b * other.c + this.d * other.d
-    this.tx = this.a * other.tx + this.c * other.ty + this.tx
-    this.ty = this.b * other.tx + this.d * other.ty + this.ty
     return this
   }
 
@@ -210,7 +216,7 @@ export class Matrix {
       tx = a
       ty = b
     } else {
-      throw ILLEGAL_PARAMETERS()
+      throw Errors.ILLEGAL_PARAMETERS
     }
     return this.clone().multiplyMut(new Matrix(1, 0, 0, 1, tx, ty))
   }
@@ -226,7 +232,8 @@ export class Matrix {
   rotate(angle: number, centerX: number = 0.0, centerY: number = 0.0) {
     const cos = Math.cos(angle)
     const sin = Math.sin(angle)
-    return this.translate(centerX, centerY)
+    return this
+      .translate(centerX, centerY)
       .multiply(new Matrix(cos, sin, -sin, cos, 0, 0))
       .translate(-centerX, -centerY)
   }
@@ -262,4 +269,4 @@ export class Matrix {
 /**
  * Function to create matrix equivalent to "new" constructor
  */
-export const matrix = (a: number, b: number, c: number, d: number, tx: number, ty: number) => new Matrix(a, b, c, d, tx, ty)
+export const matrix = (a?: number, b?: number, c?: number, d?: number, tx?: number, ty?: number) => new Matrix(a, b, c, d, tx, ty)

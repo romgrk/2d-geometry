@@ -21,59 +21,43 @@ import * as geom from '../classes'
  * Returns true if shapes are topologically equal:  their interiors intersect and
  * no part of the interior or boundary of one geometry intersects the exterior of the other
  */
-export function equal(a: Shape, b: Shape) {
-  return relate(a, b).equal()
-}
+export function equal(a: Shape, b: Shape) { return relate(a, b).equal() }
 
 /**
  * Returns true if shapes have at least one point in common, same as "not disjoint"
  */
-export function intersect(a: Shape, b: Shape) {
-  return relate(a, b).intersect()
-}
+export function intersect(a: Shape, b: Shape) { return relate(a, b).intersect() }
 
 /**
  * Returns true if shapes have at least one point in common, but their interiors do not intersect
  */
-export function touch(a: Shape, b: Shape) {
-  return relate(a, b).touch()
-}
+export function touch(a: Shape, b: Shape) { return relate(a, b).touch() }
 
 /**
  * Returns true if shapes have no points in common neither in interior nor in boundary
  */
-export function disjoint(a: Shape, b: Shape) {
-  return !intersect(a, b)
-}
+export function disjoint(a: Shape, b: Shape) { return !intersect(a, b) }
 
 /**
  * Returns true a lies in the interior of b
  */
-export function inside(a: Shape, b: Shape) {
-  return relate(a, b).inside()
-}
+export function inside(a: Shape, b: Shape) { return relate(a, b).inside() }
 
 /**
  * Returns true if every point in a lies in the interior or on the boundary of b
  */
-export function covered(a: Shape, b: Shape) {
-  return relate(a, b).covered()
-}
+export function covered(a: Shape, b: Shape) { return relate(a, b).covered() }
 
 /**
  * Returns true a's interior contains b <br/>
  * Same as inside(b, a)
  */
-export function contain(a: Shape, b: Shape) {
-  return inside(b, a)
-}
+export function contain(a: Shape, b: Shape) { return inside(b, a) }
 
 /**
  * Returns true a's cover b, same as b covered by a
  */
-export function cover(a: Shape, b: Shape) {
-  return covered(b, a)
-}
+export function cover(a: Shape, b: Shape) { return covered(b, a) }
 
 /**
  * Returns relation between two shapes as intersection 3x3 matrix, where each

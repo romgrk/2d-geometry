@@ -1,13 +1,4 @@
-/**
- * Created by alexbol on 1/21/2018.
- */
-
-'use strict'
-
 import { expect } from 'chai'
-//import Flatten from 'https://unpkg.com/@flatten-js/core';
-//import {Polygon} from 'https://unpkg.com/@flatten-js/core';
-//import {point, segment, arc, circle} from 'https://unpkg.com/@flatten-js/core';
 
 import Flatten from '../../index'
 
