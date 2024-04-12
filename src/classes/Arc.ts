@@ -199,7 +199,7 @@ export class Arc extends Shape<Arc> {
 
     if (Utils.EQ(length, this.length)) return [this.clone(), null]
 
-    const angle = this.startAngle + (this.clockwise ? -1 : +1) * this.sweep * (length / this.length)
+    const angle = this.startAngle + (this.clockwise ? +1 : -1) * this.sweep * (length / this.length)
 
     return [
       new Arc(this.pc, this.r, this.startAngle, angle, this.clockwise),
