@@ -23,16 +23,18 @@ export const TAU = 2 * Math.PI
 export const INSIDE = 1
 export const OUTSIDE = 0
 export const BOUNDARY = 2
-export const CONTAINS = 3
-export const INTERLACE = 4
 
 export enum Position {
   INSIDE = 1,
   OUTSIDE = 0,
 }
 
-export const OVERLAP_SAME = 1
-export const OVERLAP_OPPOSITE = 2
+export enum Inclusion {
+  INSIDE = 1,
+  OUTSIDE = 0,
+  BOUNDARY = 2,
+}
+
 export enum Overlap {
   SAME = 1,
   OPPOSITE = 2,

@@ -1,4 +1,3 @@
-import Errors from '../utils/errors'
 import * as Utils from '../utils/utils'
 import * as Intersection from '../algorithms/intersection'
 import * as geom from './index'
@@ -12,38 +11,17 @@ export class Ray extends Shape<Ray> {
   norm: geom.Vector
 
   /**
-   * Ray may be constructed by setting an <b>origin</b> point and a <b>normal</b> vector, so that any point <b>x</b>
-   * on a ray fit an equation: <br />
-   *  (<b>x</b> - <b>origin</b>) * <b>vector</b> = 0 <br />
-   * Ray defined by constructor is a right semi-infinite line with respect to the normal vector <br/>
-   * If normal vector is omitted ray is considered horizontal (normal vector is (0,1)). <br/>
-   * Don't be confused: direction of the normal vector is orthogonal to the ray <br/>
-   * @param {Point} pt - start point
-   * @param {Vector} norm - normal vector
+   * Ray may be constructed by setting an *origin* point and a *normal* vector, so that any point *p*
+   * on a ray fit an equation:
+   *  (p - origin) * vector = 0
+   * Ray defined by constructor is a right semi-infinite line with respect to the normal vector
+   * If normal vector is omitted ray is considered horizontal (normal vector is (0,1)).
+   * Don't be confused: direction of the normal vector is orthogonal to the ray
    */
-  constructor(...args) {
+  constructor(pt?: geom.Point, norm?: geom.Vector) {
     super()
-    this.pt = new geom.Point()
-    this.norm = new geom.Vector(0, 1)
-
-    if (args.length === 0) {
-      return
-    }
-
-    if (args.length >= 1 && args[0] instanceof geom.Point) {
-      this.pt = args[0].clone()
-    }
-
-    if (args.length === 1) {
-      return
-    }
-
-    if (args.length === 2 && args[1] instanceof geom.Vector) {
-      this.norm = args[1].clone()
-      return
-    }
-
-    throw Errors.ILLEGAL_PARAMETERS
+    this.pt = pt ?? geom.Point.EMPTY
+    this.norm = norm ?? new geom.Vector(0, 1)
   }
 
   /**
@@ -69,8 +47,7 @@ export class Ray extends Shape<Ray> {
    * Slope of the ray - angle in radians between ray and axe x from 0 to 2PI
    */
   get slope() {
-    let vec = new geom.Vector(this.norm.y, -this.norm.x)
-    return vec.slope
+    return new geom.Vector(this.norm.y, -this.norm.x).slope
   }
 
   /**
@@ -87,14 +64,14 @@ export class Ray extends Shape<Ray> {
   }
 
   /**
-   * Return ray start point
+   * Return start point
    */
   get start() {
     return this.pt
   }
 
   /**
-   * Ray has no end point?
+   * Ray has no end point
    */
   get end() {
     return undefined
@@ -109,90 +86,58 @@ export class Ray extends Shape<Ray> {
 
   /**
    * Returns true if point belongs to ray
-   * @param {Point} pt Query point
-   * @returns {boolean}
    */
-  contains(pt) {
+  contains(pt: geom.Point) {
     if (this.pt.equalTo(pt)) {
       return true
     }
     /* Ray contains point if vector to point is orthogonal to the ray normal vector
-            and cross product from vector to point is positive */
-    let vec = new geom.Vector(this.pt, pt)
+     * and cross product from vector to point is positive */
+    const vec = new geom.Vector(this.pt, pt)
     return Utils.EQ_0(this.norm.dot(vec)) && Utils.GE(vec.cross(this.norm), 0)
   }
 
   /**
    * Split ray with point and return array of segment and new ray
-   * @param {Point} pt
-   * @returns [Segment,Ray]
    */
-  split(pt) {
+  split(pt: geom.Point) {
     if (!this.contains(pt)) return []
 
     if (this.pt.equalTo(pt)) {
       return [this]
     }
 
-    return [new geom.Segment(this.pt, pt), new geom.Ray(pt, this.norm)]
+    return [new geom.Segment(this.pt, pt), new Ray(pt, this.norm)]
   }
 
   /**
    * Returns array of intersection points between ray and another shape
-   * @param {Shape} shape - Shape to intersect with ray
-   * @returns {Point[]} array of intersection points
    */
-  intersect(shape) {
-    if (shape instanceof geom.Point) {
-      return this.contains(shape) ? [shape] : []
-    }
-
-    if (shape instanceof geom.Segment) {
-      return Intersection.intersectRay2Segment(this, shape)
-    }
-
-    if (shape instanceof geom.Arc) {
-      return Intersection.intersectRay2Arc(this, shape)
-    }
-
-    if (shape instanceof geom.Line) {
-      return Intersection.intersectRay2Line(this, shape)
-    }
-
-    if (shape instanceof geom.Ray) {
-      return Intersection.intersectRay2Ray(this, shape)
-    }
-
-    if (shape instanceof geom.Circle) {
-      return Intersection.intersectRay2Circle(this, shape)
-    }
-
-    if (shape instanceof geom.Box) {
-      return Intersection.intersectRay2Box(this, shape)
-    }
-
-    if (shape instanceof geom.Polygon) {
-      return Intersection.intersectRay2Polygon(this, shape)
-    }
+  intersect(shape: geom.Shape) {
+    if (shape instanceof geom.Point) { return this.contains(shape) ? [shape] : [] }
+    if (shape instanceof geom.Segment) { return Intersection.intersectRay2Segment(this, shape) }
+    if (shape instanceof geom.Arc) { return Intersection.intersectRay2Arc(this, shape) }
+    if (shape instanceof geom.Line) { return Intersection.intersectRay2Line(this, shape) }
+    if (shape instanceof geom.Ray) { return Intersection.intersectRay2Ray(this, shape) }
+    if (shape instanceof geom.Circle) { return Intersection.intersectRay2Circle(this, shape) }
+    if (shape instanceof geom.Box) { return Intersection.intersectRay2Box(this, shape) }
+    if (shape instanceof geom.Polygon) { return Intersection.intersectRay2Polygon(this, shape) }
+    throw new Error('unimplemented')
   }
 
   /**
-   * Return new line rotated by angle
-   * @param {number} angle - angle in radians
-   * @param {Point} center - center of rotation
+   * Return new line rotated by angle.
    */
-  rotate(angle, center = new geom.Point()) {
-    return new geom.Ray(this.pt.rotate(angle, center), this.norm.rotate(angle))
+  rotate(angle: number, center = geom.Point.EMPTY) {
+    return new Ray(this.pt.rotate(angle, center), this.norm.rotate(angle))
   }
 
   /**
    * Return new ray transformed by affine transformation matrix
-   * @param {Matrix} m - affine transformation matrix (a,b,c,d,tx,ty)
-   * @returns {Ray}
    */
-  transform(m) {
-    return new geom.Ray(this.pt.transform(m), this.norm.clone())
+  transform(m: geom.Matrix) {
+    return new Ray(this.pt.transform(m), this.norm.clone())
   }
 }
 
-export const ray = (...args) => new geom.Ray(...args)
+export const ray = (pt?: geom.Point, norm?: geom.Vector) => new Ray(pt, norm)

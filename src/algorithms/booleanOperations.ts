@@ -20,7 +20,7 @@ import type { Segment } from '../classes/Segment'
 import type { Shape } from '../classes/Shape'
 import { Face } from '../classes'
 
-const { INSIDE, OUTSIDE, BOUNDARY, OVERLAP_SAME, OVERLAP_OPPOSITE } = Constants
+const { INSIDE, OUTSIDE, BOUNDARY, Overlap } = Constants
 const { START_VERTEX, END_VERTEX } = Constants
 
 export enum BooleanOp {
@@ -519,8 +519,8 @@ export function removeNotRelevantChains(
       (edge_from.bv === OUTSIDE && edge_to.bv === OUTSIDE && op === BooleanOp.INTERSECT) ||
       ((edge_from.bv === OUTSIDE || edge_to.bv === OUTSIDE) && op === BooleanOp.SUBTRACT && !is_res_polygon) ||
       ((edge_from.bv === INSIDE || edge_to.bv === INSIDE) && op === BooleanOp.SUBTRACT && is_res_polygon) ||
-      (edge_from.bv === BOUNDARY && edge_to.bv === BOUNDARY && edge_from.overlap & OVERLAP_SAME && is_res_polygon) ||
-      (edge_from.bv === BOUNDARY && edge_to.bv === BOUNDARY && edge_from.overlap & OVERLAP_OPPOSITE)
+      (edge_from.bv === BOUNDARY && edge_to.bv === BOUNDARY && edge_from.overlap & Overlap.SAME && is_res_polygon) ||
+      (edge_from.bv === BOUNDARY && edge_to.bv === BOUNDARY && edge_from.overlap & Overlap.OPPOSITE)
     ) {
       polygon.removeChain(cur_face, edge_from, edge_to)
 

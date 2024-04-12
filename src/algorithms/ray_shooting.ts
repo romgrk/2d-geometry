@@ -4,13 +4,8 @@ import * as geom from '../classes'
 
 /**
  * Implements ray shooting algorithm. Returns relation between point and polygon: inside, outside or boundary
- * @param {Polygon} polygon - polygon to test
- * @param {Point} point - point to test
- * @returns {INSIDE|OUTSIDE|BOUNDARY}
  */
-export function ray_shoot(polygon, point) {
-  let contains = undefined
-
+export function ray_shoot(polygon: geom.Polygon, point: geom.Point): k.Inclusion {
   // 1. Quick reject
   // if (!polygon.box.intersect(point.box)) {
   //     return geom.OUTSIDE;
@@ -28,19 +23,19 @@ export function ray_shoot(polygon, point) {
   )
 
   if (!polygon.box.intersect(searchBox)) {
-    return k.OUTSIDE
+    return k.Inclusion.OUTSIDE
   }
 
   let resp_edges = polygon.edges.search(searchBox)
 
   if (resp_edges.length == 0) {
-    return k.OUTSIDE
+    return k.Inclusion.OUTSIDE
   }
 
   // 2.5 Check if boundary
   for (let edge of resp_edges) {
     if (edge.shape.contains(point)) {
-      return k.BOUNDARY
+      return k.Inclusion.BOUNDARY
     }
   }
 
@@ -50,7 +45,7 @@ export function ray_shoot(polygon, point) {
     for (let ip of ray.intersect(edge.shape)) {
       // If intersection is equal to query point then point lays on boundary
       if (ip.equalTo(point)) {
-        return k.BOUNDARY
+        return k.Inclusion.BOUNDARY
       }
 
       intersections.push({
@@ -141,7 +136,7 @@ export function ray_shoot(polygon, point) {
   }
 
   // 6. Odd or even?
-  contains = counter % 2 == 1 ? k.INSIDE : k.OUTSIDE
+  const contains = counter % 2 == 1 ? k.Inclusion.INSIDE : k.Inclusion.OUTSIDE
 
   return contains
 }
