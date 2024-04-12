@@ -1,5 +1,6 @@
 // For tests only, to be removed
 import * as exports from './dist/index.js'
+import * as Distance from './dist/algorithms/distance.js'
 import * as Relations from './dist/algorithms/relation.js'
 import * as BooleanOperations from './dist/algorithms/booleanOperations.js'
 import * as Utils from './dist/utils/utils.js'
@@ -21,6 +22,7 @@ export function _(o) {
 
 const defaultExport = {
   ...exports,
+  Distance,
   Relations,
   BooleanOperations,
   Utils,

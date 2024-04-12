@@ -11,56 +11,56 @@ describe('#Flatten.Arc', function () {
     let arc = new Arc()
     expect(arc).to.be.an.instanceof(Arc)
   })
-  it('Default constructor constructs full circle unit arc with zero center and sweep 2PI CCW', function () {
+  it('Default constructor constructs full circle unit arc with zero center and sweep 2PI CW', function () {
     let arc = new Arc()
     expect(arc.pc).to.deep.equal({ x: 0, y: 0 })
     expect(arc.sweep).to.equal(Flatten.TAU)
-    expect(arc.counterClockwise).to.equal(Flatten.CCW)
+    expect(arc.clockwise).to.equal(Flatten.CW)
   })
-  it('Constructor creates CCW arc if parameter counterClockwise is omitted', function () {
+  it('Constructor creates CW arc if parameter clockwise is omitted', function () {
     let arc = new Arc(new Point(), 1, Math.PI / 4, (3 * Math.PI) / 4)
     expect(arc.sweep).to.equal(Math.PI / 2)
-    expect(arc.counterClockwise).to.equal(Flatten.CCW)
+    expect(arc.clockwise).to.equal(Flatten.CW)
   })
-  it('Constructor can create different CCW arcs if counterClockwise=true 1', function () {
-    let arc = new Arc(new Point(), 1, Math.PI / 4, (3 * Math.PI) / 4, Flatten.CCW)
-    expect(arc.sweep).to.equal(Math.PI / 2)
-    expect(arc.counterClockwise).to.equal(Flatten.CCW)
-  })
-  it('Constructor can create different CCW arcs if counterClockwise=true 2', function () {
-    let arc = new Arc(new Point(), 1, (3 * Math.PI) / 4, Math.PI / 4, Flatten.CCW)
-    expect(arc.sweep).to.equal((3 * Math.PI) / 2)
-    expect(arc.counterClockwise).to.equal(Flatten.CCW)
-  })
-  it('Constructor can create different CCW arcs if counterClockwise=true 3', function () {
-    let arc = new Arc(new Point(3, 4), 1, Math.PI / 4, -Math.PI / 4, Flatten.CCW)
-    expect(arc.sweep).to.equal((3 * Math.PI) / 2)
-    expect(arc.counterClockwise).to.equal(Flatten.CCW)
-  })
-  it('Constructor can create different CCW arcs if counterClockwise=true 4', function () {
-    let arc = new Arc(new Point(2, -2), 1, -Math.PI / 4, Math.PI / 4, Flatten.CCW)
-    expect(arc.sweep).to.equal(Math.PI / 2)
-    expect(arc.counterClockwise).to.equal(Flatten.CCW)
-  })
-  it('Constructor can create different CW arcs if counterClockwise=false 1', function () {
+  it('Constructor can create different CW arcs if clockwise=true 1', function () {
     let arc = new Arc(new Point(), 1, Math.PI / 4, (3 * Math.PI) / 4, Flatten.CW)
-    expect(arc.sweep).to.equal((3 * Math.PI) / 2)
-    expect(arc.counterClockwise).to.equal(Flatten.CW)
+    expect(arc.sweep).to.equal(Math.PI / 2)
+    expect(arc.clockwise).to.equal(Flatten.CW)
   })
-  it('Constructor can create different CW arcs if counterClockwise=false 2', function () {
+  it('Constructor can create different CW arcs if clockwise=true 2', function () {
     let arc = new Arc(new Point(), 1, (3 * Math.PI) / 4, Math.PI / 4, Flatten.CW)
-    expect(arc.sweep).to.equal(Math.PI / 2)
-    expect(arc.counterClockwise).to.equal(Flatten.CW)
-  })
-  it('Constructor can create different CW arcs if counterClockwise=false 3', function () {
-    let arc = new Arc(new Point(3, 4), 1, Math.PI / 4, -Math.PI / 4, Flatten.CW)
-    expect(arc.sweep).to.equal(Math.PI / 2)
-    expect(arc.counterClockwise).to.equal(Flatten.CW)
-  })
-  it('Constructor can create different CW arcs if counterClockwise=false 4', function () {
-    let arc = new Arc(new Point(2, -2), 1, -Math.PI / 4, Math.PI / 4, Flatten.CW)
     expect(arc.sweep).to.equal((3 * Math.PI) / 2)
-    expect(arc.counterClockwise).to.equal(Flatten.CW)
+    expect(arc.clockwise).to.equal(Flatten.CW)
+  })
+  it('Constructor can create different CW arcs if clockwise=true 3', function () {
+    let arc = new Arc(new Point(3, 4), 1, Math.PI / 4, -Math.PI / 4, Flatten.CW)
+    expect(arc.sweep).to.equal((3 * Math.PI) / 2)
+    expect(arc.clockwise).to.equal(Flatten.CW)
+  })
+  it('Constructor can create different CW arcs if clockwise=true 4', function () {
+    let arc = new Arc(new Point(2, -2), 1, -Math.PI / 4, Math.PI / 4, Flatten.CW)
+    expect(arc.sweep).to.equal(Math.PI / 2)
+    expect(arc.clockwise).to.equal(Flatten.CW)
+  })
+  it('Constructor can create different CCW arcs if clockwise=false 1', function () {
+    let arc = new Arc(new Point(), 1, Math.PI / 4, (3 * Math.PI) / 4, Flatten.CCW)
+    expect(arc.sweep).to.equal((3 * Math.PI) / 2)
+    expect(arc.clockwise).to.equal(Flatten.CCW)
+  })
+  it('Constructor can create different CCW arcs if clockwise=false 2', function () {
+    let arc = new Arc(new Point(), 1, (3 * Math.PI) / 4, Math.PI / 4, Flatten.CCW)
+    expect(arc.sweep).to.equal(Math.PI / 2)
+    expect(arc.clockwise).to.equal(Flatten.CCW)
+  })
+  it('Constructor can create different CCW arcs if clockwise=false 3', function () {
+    let arc = new Arc(new Point(3, 4), 1, Math.PI / 4, -Math.PI / 4, Flatten.CCW)
+    expect(arc.sweep).to.equal(Math.PI / 2)
+    expect(arc.clockwise).to.equal(Flatten.CCW)
+  })
+  it('Constructor can create different CCW arcs if clockwise=false 4', function () {
+    let arc = new Arc(new Point(2, -2), 1, -Math.PI / 4, Math.PI / 4, Flatten.CCW)
+    expect(arc.sweep).to.equal((3 * Math.PI) / 2)
+    expect(arc.clockwise).to.equal(Flatten.CCW)
   })
   it('In order to construct full circle, set end_angle = start_angle + 2pi', function () {
     let arc = new Arc(new Point(), 5, Math.PI, 3 * Math.PI, true)
@@ -91,7 +91,7 @@ describe('#Flatten.Arc', function () {
     let arc = new Arc(new Point(), 5, -Math.PI / 4, Math.PI / 4, false)
     expect(arc.length).to.equal((5 * 3 * Math.PI) / 2)
   })
-  it('Getter arc.box returns arc bounding box, CCW case', function () {
+  it('Getter arc.box returns arc bounding box, CW case', function () {
     let arc = new Arc(new Point(), 1, -Math.PI / 4, Math.PI / 4, true)
     let box = arc.box
     expect(Flatten.Utils.EQ(box.xmin, Math.sqrt(2) / 2)).to.equal(true)
@@ -99,7 +99,7 @@ describe('#Flatten.Arc', function () {
     expect(Flatten.Utils.EQ(box.xmax, 1)).to.equal(true)
     expect(Flatten.Utils.EQ(box.ymax, Math.sqrt(2) / 2)).to.equal(true)
   })
-  it('Getter arc.box returns arc bounding box, CW case', function () {
+  it('Getter arc.box returns arc bounding box, CCW case', function () {
     let arc = new Arc(new Point(), 1, -Math.PI / 4, Math.PI / 4, false)
     let box = arc.box
     expect(Flatten.Utils.EQ(box.xmin, -1)).to.equal(true)
@@ -132,7 +132,7 @@ describe('#Flatten.Arc', function () {
       expect(Flatten.Utils.EQ(f_arcs[1].startAngle, Math.PI / 2)).to.equal(true)
       expect(Flatten.Utils.EQ(f_arcs[1].endAngle, arc.endAngle)).to.equal(true)
     })
-    it('Case 3. One intersection, two sub arcs, CW', function () {
+    it('Case 3. One intersection, two sub arcs, CCW', function () {
       let arc = new Arc(new Point(), 1, Math.PI / 6, -Math.PI / 6, false)
       let f_arcs = arc.breakToFunctional()
       expect(f_arcs.length).to.equal(2)
@@ -157,7 +157,7 @@ describe('#Flatten.Arc', function () {
       expect(Flatten.Utils.EQ(f_arcs[1].endAngle, Math.PI)).to.equal(true)
       expect(Flatten.Utils.EQ(f_arcs[2].endAngle, arc.endAngle)).to.equal(true)
     })
-    it('Case 6. 2 intersections, 3 parts, CW', function () {
+    it('Case 6. 2 intersections, 3 parts, CCW', function () {
       let arc = new Arc(new Point(), 1, (3 * Math.PI) / 4, -Math.PI / 4, false)
       let f_arcs = arc.breakToFunctional()
       expect(f_arcs.length).to.equal(3)
@@ -168,7 +168,7 @@ describe('#Flatten.Arc', function () {
       expect(Flatten.Utils.EQ(f_arcs[2].startAngle, 0)).to.equal(true)
       expect(Flatten.Utils.EQ(f_arcs[2].endAngle, arc.endAngle)).to.equal(true)
     })
-    it('Case 7. 2 intersections on extreme points, 1 parts, CW', function () {
+    it('Case 7. 2 intersections on extreme points, 1 parts, CCW', function () {
       let arc = new Arc(new Point(), 1, Math.PI / 2, 0, false)
       let f_arcs = arc.breakToFunctional()
       expect(f_arcs.length).to.equal(1)
@@ -197,13 +197,13 @@ describe('#Flatten.Arc', function () {
     })
     it('Intersect arc with line', function () {
       let line = new Line(point(1, 0), vector(1, 0))
-      let arc = new Arc(point(1, 0), 3, -Math.PI / 3, Math.PI / 3, Flatten.CW)
+      let arc = new Arc(point(1, 0), 3, -Math.PI / 3, Math.PI / 3, Flatten.CCW)
       let ip = arc.intersect(line)
       expect(ip.length).to.equal(2)
     })
     it('Intersect arc with circle, same center and radius - return two end points', function () {
       let circle = new Circle(point(1, 0), 3)
-      let arc = new Arc(point(1, 0), 3, -Math.PI / 3, Math.PI / 3, Flatten.CW)
+      let arc = new Arc(point(1, 0), 3, -Math.PI / 3, Math.PI / 3, Flatten.CCW)
       let ip = arc.intersect(circle)
       expect(ip.length).to.equal(2)
     })
@@ -246,7 +246,7 @@ describe('#Flatten.Arc', function () {
       ]
       let polygon = new Polygon()
       polygon.addFace(points)
-      let arc = new Arc(point(150, 50), 50, Math.PI / 3, (5 * Math.PI) / 3, Flatten.CCW)
+      let arc = new Arc(point(150, 50), 50, Math.PI / 3, (5 * Math.PI) / 3, Flatten.CW)
       expect(arc.intersect(polygon).length).to.equal(1)
     })
     it('Intersect arc with box', function () {
@@ -261,37 +261,37 @@ describe('#Flatten.Arc', function () {
       ]
       let polygon = new Polygon()
       polygon.addFace(points)
-      let arc = new Arc(point(150, 50), 50, Math.PI / 3, (5 * Math.PI) / 3, Flatten.CCW)
+      let arc = new Arc(point(150, 50), 50, Math.PI / 3, (5 * Math.PI) / 3, Flatten.CW)
       expect(arc.intersect(polygon.box).length).to.equal(1)
     })
   })
-  it('Calculate signed area under circular arc, full circle case, CCW', function () {
+  it('Calculate signed area under circular arc, full circle case, CW', function () {
     let arc = new Arc(point(0, 1), 1, 0, 2 * Math.PI, true)
     let area = arc.definiteIntegral()
     expect(Flatten.Utils.EQ(area, -Math.PI)).to.equal(true)
   })
-  it('Calculate signed area under circular arc, full circle case, CW', function () {
+  it('Calculate signed area under circular arc, full circle case, CCW', function () {
     let arc = new Arc(point(0, 1), 1, 0, 2 * Math.PI, false)
     let area = arc.definiteIntegral()
     expect(Flatten.Utils.EQ(area, Math.PI)).to.equal(true)
   })
-  it('It can calculate tangent vector in start point, CCW case', function () {
-    let arc = new Arc(point(), 5, Math.PI / 4, (3 * Math.PI) / 4, Flatten.CCW)
-    let tangent = arc.tangentInStart()
-    expect(tangent.equalTo(vector(Math.cos((3 * Math.PI) / 4), Math.sin((3 * Math.PI) / 4)))).to.be.true
-  })
   it('It can calculate tangent vector in start point, CW case', function () {
     let arc = new Arc(point(), 5, Math.PI / 4, (3 * Math.PI) / 4, Flatten.CW)
     let tangent = arc.tangentInStart()
-    expect(tangent.equalTo(vector(Math.cos((7 * Math.PI) / 4), Math.sin((7 * Math.PI) / 4)))).to.be.true
+    expect(tangent.equalTo(vector(Math.cos((3 * Math.PI) / 4), Math.sin((3 * Math.PI) / 4)))).to.be.true
   })
-  it('It can calculate tangent vector in end point, CCW case', function () {
+  it('It can calculate tangent vector in start point, CCW case', function () {
     let arc = new Arc(point(), 5, Math.PI / 4, (3 * Math.PI) / 4, Flatten.CCW)
-    let tangent = arc.tangentInEnd()
-    expect(tangent.equalTo(vector(Math.cos(Math.PI / 4), Math.sin(Math.PI / 4)))).to.be.true
+    let tangent = arc.tangentInStart()
+    expect(tangent.equalTo(vector(Math.cos((7 * Math.PI) / 4), Math.sin((7 * Math.PI) / 4)))).to.be.true
   })
   it('It can calculate tangent vector in end point, CW case', function () {
     let arc = new Arc(point(), 5, Math.PI / 4, (3 * Math.PI) / 4, Flatten.CW)
+    let tangent = arc.tangentInEnd()
+    expect(tangent.equalTo(vector(Math.cos(Math.PI / 4), Math.sin(Math.PI / 4)))).to.be.true
+  })
+  it('It can calculate tangent vector in end point, CCW case', function () {
+    let arc = new Arc(point(), 5, Math.PI / 4, (3 * Math.PI) / 4, Flatten.CCW)
     let tangent = arc.tangentInEnd()
     expect(tangent.equalTo(vector(Math.cos((5 * Math.PI) / 4), Math.sin((5 * Math.PI) / 4)))).to.be.true
   })
@@ -300,50 +300,38 @@ describe('#Flatten.Arc', function () {
     let middle = arc.middle()
     expect(middle.equalTo(point(3, 0))).to.be.true
   })
-  it('It can calculate middle point case 2 ccw', function () {
-    let arc = new Arc(point(), 5, Math.PI / 4, (3 * Math.PI) / 4, Flatten.CCW)
+  it('It can calculate middle point case 2 cw', function () {
+    let arc = new Arc(point(), 5, Math.PI / 4, (3 * Math.PI) / 4, Flatten.CW)
     let middle = arc.middle()
     expect(middle.equalTo(point(0, 5))).to.be.true
   })
-  it('It can calculate middle point case 3 cw', function () {
-    let arc = new Arc(point(), 5, Math.PI / 4, (3 * Math.PI) / 4, Flatten.CW)
+  it('It can calculate middle point case 3 ccw', function () {
+    let arc = new Arc(point(), 5, Math.PI / 4, (3 * Math.PI) / 4, Flatten.CCW)
     let middle = arc.middle()
     expect(middle.equalTo(point(0, -5))).to.be.true
   })
-  it('It can calculate middle point case 4 cw, startAngle > endAngle', function () {
-    let arc = new Arc(point(), 5, Math.PI / 4, -Math.PI / 4, Flatten.CW)
+  it('It can calculate middle point case 4 ccw, startAngle > endAngle', function () {
+    let arc = new Arc(point(), 5, Math.PI / 4, -Math.PI / 4, Flatten.CCW)
     let middle = arc.middle()
     expect(middle.equalTo(point(5, 0))).to.be.true
   })
   it('Can reverse arc', function () {
-    let arc = new Arc(point(), 5, Math.PI / 4, (3 * Math.PI) / 4, Flatten.CCW)
+    let arc = new Arc(point(), 5, Math.PI / 4, (3 * Math.PI) / 4, Flatten.CW)
     let reversed_arc = arc.reverse()
-    expect(reversed_arc.counterClockwise).to.equal(Flatten.CW)
+    expect(reversed_arc.clockwise).to.equal(Flatten.CCW)
     expect(Flatten.Utils.EQ(arc.sweep, reversed_arc.sweep)).to.be.true
   })
   it('Can mirror arc by Y axis using transformation matrix', () => {
     let a1 = arc(point(0, 10), 20, -Math.PI / 4, Math.PI / 4, true)
     let m = matrix().scale(-1, 1)
     let a2 = a1.transform(m)
-    expect(a2.start.x).to.be.closeTo(-a1.start.x, Flatten.DP_TOL)
-    expect(a2.start.y).to.be.closeTo(a1.start.y, Flatten.DP_TOL)
-    expect(a2.end.x).to.be.closeTo(-a1.end.x, Flatten.DP_TOL)
-    expect(a2.end.y).to.be.closeTo(a1.end.y, Flatten.DP_TOL)
-    expect(a2.center.x).to.be.closeTo(-a1.center.x, Flatten.DP_TOL)
-    expect(a2.center.y).to.be.closeTo(a1.center.y, Flatten.DP_TOL)
-    expect(a2.counterClockwise).to.be.equal(!a1.counterClockwise)
-  })
-  it('Method svg() without parameters creates svg string with default attributes', function () {
-    let arc = new Arc(point(), 5, Math.PI / 4, (3 * Math.PI) / 4, Flatten.CCW)
-    let svg = arc.svg()
-    expect(svg.search('stroke')).to.not.equal(-1)
-  })
-  it('Method svg() with extra parameters may add additional attributes', function () {
-    let arc = new Arc(point(), 5, Math.PI / 4, (3 * Math.PI) / 4, Flatten.CCW)
-    let svg = arc.svg({ id: '123', className: 'name' })
-    expect(svg.search('stroke')).to.not.equal(-1)
-    expect(svg.search('id')).to.not.equal(-1)
-    expect(svg.search('class')).to.not.equal(-1)
+    expect(a2.start.x).to.be.closeTo(-a1.start.x, Flatten.Utils.getTolerance())
+    expect(a2.start.y).to.be.closeTo(a1.start.y, Flatten.Utils.getTolerance())
+    expect(a2.end.x).to.be.closeTo(-a1.end.x, Flatten.Utils.getTolerance())
+    expect(a2.end.y).to.be.closeTo(a1.end.y, Flatten.Utils.getTolerance())
+    expect(a2.center.x).to.be.closeTo(-a1.center.x, Flatten.Utils.getTolerance())
+    expect(a2.center.y).to.be.closeTo(a1.center.y, Flatten.Utils.getTolerance())
+    expect(a2.clockwise).to.be.equal(!a1.clockwise)
   })
 
   describe('#Flatten.Arc.pointAtLength', function () {

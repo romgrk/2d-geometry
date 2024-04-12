@@ -195,7 +195,7 @@ export function parsePath(description: string, options: Options = {}) {
         const a = line.length / 2
         const b = Math.sqrt(r ** 2 - a ** 2)
         const v = new Vector(current, midpoint)
-        const n = v.rotate90CCW().normalize()
+        const n = v.rotate90CW().normalize()
         const center = midpoint.translate(n.multiply(sweep ? (large ? -b : b) : large ? b : -b))
 
         const startAngle = new Vector(center, current).slope

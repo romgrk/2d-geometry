@@ -55,11 +55,11 @@ export function intersectLine2Circle(line: g.Line, circle: g.Circle): g.Point[] 
     let delta = Math.sqrt(circle.r * circle.r - dist * dist)
     let v_trans: g.Vector, pt: g.Point
 
-    v_trans = line.norm.rotate90CCW().multiply(delta)
+    v_trans = line.norm.rotate90CW().multiply(delta)
     pt = prj.translate(v_trans)
     ip.push(pt)
 
-    v_trans = line.norm.rotate90CW().multiply(delta)
+    v_trans = line.norm.rotate90CCW().multiply(delta)
     pt = prj.translate(v_trans)
     ip.push(pt)
   }
@@ -321,12 +321,12 @@ export function intersectCircle2Circle(circle1: g.Circle, circle2: g.Circle): g.
   let h = Math.sqrt(r1 * r1 - a * a)
   // let norm;
 
-  // norm = vec.rotate90CCW().multiply(h);
-  pt = mid_pt.translate(vec.rotate90CCW().multiply(h))
+  // norm = vec.rotate90CW().multiply(h);
+  pt = mid_pt.translate(vec.rotate90CW().multiply(h))
   ip.push(pt)
 
-  // norm = vec.rotate90CW();
-  pt = mid_pt.translate(vec.rotate90CW().multiply(h))
+  // norm = vec.rotate90CCW();
+  pt = mid_pt.translate(vec.rotate90CCW().multiply(h))
   ip.push(pt)
 
   return ip
@@ -511,14 +511,8 @@ export function intersectCircle2Polygon(circle: g.Circle, polygon: g.Polygon): g
 }
 
 export function intersectEdge2Edge(edge1: g.Edge, edge2: g.Edge): g.Point[] {
-  if (edge1.isSegment() && edge2.isSegment())
-    return intersectSegment2Segment(edge1.shape, edge2.shape)
-  if (edge1.isSegment() && edge2.isArc())
-    return intersectSegment2Arc(edge1.shape, edge2.shape)
-  if (edge1.isArc() && edge2.isSegment())
-    return intersectSegment2Arc(edge2.shape, edge1.shape)
-  if (edge1.isArc() && edge2.isArc())
-    return intersectArc2Arc(edge1.shape, edge2.shape)
+  if (edge1.isSegment()) { return intersectEdge2Segment(edge2, edge1.shape) }
+  if (edge1.isArc()) { return intersectEdge2Arc(edge2, edge1.shape) }
   throw new Error('unimplemented')
 }
 

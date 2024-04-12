@@ -341,7 +341,7 @@ export class Line extends Shape<Line> {
     }
     let vec = new Vector(pt1, pt2)
     let unit = vec.normalize()
-    return unit.rotate90CCW()
+    return unit.rotate90CW()
   }
 }
 

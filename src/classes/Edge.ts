@@ -143,13 +143,13 @@ export class Edge<T extends EdgeShape = EdgeShape> {
     } else if (shape1 instanceof Arc && shape2 instanceof Arc) {
       if (
         shape1.start.equalTo(shape2.start) &&
-        shape1.end.equalTo(shape2.end) /*shape1.counterClockwise === shape2.counterClockwise &&*/ &&
+        shape1.end.equalTo(shape2.end) /*shape1.clockwise === shape2.clockwise &&*/ &&
         shape1.middle().equalTo(shape2.middle())
       ) {
         flag = Overlap.SAME
       } else if (
         shape1.start.equalTo(shape2.end) &&
-        shape1.end.equalTo(shape2.start) /*shape1.counterClockwise !== shape2.counterClockwise &&*/ &&
+        shape1.end.equalTo(shape2.start) /*shape1.clockwise !== shape2.clockwise &&*/ &&
         shape1.middle().equalTo(shape2.middle())
       ) {
         flag = Overlap.OPPOSITE

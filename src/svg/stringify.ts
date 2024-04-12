@@ -16,7 +16,7 @@ export function stringify(shape: Shape, attrs?: Record<string, any>) {
     case ShapeTag.Arc: {
       const arc = shape as Arc
       let largeArcFlag = arc.sweep <= Math.PI ? '0' : '1'
-      let sweepFlag = arc.counterClockwise ? '1' : '0'
+      let sweepFlag = arc.clockwise ? '1' : '0'
 
       if (Utils.EQ(arc.sweep, TAU)) {
         return stringify(new Circle(arc.pc, arc.r), attrs)

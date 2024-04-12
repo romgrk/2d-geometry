@@ -1,4 +1,4 @@
-import { TAU, CCW } from '../utils/constants'
+import { TAU, CW } from '../utils/constants'
 import * as Distance from '../algorithms/distance'
 import { PlanarSet } from '../data_structures/PlanarSet'
 import * as Utils from '../utils/utils'
@@ -18,7 +18,7 @@ import { Shape, ShapeTag } from './Shape'
  * Class representing a circular arc
  */
 export class Arc extends Shape<Arc> {
-  static EMPTY = Object.freeze(new Arc(Point.EMPTY, 0, 0, 0, CCW))
+  static EMPTY = Object.freeze(new Arc(Point.EMPTY, 0, 0, 0, CW))
 
   /**
    * Arc center
@@ -39,13 +39,13 @@ export class Arc extends Shape<Arc> {
   /**
    * Arc orientation
    */
-  counterClockwise: boolean
+  clockwise: boolean
 
   _start: Point | null
   _end: Point | null
 
   constructor(arc: Arc)
-  constructor(pc: Point, r: number, startAngle: number, endAngle: number, ccw?: boolean)
+  constructor(pc: Point, r: number, startAngle: number, endAngle: number, cw?: boolean)
   constructor(a?: unknown, b?: unknown, c?: unknown, d?: unknown, e?: unknown) {
     super()
     this.pc = Point.EMPTY
@@ -58,23 +58,23 @@ export class Arc extends Shape<Arc> {
     this.r = 1
     this.startAngle = 0
     this.endAngle = TAU
-    this.counterClockwise = CCW
+    this.clockwise = CW
 
     if (a === undefined) return
 
     if (a instanceof Object && (a as any).name === 'arc') {
-      const { pc, r, startAngle, endAngle, counterClockwise } = a as Arc
+      const { pc, r, startAngle, endAngle, clockwise } = a as Arc
       this.pc = new Point(pc.x, pc.y)
       this.r = r
       this.startAngle = startAngle
       this.endAngle = endAngle
-      this.counterClockwise = counterClockwise
+      this.clockwise = clockwise
     } else {
       if (a !== undefined) this.pc = a as Point
       if (b !== undefined) this.r = b as number
       if (c !== undefined) this.startAngle = c as number
       if (d !== undefined) this.endAngle = d as number
-      if (e !== undefined) this.counterClockwise = e as boolean
+      if (e !== undefined) this.clockwise = e as boolean
     }
   }
 
@@ -82,7 +82,7 @@ export class Arc extends Shape<Arc> {
    * Return new cloned instance of arc
    */
   clone() {
-    return new Arc(this.pc.clone(), this.r, this.startAngle, this.endAngle, this.counterClockwise)
+    return new Arc(this.pc.clone(), this.r, this.startAngle, this.endAngle, this.clockwise)
   }
 
   get tag() {
@@ -112,7 +112,7 @@ export class Arc extends Shape<Arc> {
       return TAU
     }
     let sweep: number
-    if (!this.counterClockwise) {
+    if (this.clockwise) {
       sweep = this.endAngle > this.startAngle ? this.endAngle - this.startAngle : this.endAngle - this.startAngle + TAU
     } else {
       sweep = this.startAngle > this.endAngle ? this.startAngle - this.endAngle : this.startAngle - this.endAngle + TAU
@@ -172,7 +172,7 @@ export class Arc extends Shape<Arc> {
     if (pt.equalTo(this.start)) return true
 
     let angle = new Vector(this.pc, pt).slope
-    let test_arc = new Arc(this.pc, this.r, this.startAngle, angle, this.counterClockwise)
+    let test_arc = new Arc(this.pc, this.r, this.startAngle, angle, this.clockwise)
     return Utils.LE(test_arc.length, this.length)
   }
 
@@ -189,8 +189,8 @@ export class Arc extends Shape<Arc> {
     let angle = new Vector(this.pc, pt).slope
 
     return [
-      new Arc(this.pc, this.r, this.startAngle, angle, this.counterClockwise),
-      new Arc(this.pc, this.r, angle, this.endAngle, this.counterClockwise),
+      new Arc(this.pc, this.r, this.startAngle, angle, this.clockwise),
+      new Arc(this.pc, this.r, angle, this.endAngle, this.clockwise),
     ]
   }
 
@@ -199,11 +199,11 @@ export class Arc extends Shape<Arc> {
 
     if (Utils.EQ(length, this.length)) return [this.clone(), null]
 
-    const angle = this.startAngle + (this.counterClockwise ? -1 : +1) * this.sweep * (length / this.length)
+    const angle = this.startAngle + (this.clockwise ? -1 : +1) * this.sweep * (length / this.length)
 
     return [
-      new Arc(this.pc, this.r, this.startAngle, angle, this.counterClockwise),
-      new Arc(this.pc, this.r, angle, this.endAngle, this.counterClockwise),
+      new Arc(this.pc, this.r, this.startAngle, angle, this.clockwise),
+      new Arc(this.pc, this.r, angle, this.endAngle, this.clockwise),
     ]
   }
 
@@ -211,8 +211,8 @@ export class Arc extends Shape<Arc> {
    * Return middle point of the arc
    */
   middle() {
-    let endAngle = this.counterClockwise ? this.startAngle + this.sweep / 2 : this.startAngle - this.sweep / 2
-    let arc = new Arc(this.pc, this.r, this.startAngle, endAngle, this.counterClockwise)
+    let endAngle = this.clockwise ? this.startAngle + this.sweep / 2 : this.startAngle - this.sweep / 2
+    let arc = new Arc(this.pc, this.r, this.startAngle, endAngle, this.clockwise)
     return arc.end
   }
 
@@ -225,8 +225,8 @@ export class Arc extends Shape<Arc> {
     if (length === 0) return this.start
     if (length === this.length) return this.end
     let factor = length / this.length
-    let endAngle = this.counterClockwise ? this.startAngle + this.sweep * factor : this.startAngle - this.sweep * factor
-    let arc = new Arc(this.pc, this.r, this.startAngle, endAngle, this.counterClockwise)
+    let endAngle = this.clockwise ? this.startAngle + this.sweep * factor : this.startAngle - this.sweep * factor
+    let arc = new Arc(this.pc, this.r, this.startAngle, endAngle, this.clockwise)
     return arc.end
   }
 
@@ -287,7 +287,7 @@ export class Arc extends Shape<Arc> {
     let test_arcs = []
     for (let i = 0; i < 4; i++) {
       if (pts[i].on(this)) {
-        test_arcs.push(new Arc(this.pc, this.r, this.startAngle, angles[i], this.counterClockwise))
+        test_arcs.push(new Arc(this.pc, this.r, this.startAngle, angles[i], this.clockwise))
       }
     }
 
@@ -303,9 +303,9 @@ export class Arc extends Shape<Arc> {
         let prev_arc = func_arcs_array.length > 0 ? func_arcs_array[func_arcs_array.length - 1] : undefined
         let new_arc
         if (prev_arc) {
-          new_arc = new Arc(this.pc, this.r, prev_arc.endAngle, test_arcs[i].endAngle, this.counterClockwise)
+          new_arc = new Arc(this.pc, this.r, prev_arc.endAngle, test_arcs[i].endAngle, this.clockwise)
         } else {
-          new_arc = new Arc(this.pc, this.r, this.startAngle, test_arcs[i].endAngle, this.counterClockwise)
+          new_arc = new Arc(this.pc, this.r, this.startAngle, test_arcs[i].endAngle, this.clockwise)
         }
         if (!Utils.EQ_0(new_arc.length)) {
           func_arcs_array.push(new_arc.clone())
@@ -316,9 +316,9 @@ export class Arc extends Shape<Arc> {
       let prev_arc = func_arcs_array.length > 0 ? func_arcs_array[func_arcs_array.length - 1] : undefined
       let new_arc
       if (prev_arc) {
-        new_arc = new Arc(this.pc, this.r, prev_arc.endAngle, this.endAngle, this.counterClockwise)
+        new_arc = new Arc(this.pc, this.r, prev_arc.endAngle, this.endAngle, this.clockwise)
       } else {
-        new_arc = new Arc(this.pc, this.r, this.startAngle, this.endAngle, this.counterClockwise)
+        new_arc = new Arc(this.pc, this.r, this.startAngle, this.endAngle, this.clockwise)
       }
       // It could be TAU when occasionally start = 0 and end = TAU but this is not valid for breakToFunctional
       if (!Utils.EQ_0(new_arc.length) && !Utils.EQ(new_arc.sweep, 2 * Math.PI)) {
@@ -333,7 +333,7 @@ export class Arc extends Shape<Arc> {
    */
   tangentInStart() {
     let vec = new Vector(this.pc, this.start)
-    let angle = this.counterClockwise ? Math.PI / 2 : -Math.PI / 2
+    let angle = this.clockwise ? Math.PI / 2 : -Math.PI / 2
     return vec.rotate(angle).normalize()
   }
 
@@ -342,7 +342,7 @@ export class Arc extends Shape<Arc> {
    */
   tangentInEnd() {
     let vec = new Vector(this.pc, this.end)
-    let angle = this.counterClockwise ? -Math.PI / 2 : Math.PI / 2
+    let angle = this.clockwise ? -Math.PI / 2 : Math.PI / 2
     return vec.rotate(angle).normalize()
   }
 
@@ -350,7 +350,7 @@ export class Arc extends Shape<Arc> {
    * Returns new arc with swapped start and end angles and reversed direction
    */
   reverse() {
-    return new Arc(this.pc, this.r, this.endAngle, this.startAngle, !this.counterClockwise)
+    return new Arc(this.pc, this.r, this.endAngle, this.startAngle, !this.clockwise)
   }
 
   /**
@@ -360,23 +360,23 @@ export class Arc extends Shape<Arc> {
     let newStart = this.start.transform(matrix)
     let newEnd = this.end.transform(matrix)
     let newCenter = this.pc.transform(matrix)
-    let newDirection = this.counterClockwise
+    let newDirection = this.clockwise
     if (matrix.a * matrix.d < 0) {
       newDirection = !newDirection
     }
     return Arc.arcSE(newCenter, newStart, newEnd, newDirection)
   }
 
-  static arcSE(center, start, end, counterClockwise) {
+  static arcSE(center, start, end, clockwise) {
     let startAngle = new Vector(center, start).slope
     let endAngle = new Vector(center, end).slope
     if (Utils.EQ(startAngle, endAngle)) {
       endAngle += TAU
-      counterClockwise = true
+      clockwise = true
     }
     let r = new Vector(center, start).length
 
-    return new Arc(center, r, startAngle, endAngle, counterClockwise)
+    return new Arc(center, r, startAngle, endAngle, clockwise)
   }
 
   definiteIntegral(ymin = 0) {
@@ -424,5 +424,5 @@ export class Arc extends Shape<Arc> {
 /**
  * Function to create arc equivalent to "new" constructor
  */
-export const arc = (pc: Point, r: number, startAngle: number, endAngle: number, ccw?: boolean) =>
-  new Arc(pc, r, startAngle, endAngle, ccw)
+export const arc = (pc: Point, r: number, startAngle: number, endAngle: number, cw?: boolean) =>
+  new Arc(pc, r, startAngle, endAngle, cw)

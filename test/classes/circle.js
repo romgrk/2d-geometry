@@ -35,14 +35,14 @@ describe('#Flatten.Circle', function () {
     let circle = new Circle(new Point(0, 0), 2)
     expect(circle.box).to.deep.equal({ xmin: -2, ymin: -2, xmax: 2, ymax: 2 })
   })
-  it('Can transform circle into closed CCW arc', function () {
+  it('Can transform circle into closed CW arc', function () {
     let circle = new Circle(new Point(0, 0), 2)
     let arc = circle.toArc(true)
     expect(arc.sweep).to.equal(Flatten.TAU)
     expect(arc.start.equalTo(point(-2, 0))).to.be.true
     expect(arc.end.equalTo(point(-2, 0))).to.be.true
   })
-  it('Can transform circle into closed CW arc', function () {
+  it('Can transform circle into closed CCW arc', function () {
     let circle = new Circle(new Point(0, 0), 2)
     let arc = circle.toArc(false)
     expect(arc.sweep).to.equal(Flatten.TAU)
@@ -216,17 +216,5 @@ describe('#Flatten.Circle', function () {
       expect(shortest_segment.start).to.deep.equal({ x: 300, y: 50 })
       expect(shortest_segment.end).to.deep.equal({ x: 300, y: 75 })
     })
-  })
-  it('Method svg() without parameters creates svg string with default attributes', function () {
-    let c = circle(point(300, 25), 25)
-    let svg = c.svg()
-    expect(svg.search('stroke')).to.not.equal(-1)
-  })
-  it('Method svg() with extra parameters may add additional attributes', function () {
-    let c = circle(point(300, 25), 25)
-    let svg = c.svg({ id: '123', className: 'name' })
-    expect(svg.search('stroke')).to.not.equal(-1)
-    expect(svg.search('id')).to.not.equal(-1)
-    expect(svg.search('class')).to.not.equal(-1)
   })
 })

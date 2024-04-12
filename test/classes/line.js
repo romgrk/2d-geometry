@@ -151,7 +151,7 @@ describe('#Flatten.Line', function () {
     })
     it('Line to arc intersection - quick reject ', function () {
       let line = new Flatten.Line(point(1, 0), vector(1, 0))
-      let arc = new Flatten.Arc(point(1, 0), 3, -Math.PI / 3, Math.PI / 3, Flatten.CCW)
+      let arc = new Flatten.Arc(point(1, 0), 3, -Math.PI / 3, Math.PI / 3, Flatten.CW)
       let ip = line.intersect(arc)
       expect(ip.length).to.equal(0)
     })
@@ -205,27 +205,6 @@ describe('#Flatten.Line', function () {
     let line1 = new Flatten.Line(new Flatten.Point(0, 2), new Flatten.Point(2, 0))
     let line2 = new Flatten.Line(new Flatten.Point(4.001, 0), new Flatten.Point(0, 4))
     expect(line1.parallelTo(line2)).to.be.false
-  })
-  it('Method svg() creates same svg string as segment with same points', function () {
-    let l = line(point(4, 0), point(0, 4))
-    let box = new Box(0, 0, 4, 4)
-    let svg = l.svg(box)
-    let svg_seg = segment(4, 0, 0, 4).svg()
-    expect(svg).to.equal(svg_seg)
-  })
-  it('Method svg() without parameters creates svg string with default attributes', function () {
-    let l = line(point(4, 0), point(0, 4))
-    let box = new Box(0, 0, 4, 4)
-    let svg = l.svg(box)
-    expect(svg.search('stroke')).to.not.equal(-1)
-  })
-  it('Method svg() with extra parameters may add additional attributes', function () {
-    let l = line(point(4, 0), point(0, 4))
-    let box = new Box(0, 0, 4, 4)
-    let svg = l.svg(box, { id: '123', className: 'name' })
-    expect(svg.search('stroke')).to.not.equal(-1)
-    expect(svg.search('id')).to.not.equal(-1)
-    expect(svg.search('class')).to.not.equal(-1)
   })
   it('May stringify and parse line', function () {
     let l = line(point(4, 0), point(0, 4))

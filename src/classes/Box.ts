@@ -23,7 +23,7 @@ export class Box extends Shape<Box> {
   /** Maximal y coordinate */
   ymax: number
 
-  constructor(xmin: number = 0, ymin: number = 0, xmax: number = 0, ymax: number = 0) {
+  constructor(xmin: number = Infinity, ymin: number = Infinity, xmax: number = -Infinity, ymax: number = -Infinity) {
     super()
     this.xmin = NaN
     this.ymin = NaN

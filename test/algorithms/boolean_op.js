@@ -10,7 +10,7 @@ let { unify, subtract, intersect } = BooleanOperations
 
 let { equal } = Flatten.Relations
 
-describe.only('Boolean Operations', function () {
+describe('Boolean Operations', function () {
   describe('Boolean Union', function () {
     it('Function unify defined', function () {
       expect(unify).to.exist
@@ -163,9 +163,9 @@ describe.only('Boolean Operations', function () {
       let poly = unify(polygon1, polygon2)
       expect(poly.faces.size).to.equal(2)
       expect([...poly.faces][0].size).to.equal(8)
-      expect([...poly.faces][0].orientation()).to.equal(Flatten.ORIENTATION.CW)
+      expect([...poly.faces][0].orientation()).to.equal(Flatten.ORIENTATION.CCW)
       expect([...poly.faces][1].size).to.equal(3)
-      expect([...poly.faces][1].orientation()).to.equal(Flatten.ORIENTATION.CCW)
+      expect([...poly.faces][1].orientation()).to.equal(Flatten.ORIENTATION.CW)
       expect(poly.edges.size).to.equal(11)
     })
     it('Can perform unify. Fixed: Infinite loop for boolean union over (valid) polygons. Issue #53', function () {
@@ -315,8 +315,8 @@ describe.only('Boolean Operations', function () {
       let polygon2 = new Polygon()
       polygon2.addFace([point(-5, -10), point(-5, 30), point(5, 30), point(5, -10)])
 
-      expect([...polygon1.faces][0].orientation()).to.equal(Flatten.ORIENTATION.CW)
-      expect([...polygon2.faces][0].orientation()).to.equal(Flatten.ORIENTATION.CW)
+      expect([...polygon1.faces][0].orientation()).to.equal(Flatten.ORIENTATION.CCW)
+      expect([...polygon2.faces][0].orientation()).to.equal(Flatten.ORIENTATION.CCW)
 
       let poly = subtract(polygon1, polygon2)
 
@@ -398,7 +398,7 @@ describe.only('Boolean Operations', function () {
       const a = new Polygon()
       for (const polygon of baseZ0Surface) {
         let face = a.addFace(polygon.map(([x, y]) => point(x, y)))
-        if (face.orientation() !== Flatten.ORIENTATION.CCW) {
+        if (face.orientation() !== Flatten.ORIENTATION.CW) {
           face.reverse()
         }
       }
@@ -406,7 +406,7 @@ describe.only('Boolean Operations', function () {
       const b = new Polygon()
       for (const polygon of z0Surface) {
         let face = b.addFace(polygon.map(([x, y]) => point(x, y)))
-        if (face.orientation() !== Flatten.ORIENTATION.CCW) {
+        if (face.orientation() !== Flatten.ORIENTATION.CW) {
           face.reverse()
         }
       }
@@ -415,8 +415,8 @@ describe.only('Boolean Operations', function () {
 
       expect(myPoly.faces.size).to.equal(2)
       expect(myPoly.edges.size).to.equal(8)
-      expect([...myPoly.faces][0].orientation()).to.equal(Flatten.ORIENTATION.CCW)
-      expect([...myPoly.faces][1].orientation()).to.equal(Flatten.ORIENTATION.CW)
+      expect([...myPoly.faces][0].orientation()).to.equal(Flatten.ORIENTATION.CW)
+      expect([...myPoly.faces][1].orientation()).to.equal(Flatten.ORIENTATION.CCW)
     })
     it('Can perform subtract. Fixed: Issue #55 case 0', function () {
 
@@ -612,31 +612,31 @@ describe.only('Boolean Operations', function () {
       // myPoly.addFace([point(50, 50), point(950, 50), point(950, 950), point(50,950)]);
 
       let myCircle = new Polygon()
-      myCircle.addFace([arc(point(0, 1000), 980, 0, TAU, Flatten.CW)])
+      myCircle.addFace([arc(point(0, 1000), 980, 0, TAU, Flatten.CCW)])
 
       myPoly = intersect(myPoly, myCircle)
 
       myCircle = new Polygon()
-      myCircle.addFace([arc(point(0, 1000), 780, 0, TAU, Flatten.CW)])
+      myCircle.addFace([arc(point(0, 1000), 780, 0, TAU, Flatten.CCW)])
       myPoly = subtract(myPoly, myCircle)
 
       myCircle = new Polygon()
-      myCircle.addFace([arc(point(1000, 1000), 1330, 0, TAU, Flatten.CW)])
+      myCircle.addFace([arc(point(1000, 1000), 1330, 0, TAU, Flatten.CCW)])
       myPoly = intersect(myPoly, myCircle)
 
       myCircle = new Polygon()
-      myCircle.addFace([arc(point(1000, 1000), 1130, 0, TAU, Flatten.CW)])
+      myCircle.addFace([arc(point(1000, 1000), 1130, 0, TAU, Flatten.CCW)])
       myPoly = subtract(myPoly, myCircle)
 
       myCircle = new Polygon()
-      myCircle.addFace([arc(point(1000, 0), 980, 0, TAU, Flatten.CW)])
+      myCircle.addFace([arc(point(1000, 0), 980, 0, TAU, Flatten.CCW)])
 
       myPoly = intersect(myPoly, myCircle)
 
       expect(myPoly.faces.size).to.equal(1)
       expect(myPoly.edges.size).to.equal(6)
       expect([...myPoly.faces][0].size).to.equal(6)
-      expect([...myPoly.faces][0].orientation()).to.equal(Flatten.ORIENTATION.CW)
+      expect([...myPoly.faces][0].orientation()).to.equal(Flatten.ORIENTATION.CCW)
     })
     it('Issue #3', function () {
 
@@ -645,42 +645,42 @@ describe.only('Boolean Operations', function () {
       // state.layers[state.layers.length] = Layers.newLayer(stage, layers).add(myPoly);  // 0
 
       let myCircle = new Polygon()
-      myCircle.addFace([arc(point(0, 0), 84.5779281026111, 0, TAU, Flatten.CCW)])
+      myCircle.addFace([arc(point(0, 0), 84.5779281026111, 0, TAU, Flatten.CW)])
       // state.layers[state.layers.length] = Layers.newLayer(stage, layers).add(myCircle);  // 1
 
       myPoly = intersect(myPoly, myCircle)
       // state.layers[state.layers.length] = Layers.newLayer(stage, layers).add(myPoly);   // 2
 
       myCircle = new Polygon()
-      myCircle.addFace([arc(point(0, 0), 84.49938828627135, 0, TAU, Flatten.CCW)])
+      myCircle.addFace([arc(point(0, 0), 84.49938828627135, 0, TAU, Flatten.CW)])
       // state.layers[state.layers.length] = Layers.newLayer(stage, layers).add(myCircle);  // 3
 
       myPoly = subtract(myPoly, myCircle)
       // state.layers[state.layers.length] = Layers.newLayer(stage, layers).add(myPoly);   // 4
 
       myCircle = new Polygon()
-      myCircle.addFace([arc(point(0, 120), 84.8710637077582, 0, TAU, Flatten.CCW)])
+      myCircle.addFace([arc(point(0, 120), 84.8710637077582, 0, TAU, Flatten.CW)])
       // state.layers[state.layers.length] = Layers.newLayer(stage, layers).add(myCircle);  // 5
 
       myPoly = intersect(myPoly, myCircle)
       // state.layers[state.layers.length] = Layers.newLayer(stage, layers).add(myPoly);   // 6
 
       myCircle = new Polygon()
-      myCircle.addFace([arc(point(0, 120), 84.79252389141845, 0, TAU, Flatten.CCW)])
+      myCircle.addFace([arc(point(0, 120), 84.79252389141845, 0, TAU, Flatten.CW)])
       // state.layers[state.layers.length] = Layers.newLayer(stage, layers).add(myCircle);  // 7
 
       myPoly = subtract(myPoly, myCircle)
       // state.layers[state.layers.length] = Layers.newLayer(stage, layers).add(myPoly);   // 8
 
       myCircle = new Polygon()
-      myCircle.addFace([arc(point(120, 120), 85.20624291591454, 0, TAU, Flatten.CCW)])
+      myCircle.addFace([arc(point(120, 120), 85.20624291591454, 0, TAU, Flatten.CW)])
       // state.layers[state.layers.length] = Layers.newLayer(stage, layers).add(myCircle);  // 9
 
       myPoly = intersect(myPoly, myCircle)
       // state.layers[state.layers.length] = Layers.newLayer(stage, layers).add(myPoly);   // 10
 
       myCircle = new Polygon()
-      myCircle.addFace([arc(point(120, 120), 85.1277030995748, 0, TAU, Flatten.CCW)])
+      myCircle.addFace([arc(point(120, 120), 85.1277030995748, 0, TAU, Flatten.CW)])
       // state.layers[state.layers.length] = Layers.newLayer(stage, layers).add(myCircle);  // 11
 
       myPoly = subtract(myPoly, myCircle)
@@ -689,7 +689,7 @@ describe.only('Boolean Operations', function () {
       expect(myPoly.faces.size).to.equal(1)
       expect(myPoly.edges.size).to.equal(7)
       expect([...myPoly.faces][0].size).to.equal(7)
-      expect([...myPoly.faces][0].orientation()).to.equal(Flatten.ORIENTATION.CW)
+      expect([...myPoly.faces][0].orientation()).to.equal(Flatten.ORIENTATION.CCW)
     })
     it('Fixed: Issue #8', function () {
       const a = [

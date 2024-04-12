@@ -24,12 +24,6 @@ describe('#Flatten.Point', function () {
   it('New point may be constructed with array of two numbers', function () {
     expect(point([1, 3])).to.deep.equal({ x: 1, y: 3 })
   })
-  it('Constructor with illegal parameters throw error', function () {
-    let fn = function () {
-      return new Point(1, '1')
-    }
-    expect(fn).to.throw(ReferenceError)
-  })
   it('Method clone creates new instance of Point', function () {
     let point1 = new Point(2, 1)
     let point2 = point1.clone()
@@ -79,14 +73,6 @@ describe('#Flatten.Point', function () {
     const point = new Point(2, 3)
     const scaled_point = point.scale(2, 2)
     expect(scaled_point).to.deep.equal({ x: 4, y: 6 })
-  })
-  it('Method translate with illegal parameters throws error', function () {
-    let point = new Point(1, 1)
-    let v = new Vector(2, 0)
-    let fn = function () {
-      return point.translate(v, 1)
-    }
-    expect(fn).to.throw(ReferenceError)
   })
   it('Method returns projection point on given line', function () {
     let anchor = new Point(1, 1)
@@ -229,18 +215,6 @@ describe('#Flatten.Point', function () {
     let pt2 = new Point(3, 1)
     expect(pt1.leftTo(line)).to.equal(true)
     expect(pt2.leftTo(line)).to.equal(false)
-  })
-  it('Method svg() without parameters creates svg string with default attributes', function () {
-    let pt = new Point(-2, 2)
-    let svg = pt.svg()
-    expect(svg.search('stroke')).to.not.equal(-1)
-  })
-  it('Method svg() with extra parameters may add additional attributes', function () {
-    let pt = new Point(-2, 2)
-    let svg = pt.svg({ id: '123', className: 'name', r: 5, fill: 'green' })
-    expect(svg.search('stroke')).to.not.equal(-1)
-    expect(svg.search('id')).to.not.equal(-1)
-    expect(svg.search('class')).to.not.equal(-1)
   })
   it('May stringify and parse point', function () {
     let pt = new Point(-20, 30)

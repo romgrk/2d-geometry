@@ -1,6 +1,6 @@
 import CircularLinkedList from '../data_structures/circular_linked_list'
 import * as Utils from '../utils/utils'
-import { CCW, ORIENTATION } from '../utils/constants'
+import { CW, ORIENTATION } from '../utils/constants'
 import * as geom from './index'
 import { Box } from './Box'
 import type { Edge } from './Edge'
@@ -96,10 +96,10 @@ export class Face extends CircularLinkedList<any> {
           polygon.edges.add(edge)
         }
       } else if (a instanceof geom.Circle) {
-      /* Instantiate face from a circle in CCW orientation */
-        this.shapes2face(polygon.edges, [a.toArc(CCW)])
+      /* Instantiate face from a circle in CW orientation */
+        this.shapes2face(polygon.edges, [a.toArc(CW)])
       } else if (a instanceof geom.Box) {
-      /* Instantiate face from a box in CCW orientation */
+      /* Instantiate face from a box in CW orientation */
         const box = a
         this.shapes2face(polygon.edges, [
           new geom.Segment(new geom.Point(box.xmin, box.ymin), new geom.Point(box.xmax, box.ymin)),
@@ -108,7 +108,7 @@ export class Face extends CircularLinkedList<any> {
           new geom.Segment(new geom.Point(box.xmin, box.ymax), new geom.Point(box.xmin, box.ymin)),
         ])
       } else if (a instanceof geom.Path) {
-      /* Instantiate face from a path in CCW orientation */
+      /* Instantiate face from a path in CW orientation */
         const path = a
         this.shapes2face(polygon.edges, path.parts)
       }
@@ -127,7 +127,7 @@ export class Face extends CircularLinkedList<any> {
       this.setArcLength()
 
       // this.box = this.getBox();
-      // this.orientation = this.getOrientation();      // face direction cw or ccw
+      // this.orientation = this.getOrientation();      // face direction ccw or cw
     }
   }
 
@@ -199,7 +199,7 @@ export class Face extends CircularLinkedList<any> {
       // this.box = this.box.merge(shape.box);
       edges.add(edge)
     }
-    // this.orientation = this.getOrientation();              // face direction cw or ccw
+    // this.orientation = this.getOrientation();              // face direction ccw or cw
   }
 
   /**
@@ -343,7 +343,7 @@ export class Face extends CircularLinkedList<any> {
   }
 
   /**
-   * Return face orientation: one of geom.ORIENTATION.CCW, geom.ORIENTATION.CW, geom.ORIENTATION.NOT_ORIENTABLE <br/>
+   * Return face orientation: one of geom.ORIENTATION.CW, geom.ORIENTATION.CCW, geom.ORIENTATION.NOT_ORIENTABLE <br/>
    * According to Green theorem the area of a closed curve may be calculated as double integral,
    * and the sign of the integral will be defined by the direction of the curve.
    * When the integral ("signed area") will be negative, direction is counterclockwise,
@@ -356,9 +356,9 @@ export class Face extends CircularLinkedList<any> {
       if (Utils.EQ_0(area)) {
         this._orientation = ORIENTATION.NOT_ORIENTABLE
       } else if (Utils.LT(area, 0)) {
-        this._orientation = ORIENTATION.CCW
-      } else {
         this._orientation = ORIENTATION.CW
+      } else {
+        this._orientation = ORIENTATION.CCW
       }
     }
     return this._orientation

@@ -85,6 +85,16 @@ export class Ray extends Shape<Ray> {
   }
 
   /**
+   * Return coordinate of the point that lies on the ray in the transformed
+   * coordinate system where center is the projection of the point(0,0) to
+   * the line containing this ray and axe y is collinear to the normal vector. <br/>
+   * This method assumes that point lies on the ray
+   */
+  coord(pt: geom.Point) {
+    return new geom.Vector(pt.x, pt.y).cross(this.norm);
+  }
+
+  /**
    * Returns true if point belongs to ray
    */
   contains(pt: geom.Point) {

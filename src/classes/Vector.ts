@@ -182,14 +182,14 @@ export class Vector extends Shape<Vector> {
   /**
    * Returns vector rotated 90 degrees counterclockwise
    */
-  rotate90CCW() {
+  rotate90CW() {
     return new Vector(-this.y, this.x)
   }
 
   /**
    * Returns vector rotated 90 degrees clockwise
    */
-  rotate90CW() {
+  rotate90CCW() {
     return new Vector(this.y, -this.x)
   }
 

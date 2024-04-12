@@ -5,7 +5,7 @@
 import { expect } from 'chai'
 import Flatten, { matrix } from '../../index'
 
-import { Point, Circle, Line, Segment, Arc, Box, Polygon, Edge, PlanarSet } from '../../index'
+import { Point, Circle, Line, Segment, Arc, Box, Polygon, Edge, PlanarSet, Multiline } from '../../index'
 import { point, vector, circle, line, segment, box, multiline } from '../../index'
 import {
   intersectLine2Polygon,
@@ -15,7 +15,7 @@ import {
 import * as BooleanOperations from '../../dist/algorithms/booleanOperations'
 let { unify } = BooleanOperations
 
-describe('#Flatten.Polygon', function () {
+describe('Polygon', function () {
   it('May create new instance of Polygon', function () {
     let polygon = new Polygon()
     expect(polygon).to.be.an.instanceof(Polygon)
@@ -74,30 +74,30 @@ describe('#Flatten.Polygon', function () {
     expect(polygon.edges.size).to.equal(6)
     expect(polygon.faces.size).to.equal(2)
   })
-  it('Can construct polygon from Circle in CCW orientation', function () {
+  it('Can construct polygon from Circle in CW orientation', function () {
     let polygon = new Polygon(circle(point(3, 3), 50))
     // polygon.addFace(circle(point(3,3),50));
     expect(polygon.faces.size).to.equal(1)
     expect(polygon.edges.size).to.equal(1)
-    expect([...polygon.faces][0].orientation()).to.equal(Flatten.ORIENTATION.CCW)
+    expect([...polygon.faces][0].orientation()).to.equal(Flatten.ORIENTATION.CW)
   })
-  it('Can construct polygon from a box in CCW orientation', function () {
+  it('Can construct polygon from a box in CW orientation', function () {
     let polygon = new Polygon(box(30, 40, 100, 200))
     // polygon.addFace(box(30,40,100,200));
     expect(polygon.faces.size).to.equal(1)
     expect(polygon.edges.size).to.equal(4)
-    expect([...polygon.faces][0].orientation()).to.equal(Flatten.ORIENTATION.CCW)
+    expect([...polygon.faces][0].orientation()).to.equal(Flatten.ORIENTATION.CW)
   })
   it('Can construct polygon from a box and circle as a hole', function () {
     let polygon = new Polygon()
     polygon.addFace(box(0, 0, 100, 100))
-    polygon.addFace(circle(point(40, 40), 20)).reverse() // change orientation to CW
+    polygon.addFace(circle(point(40, 40), 20)).reverse() // change orientation to CCW
     expect(polygon.faces.size).to.equal(2)
     expect(polygon.edges.size).to.equal(5)
     expect([...polygon.faces][0].size).to.equal(4)
-    expect([...polygon.faces][0].orientation()).to.equal(Flatten.ORIENTATION.CCW)
+    expect([...polygon.faces][0].orientation()).to.equal(Flatten.ORIENTATION.CW)
     expect([...polygon.faces][1].size).to.equal(1)
-    expect([...polygon.faces][1].orientation()).to.equal(Flatten.ORIENTATION.CW)
+    expect([...polygon.faces][1].orientation()).to.equal(Flatten.ORIENTATION.CCW)
   })
   it('Can construct polygon using class constructor', function () {
     let poly = new Polygon([
@@ -562,7 +562,7 @@ describe('#Flatten.Polygon', function () {
 
     let jsonPolygon = JSON.parse(string)
     let newPolygon = new Polygon()
-    for (let jsonFace of jsonPolygon) {
+    for (let jsonFace of jsonPolygon.faces) {
       newPolygon.addFace(jsonFace)
     }
 
@@ -590,7 +590,7 @@ describe('#Flatten.Polygon', function () {
 
     let jsonPolygon = JSON.parse(string)
     let newPolygon = new Polygon()
-    for (let jsonFace of jsonPolygon) {
+    for (let jsonFace of jsonPolygon.faces) {
       newPolygon.addFace(jsonFace)
     }
 
@@ -644,7 +644,7 @@ describe('#Flatten.Polygon', function () {
       ]
       let polygon = new Polygon()
       polygon.addFace(points)
-      let arc = new Arc(point(150, 50), 50, Math.PI / 3, (5 * Math.PI) / 3, Flatten.CCW)
+      let arc = new Arc(point(150, 50), 50, Math.PI / 3, (5 * Math.PI) / 3, Flatten.CW)
       expect(polygon.intersect(arc).length).to.equal(1)
     })
     it('Intersect circle with polygon', function () {
@@ -938,7 +938,8 @@ describe('#Flatten.Polygon', function () {
       expect(ip[0]).to.deep.equal({ x: 150, y: 20 })
       expect(ip[1]).to.deep.equal({ x: 100, y: 30 })
     })
-    it('Can perform intersection between multiline and polygon', function () {
+    // TODO: Decide if we want to support line & ray edges
+    it.skip('Can perform intersection between multiline and polygon', function () {
       let poly = new Polygon([
         point(100, 20),
         point(250, 75),

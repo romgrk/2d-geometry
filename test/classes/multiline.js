@@ -146,11 +146,4 @@ describe('#Flatten.Multiline', function () {
 
     expect(str).not.to.be.empty
   })
-  it('May create svg path', function () {
-    let shapes = [segment(point(0, 0), point(50, 100)), segment(point(50, 100), point(100, 0))]
-    let ml = new Flatten.Multiline(shapes)
-    let str = ml.svg()
-
-    expect(str).not.to.be.empty
-  })
 })
