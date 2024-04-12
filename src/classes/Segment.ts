@@ -41,8 +41,8 @@ export class Segment extends Shape<Segment> {
       return
     }
 
-    if (argsLength === 1 && a instanceof Segment) {
-      let { start, end } = a
+    if (argsLength === 1 && (a as any).name === 'segment') {
+      let { start, end } = a as Segment
       this.start = new Point(start.x, start.y)
       this.end = new Point(end.x, end.y)
       return

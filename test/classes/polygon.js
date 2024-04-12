@@ -408,8 +408,8 @@ describe('#Flatten.Polygon', function () {
     let [dist, shortest_segment] = poly.distanceTo(c)
 
     expect(dist).to.equal(25)
-    expect(shortest_segment.pe).to.deep.equal({ x: 300, y: 50 })
-    expect(shortest_segment.ps).to.deep.equal({ x: 300, y: 75 })
+    expect(shortest_segment.end).to.deep.equal({ x: 300, y: 50 })
+    expect(shortest_segment.start).to.deep.equal({ x: 300, y: 75 })
   })
   it('Can measure distance between two polygons', function () {
     'use strict'
@@ -433,8 +433,8 @@ describe('#Flatten.Polygon', function () {
 
     let [dist, shortest_segment] = Flatten.Distance.distance(poly1, poly2)
     expect(dist).to.equal(50)
-    expect(shortest_segment.pe).to.deep.equal({ x: 250, y: 250 })
-    expect(shortest_segment.ps).to.deep.equal({ x: 250, y: 200 })
+    expect(shortest_segment.end).to.deep.equal({ x: 250, y: 250 })
+    expect(shortest_segment.start).to.deep.equal({ x: 250, y: 200 })
   })
   it('distanceTo between Polygons: First point of segment is not always on the this polygon #57', function () {
     'use strict'
@@ -447,8 +447,8 @@ describe('#Flatten.Polygon', function () {
     let [dist, shortest_segment] = p1.distanceTo(p2)
 
     expect(dist).to.equal(450)
-    expect(shortest_segment.ps).to.deep.equal({ x: 200, y: 50 })
-    expect(shortest_segment.pe).to.deep.equal({ x: 200, y: 500 })
+    expect(shortest_segment.start).to.deep.equal({ x: 200, y: 50 })
+    expect(shortest_segment.end).to.deep.equal({ x: 200, y: 500 })
   })
   it('Can add new vertex to face and split edge of polygon (segment)', function () {
     'use strict'

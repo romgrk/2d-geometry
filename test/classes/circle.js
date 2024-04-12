@@ -154,8 +154,8 @@ describe('#Flatten.Circle', function () {
 
       let [dist, shortest_segment] = c.distanceTo(pt)
       expect(dist).to.equal(50)
-      expect(shortest_segment.ps).to.deep.equal({ x: 200, y: 150 })
-      expect(shortest_segment.pe).to.deep.equal(pt)
+      expect(shortest_segment.start).to.deep.equal({ x: 200, y: 150 })
+      expect(shortest_segment.end).to.deep.equal(pt)
     })
     it('Can measure distance between circle and circle', function () {
       let c1 = circle(point(200, 200), 50)
@@ -163,8 +163,8 @@ describe('#Flatten.Circle', function () {
 
       let [dist, shortest_segment] = c1.distanceTo(c2)
       expect(dist).to.equal(20)
-      expect(shortest_segment.ps).to.deep.equal({ x: 200, y: 150 })
-      expect(shortest_segment.pe).to.deep.equal({ x: 200, y: 130 })
+      expect(shortest_segment.start).to.deep.equal({ x: 200, y: 150 })
+      expect(shortest_segment.end).to.deep.equal({ x: 200, y: 130 })
     })
     it('Can measure distance between circle and line', function () {
       let c = circle(point(200, 200), 50)
@@ -172,8 +172,8 @@ describe('#Flatten.Circle', function () {
 
       let [dist, shortest_segment] = c.distanceTo(l)
       expect(dist).to.equal(20)
-      expect(shortest_segment.ps).to.deep.equal({ x: 200, y: 150 })
-      expect(shortest_segment.pe).to.deep.equal({ x: 200, y: 130 })
+      expect(shortest_segment.start).to.deep.equal({ x: 200, y: 150 })
+      expect(shortest_segment.end).to.deep.equal({ x: 200, y: 130 })
     })
     it('Can measure distance between circle and segment', function () {
       let c = circle(point(200, 200), 50)
@@ -181,8 +181,8 @@ describe('#Flatten.Circle', function () {
 
       let [dist, shortest_segment] = c.distanceTo(seg)
       expect(dist).to.equal(20)
-      expect(shortest_segment.ps).to.deep.equal({ x: 200, y: 150 })
-      expect(shortest_segment.pe).to.deep.equal({ x: 200, y: 130 })
+      expect(shortest_segment.start).to.deep.equal({ x: 200, y: 150 })
+      expect(shortest_segment.end).to.deep.equal({ x: 200, y: 130 })
     })
     it('Can measure distance between circle and arc', function () {
       let c = circle(point(200, 200), 50)
@@ -190,8 +190,8 @@ describe('#Flatten.Circle', function () {
 
       let [dist, shortest_segment] = c.distanceTo(a)
       expect(dist).to.equal(30)
-      expect(shortest_segment.ps).to.deep.equal({ x: 200, y: 150 })
-      expect(shortest_segment.pe).to.deep.equal({ x: 200, y: 120 })
+      expect(shortest_segment.start).to.deep.equal({ x: 200, y: 150 })
+      expect(shortest_segment.end).to.deep.equal({ x: 200, y: 120 })
     })
     it('Can measure distance between circle and polygon', function () {
       let points = [
@@ -213,8 +213,8 @@ describe('#Flatten.Circle', function () {
       let [dist, shortest_segment] = c.distanceTo(poly)
 
       expect(dist).to.equal(25)
-      expect(shortest_segment.ps).to.deep.equal({ x: 300, y: 50 })
-      expect(shortest_segment.pe).to.deep.equal({ x: 300, y: 75 })
+      expect(shortest_segment.start).to.deep.equal({ x: 300, y: 50 })
+      expect(shortest_segment.end).to.deep.equal({ x: 300, y: 75 })
     })
   })
   it('Method svg() without parameters creates svg string with default attributes', function () {

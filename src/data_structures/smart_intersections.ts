@@ -50,7 +50,13 @@ export function addToIntPoints(edge: Edge, pt: Point, int_points: Intersection[]
     is_vertex |= Constants.END_VERTEX
   }
   // Fix intersection point which is end point of the last edge
-  let arc_length = is_vertex & Constants.END_VERTEX && edge.next.arc_length === 0 ? 0 : edge.arc_length + len
+  let arc_length: number
+  if (len === Infinity) {
+    arc_length = (shapes[0] as unknown as Line).coord(pt)
+  }
+  else {
+    arc_length = is_vertex & Constants.END_VERTEX && edge.next.arc_length === 0 ? 0 : edge.arc_length + len
+  }
 
   int_points.push({
     id: id,

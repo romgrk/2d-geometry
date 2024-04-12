@@ -68,10 +68,10 @@ export function point2segment(pt: g.Point, segment: g.Segment): [number, g.Segme
     closest_point = segment.start.translate(v_unit.multiply(v_unit.dot(v_ps2pt)))
     return [dist, new g.Segment(pt, closest_point)]
   } else if (start_sp < 0) {
-    /* point is out of scope closer to ps */
+    /* point is out of scope closer to start */
     return pt.distanceTo(segment.start)
   } else {
-    /* point is out of scope closer to pe */
+    /* point is out of scope closer to end */
     return pt.distanceTo(segment.end)
   }
 }

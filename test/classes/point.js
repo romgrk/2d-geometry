@@ -124,9 +124,9 @@ describe('#Flatten.Point', function () {
       expect(pt.distanceTo(line)[0]).to.equal(1)
     })
     it('Method distanceTo returns distance to segment', function () {
-      let ps = new Point(-2, 2)
-      let pe = new Point(2, 2)
-      let segment = new Segment(ps, pe)
+      let start = new Point(-2, 2)
+      let end = new Point(2, 2)
+      let segment = new Segment(start, end)
       let pt1 = new Point(2, 4) /* point in segment scope */
       let pt2 = new Point(-5, 2) /* point is out of segment scope */
       let pt3 = new Point(6, 2) /* point is out of segment scope */

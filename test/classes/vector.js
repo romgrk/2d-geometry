@@ -16,10 +16,10 @@ describe('Vector', function () {
     let vector = new Vector(1, 1)
     expect(vector).to.deep.equal({ x: 1, y: 1 })
   })
-  it('Constructor Vector(ps, pe) creates vector [ps, pe]', function () {
-    let ps = new Point(1, 1)
-    let pe = new Point(3, 2)
-    let vector = new Vector(ps, pe)
+  it('Constructor Vector(start, end) creates vector [start, end]', function () {
+    let start = new Point(1, 1)
+    let end = new Point(3, 2)
+    let vector = new Vector(start, end)
     expect(vector).to.deep.equal({ x: 2, y: 1 })
   })
   it('Constructor Vector([x, y]) creates vector [x, y]', function () {
@@ -27,9 +27,9 @@ describe('Vector', function () {
     expect(vector).to.deep.equal({ x: 1, y: 1 })
   })
   it('Constructor Vector with illegal parameters throw error', function () {
-    let ps = new Point(1, 1)
+    let start = new Point(1, 1)
     let fn = function () {
-      new Vector(ps, 2)
+      new Vector(start, 2)
     }
     expect(fn).to.throw(ReferenceError)
   })

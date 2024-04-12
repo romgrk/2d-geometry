@@ -83,9 +83,9 @@ describe('#Data_structures.PlanarSet', function () {
     let shapeSet = new PlanarSet()
 
     for (let i = 0; i < 1000; i++) {
-      let ps = point(random(1, 600), random(1, 600))
-      let pe = ps.translate(random(50, 100), random(50, 100))
-      shapeSet.add(segment(ps, pe))
+      let start = point(random(1, 600), random(1, 600))
+      let end = start.translate(random(50, 100), random(50, 100))
+      shapeSet.add(segment(start, end))
     }
 
     let height = (tree) => {
@@ -169,9 +169,9 @@ describe('#Data_structures.PlanarSet', function () {
   //     let shapeSet = new PlanarSet();
   //
   //     for (let i = 0; i < 1000; i++) {
-  //         let ps = point(random(1,600), random(1,600));
-  //         let pe = ps.translate(random(50,100), random(50, 100));
-  //         shapeSet.add(segment(ps, pe));
+  //         let start = point(random(1,600), random(1,600));
+  //         let end = start.translate(random(50,100), random(50, 100));
+  //         shapeSet.add(segment(start, end));
   //     }
   //
   //     for (let shape of shapeSet) {
@@ -195,9 +195,9 @@ describe('#Data_structures.PlanarSet', function () {
   //     let ipSet = new PlanarSet();
   //
   //     for (let i = 0; i < 10000; i++) {
-  //         let ps = point(random(1,6000), random(1,6000));
-  //         let pe = ps.translate(random(50,100), random(50, 100));
-  //         shapeSet.add(segment(ps, pe));
+  //         let start = point(random(1,6000), random(1,6000));
+  //         let end = start.translate(random(50,100), random(50, 100));
+  //         shapeSet.add(segment(start, end));
   //     }
   //
   //     let t1 = now();
