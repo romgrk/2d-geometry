@@ -20,15 +20,6 @@ export const ORIENTATION = {
 
 export const TAU = 2 * Math.PI
 
-export const INSIDE = 1
-export const OUTSIDE = 0
-export const BOUNDARY = 2
-
-export enum Position {
-  INSIDE = 1,
-  OUTSIDE = 0,
-}
-
 export enum Inclusion {
   INSIDE = 1,
   OUTSIDE = 0,

@@ -5,7 +5,7 @@ import { expect } from 'chai'
 import Flatten from '../../index'
 import { ray_shoot } from '../../dist/algorithms/ray_shooting'
 
-import { Point, Vector, Circle, Line, Segment, Arc, Box, Polygon, Edge, Face, PlanarSet } from '../../index'
+import { Point, Vector, Circle, Line, Segment, Arc, Box, Polygon, Edge, Face, PlanarSet, Inclusion } from '../../index'
 import { point, vector, circle, line, segment, arc } from '../../index'
 
 describe('#Flatten.Face', function () {
@@ -136,7 +136,7 @@ describe('#Flatten.Face', function () {
       let point = face.pointAtLength((i / 33) * length)
       expect(point).is.not.null
       let rel = ray_shoot(poly, point)
-      expect(rel).to.equal(Flatten.BOUNDARY)
+      expect(rel).to.equal(Inclusion.BOUNDARY)
     }
   })
 })

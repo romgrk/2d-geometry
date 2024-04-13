@@ -5,7 +5,7 @@
 import { expect } from 'chai'
 import Flatten, { matrix } from '../../index'
 
-import { Point, Circle, Line, Segment, Arc, Box, Polygon, Edge, PlanarSet, Multiline } from '../../index'
+import { Point, Circle, Line, Segment, Arc, Box, Polygon, Edge, PlanarSet, Multiline, Inclusion } from '../../index'
 import { point, vector, circle, line, segment, box, multiline } from '../../index'
 import {
   intersectLine2Polygon,
@@ -513,11 +513,11 @@ describe('Polygon', function () {
     let bv4 = new Edge(segment(point(150, 30), point(200, 40))).setInclusion(poly) // start inside
     let bv5 = new Edge(segment(point(120, 20), point(130, 20))).setInclusion(poly) // boundary
 
-    expect(bv1).to.equal(Flatten.INSIDE)
-    expect(bv2).to.equal(Flatten.OUTSIDE)
-    expect(bv3).to.equal(Flatten.INSIDE)
-    expect(bv4).to.equal(Flatten.INSIDE)
-    expect(bv5).to.equal(Flatten.BOUNDARY)
+    expect(bv1).to.equal(Inclusion.INSIDE)
+    expect(bv2).to.equal(Inclusion.OUTSIDE)
+    expect(bv3).to.equal(Inclusion.INSIDE)
+    expect(bv4).to.equal(Inclusion.INSIDE)
+    expect(bv5).to.equal(Inclusion.BOUNDARY)
   })
   it('Can remove chain of edges from face', function () {
     'use strict'

@@ -37,10 +37,6 @@ export class PlanarSet<T extends { box: Box }> {
     this.set.forEach(fn)
   }
 
-  asArray() {
-    return Array.from(this.set)
-  }
-
   /**
    * Add new shape to planar set and to its spatial index.<br/>
    * If shape already exist, it will not be added again.

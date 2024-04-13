@@ -1,5 +1,5 @@
 import DE9IM from '../data_structures/de9im'
-import * as k from '../utils/constants'
+import { Inclusion } from '../utils/constants'
 import {
   intersectLine2Box,
   intersectLine2Circle,
@@ -202,9 +202,9 @@ function relateLine2Polygon(line: Line, polygon: Polygon) {
 
   ;[...multiline].forEach((edge) => edge.setInclusion(polygon))
 
-  denim.I2I = [...multiline].filter((edge) => edge.bv === k.INSIDE).map((edge) => edge.shape)
-  denim.I2B = [...multiline].slice(1).map((edge) => (edge.bv === k.BOUNDARY ? edge.shape : edge.shape.start))
-  denim.I2E = [...multiline].filter((edge) => edge.bv === k.OUTSIDE).map((edge) => edge.shape)
+  denim.I2I = [...multiline].filter((edge) => edge.bv === Inclusion.INSIDE).map((edge) => edge.shape)
+  denim.I2B = [...multiline].slice(1).map((edge) => (edge.bv === Inclusion.BOUNDARY ? edge.shape : edge.shape.start))
+  denim.I2E = [...multiline].filter((edge) => edge.bv === Inclusion.OUTSIDE).map((edge) => edge.shape)
 
   denim.E2I = polygon.cut(multiline)
 
@@ -221,22 +221,22 @@ function relateShape2Polygon(shape, polygon: Polygon) {
 
   ;[...multiline].forEach((edge) => edge.setInclusion(polygon))
 
-  denim.I2I = [...multiline].filter((edge) => edge.bv === k.INSIDE).map((edge) => edge.shape)
-  denim.I2B = [...multiline].slice(1).map((edge) => (edge.bv === k.BOUNDARY ? edge.shape : edge.shape.start))
-  denim.I2E = [...multiline].filter((edge) => edge.bv === k.OUTSIDE).map((edge) => edge.shape)
+  denim.I2I = [...multiline].filter((edge) => edge.bv === Inclusion.INSIDE).map((edge) => edge.shape)
+  denim.I2B = [...multiline].slice(1).map((edge) => (edge.bv === Inclusion.BOUNDARY ? edge.shape : edge.shape.start))
+  denim.I2E = [...multiline].filter((edge) => edge.bv === Inclusion.OUTSIDE).map((edge) => edge.shape)
 
   denim.B2I = []
   denim.B2B = []
   denim.B2E = []
   for (let pt of [shape.start, shape.end]) {
     switch (ray_shoot(polygon, pt)) {
-      case k.INSIDE:
+      case Inclusion.INSIDE:
         denim.B2I.push(pt)
         break
-      case k.BOUNDARY:
+      case Inclusion.BOUNDARY:
         denim.B2B.push(pt)
         break
-      case k.OUTSIDE:
+      case Inclusion.OUTSIDE:
         denim.B2E.push(pt)
         break
       default:

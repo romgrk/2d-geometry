@@ -15,7 +15,7 @@ import {
 } from '../data_structures/smart_intersections'
 import { Multiline } from './Multiline'
 import { intersectEdge2Line } from '../algorithms/intersection'
-import { INSIDE, BOUNDARY } from '../utils/constants'
+import { Inclusion } from '../utils/constants'
 import { PlanarSet } from '../data_structures/PlanarSet'
 import * as geom from '../classes'
 import type { Box } from '../classes/Box'
@@ -120,7 +120,7 @@ export class Polygon extends Shape<Polygon> {
   }
 
   get parts() {
-    return this.edges.asArray().map(e => e.shape)
+    return Array.from(this.edges).map(e => e.shape)
   }
 
   /**
@@ -170,17 +170,15 @@ export class Polygon extends Shape<Polygon> {
    * 3. There is no intersections between faces (excluding touching) - TODO
    */
   isValid() {
-    let valid = true
     // 1. Polygon is invalid if at least one face is not simple
     for (let face of this.faces) {
       if (!face.isSimple(this.edges)) {
-        valid = false
-        break
+        return false
       }
     }
     // 2. TODO: check if no island inside island and no hole inside hole
     // 3. TODO: check the there is no intersection between faces
-    return valid
+    return true
   }
 
   /**
@@ -333,7 +331,7 @@ export class Polygon extends Shape<Polygon> {
   cut(multiline: Multiline) {
     let cutPolygons = [this.clone()]
     for (const edge of multiline) {
-      if (edge.setInclusion(this) !== INSIDE) continue
+      if (edge.setInclusion(this) !== Inclusion.INSIDE) continue
 
       const cut_edge_start = edge.shape.start
       const cut_edge_end = edge.shape.end
@@ -471,7 +469,7 @@ export class Polygon extends Shape<Polygon> {
     let int_point1_prev = intersections.int_points1[0]
     let new_edge
     for (let int_point1_curr of intersections.int_points1_sorted) {
-      if (int_point1_curr.edge_before.bv === INSIDE) {
+      if (int_point1_curr.edge_before.bv === Inclusion.INSIDE) {
         new_edge = new geom.Edge(new geom.Segment(int_point1_prev.pt, int_point1_curr.pt)) // (int_point1_curr.edge_before.shape);
         insertBetweenIntPoints(
           intersections.int_points2[int_point1_prev.id],
@@ -555,7 +553,7 @@ export class Polygon extends Shape<Polygon> {
   contains(shape: Shape) {
     if (shape instanceof geom.Point) {
       let rel = ray_shoot(this, shape)
-      return rel === INSIDE || rel === BOUNDARY
+      return rel === Inclusion.INSIDE || rel === Inclusion.BOUNDARY
     } else {
       return Relations.cover(this, shape)
     }

@@ -4,6 +4,7 @@
  */
 import * as Utils from '../utils/utils'
 import * as Constants from '../utils/constants'
+import { Inclusion } from '../utils/constants'
 import type { Face, Edge, Line, Point, Polygon, Multiline } from '../classes'
 
 export type Intersection = {
@@ -223,8 +224,8 @@ export function initializeInclusionFlags(int_points: Intersection[]) {
   }
 
   for (let int_point of int_points) {
-    int_point.edge_before.bvEnd = Constants.BOUNDARY
-    int_point.edge_after.bvStart = Constants.BOUNDARY
+    int_point.edge_before.bvEnd = Inclusion.BOUNDARY
+    int_point.edge_after.bvStart = Inclusion.BOUNDARY
   }
 }
 
@@ -284,7 +285,7 @@ export function setOverlappingFlags(intersections: Intersections) {
     let edge_from1 = cur_int_point1.edge_after
     let edge_to1 = next_int_point1.edge_before
 
-    if (!(edge_from1.bv === Constants.BOUNDARY && edge_to1.bv === Constants.BOUNDARY))
+    if (!(edge_from1.bv === Inclusion.BOUNDARY && edge_to1.bv === Inclusion.BOUNDARY))
       // not a boundary chain - skip
       continue
 
@@ -301,7 +302,7 @@ export function setOverlappingFlags(intersections: Intersections) {
 
     /* if [edge_from2..edge_to2] is not a boundary chain, invert it */
     /* check also that chain consist of one or two edges */
-    if (!(edge_from2.bv === Constants.BOUNDARY && edge_to2.bv === Constants.BOUNDARY && edge_from2 === edge_to2)) {
+    if (!(edge_from2.bv === Inclusion.BOUNDARY && edge_to2.bv === Inclusion.BOUNDARY && edge_from2 === edge_to2)) {
       cur_int_point2 = intersections.int_points2[next_int_point1.id]
       next_int_point2 = intersections.int_points2[cur_int_point1.id]
 
@@ -309,7 +310,7 @@ export function setOverlappingFlags(intersections: Intersections) {
       edge_to2 = next_int_point2.edge_before
     }
 
-    if (!(edge_from2.bv === Constants.BOUNDARY && edge_to2.bv === Constants.BOUNDARY && edge_from2 === edge_to2))
+    if (!(edge_from2.bv === Inclusion.BOUNDARY && edge_to2.bv === Inclusion.BOUNDARY && edge_from2 === edge_to2))
       continue // not an overlapping chain - skip   TODO: fix boundary conflict
 
     // Set overlapping flag - one-to-one case

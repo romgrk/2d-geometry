@@ -1,4 +1,4 @@
-import { Position, Overlap } from '../utils/constants'
+import { Inclusion, Overlap } from '../utils/constants'
 import { ray_shoot } from '../algorithms/ray_shooting'
 import { Arc, Face, Line, Ray, Quadratic, Bezier } from './index'
 import type { Point } from './Point'
@@ -99,7 +99,7 @@ export class Edge<T extends EdgeShape = EdgeShape> {
     if (this.bv !== undefined) return this.bv
 
     if (this.shape instanceof Line || this.shape instanceof Ray) {
-      this.bv = Position.OUTSIDE
+      this.bv = Inclusion.OUTSIDE
       return this.bv
     }
 
@@ -110,11 +110,11 @@ export class Edge<T extends EdgeShape = EdgeShape> {
       this.bvEnd = ray_shoot(polygon, this.end)
     }
     /* At least one end outside - the whole edge outside */
-    if (this.bvStart === Position.OUTSIDE || this.bvEnd == Position.OUTSIDE) {
-      this.bv = Position.OUTSIDE
-    } else if (this.bvStart === Position.INSIDE || this.bvEnd == Position.INSIDE) {
+    if (this.bvStart === Inclusion.OUTSIDE || this.bvEnd == Inclusion.OUTSIDE) {
+      this.bv = Inclusion.OUTSIDE
+    } else if (this.bvStart === Inclusion.INSIDE || this.bvEnd == Inclusion.INSIDE) {
     /* At least one end inside - the whole edge inside */
-      this.bv = Position.INSIDE
+      this.bv = Inclusion.INSIDE
     } else {
     /* Both are boundary - check the middle point */
       let bvMiddle = ray_shoot(polygon, this.middle())

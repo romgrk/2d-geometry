@@ -20,7 +20,7 @@ import type { Segment } from '../classes/Segment'
 import type { Shape } from '../classes/Shape'
 import { Face } from '../classes'
 
-const { INSIDE, OUTSIDE, BOUNDARY, Overlap } = Constants
+const { Inclusion, Overlap } = Constants
 const { START_VERTEX, END_VERTEX } = Constants
 
 export enum BooleanOp {
@@ -312,21 +312,21 @@ function fixBoundaryConflicts(
     let edge_to1 = next_int_point1.edge_before
 
     // Case #1. One of the ends is not boundary - probably tiny edge wrongly marked as boundary
-    if (edge_from1.bv === BOUNDARY && edge_to1.bv != BOUNDARY) {
+    if (edge_from1.bv === Inclusion.BOUNDARY && edge_to1.bv != Inclusion.BOUNDARY) {
       edge_from1.bv = edge_to1.bv
       continue
     }
 
-    if (edge_from1.bv != BOUNDARY && edge_to1.bv === BOUNDARY) {
+    if (edge_from1.bv != Inclusion.BOUNDARY && edge_to1.bv === Inclusion.BOUNDARY) {
       edge_to1.bv = edge_from1.bv
       continue
     }
 
     // Set up all boundary values for middle edges. Need for cases 2 and 3
     if (
-      (edge_from1.bv === BOUNDARY && edge_to1.bv === BOUNDARY && edge_from1 != edge_to1) ||
-      (edge_from1.bv === INSIDE && edge_to1.bv === OUTSIDE) ||
-      (edge_from1.bv === OUTSIDE && edge_to1.bv === INSIDE)
+      (edge_from1.bv === Inclusion.BOUNDARY && edge_to1.bv === Inclusion.BOUNDARY && edge_from1 != edge_to1) ||
+      (edge_from1.bv === Inclusion.INSIDE && edge_to1.bv === Inclusion.OUTSIDE) ||
+      (edge_from1.bv === Inclusion.OUTSIDE && edge_to1.bv === Inclusion.INSIDE)
     ) {
       let edge_tmp = edge_from1.next
       while (edge_tmp != edge_to1) {
@@ -340,11 +340,11 @@ function fixBoundaryConflicts(
 
     // Case #2. Both of the ends boundary. Check all the edges in the middle
     // If some edges in the middle are not boundary then update bv of 'from' and 'to' edges
-    if (edge_from1.bv === BOUNDARY && edge_to1.bv === BOUNDARY && edge_from1 != edge_to1) {
+    if (edge_from1.bv === Inclusion.BOUNDARY && edge_to1.bv === Inclusion.BOUNDARY && edge_from1 != edge_to1) {
       let edge_tmp = edge_from1.next
       let new_bv
       while (edge_tmp != edge_to1) {
-        if (edge_tmp.bv != BOUNDARY) {
+        if (edge_tmp.bv != Inclusion.BOUNDARY) {
           if (new_bv === undefined) {
             // first not boundary edge between from and to
             new_bv = edge_tmp.bv
@@ -368,8 +368,8 @@ function fixBoundaryConflicts(
 
     // Case 3. One of the ends is inner, another is outer
     if (
-      (edge_from1.bv === INSIDE && edge_to1.bv === OUTSIDE) ||
-      (edge_from1.bv === OUTSIDE && edge_to1.bv === INSIDE)
+      (edge_from1.bv === Inclusion.INSIDE && edge_to1.bv === Inclusion.OUTSIDE) ||
+      (edge_from1.bv === Inclusion.OUTSIDE && edge_to1.bv === Inclusion.INSIDE)
     ) {
       let edge_tmp = edge_from1
       // Find missing intersection point
@@ -388,13 +388,13 @@ function fixBoundaryConflicts(
               // nothing to split
               int_point1.edge_after = edge_tmp
               int_point1.edge_before = edge_tmp.prev
-              edge_tmp.bvStart = BOUNDARY
+              edge_tmp.bvStart = Inclusion.BOUNDARY
               edge_tmp.bv = undefined
               edge_tmp.setInclusion(poly2)
             } else if (int_point1.is_vertex & END_VERTEX) {
               // nothing to split
               int_point1.edge_after = edge_tmp.next
-              edge_tmp.bvEnd = BOUNDARY
+              edge_tmp.bvEnd = Inclusion.BOUNDARY
               edge_tmp.bv = undefined
               edge_tmp.setInclusion(poly2)
             } else {
@@ -405,7 +405,7 @@ function fixBoundaryConflicts(
 
               newEdge1.setInclusion(poly2)
 
-              newEdge1.next.bvStart = BOUNDARY
+              newEdge1.next.bvStart = Inclusion.BOUNDARY
               newEdge1.next.bvEnd = undefined
               newEdge1.next.bv = undefined
               newEdge1.next.setInclusion(poly2)
@@ -436,11 +436,11 @@ function fixBoundaryConflicts(
               if (int_point2_edge_after) int_point2_edge_after.edge_after = newEdge2
 
               newEdge2.bvStart = undefined
-              newEdge2.bvEnd = BOUNDARY
+              newEdge2.bvEnd = Inclusion.BOUNDARY
               newEdge2.bv = undefined
               newEdge2.setInclusion(poly1)
 
-              newEdge2.next.bvStart = BOUNDARY
+              newEdge2.next.bvStart = Inclusion.BOUNDARY
               newEdge2.next.bvEnd = undefined
               newEdge2.next.bv = undefined
               newEdge2.next.setInclusion(poly1)
@@ -515,12 +515,12 @@ export function removeNotRelevantChains(
     let edge_to = int_point_next.edge_before
 
     if (
-      (edge_from.bv === INSIDE && edge_to.bv === INSIDE && op === BooleanOp.UNION) ||
-      (edge_from.bv === OUTSIDE && edge_to.bv === OUTSIDE && op === BooleanOp.INTERSECT) ||
-      ((edge_from.bv === OUTSIDE || edge_to.bv === OUTSIDE) && op === BooleanOp.SUBTRACT && !is_res_polygon) ||
-      ((edge_from.bv === INSIDE || edge_to.bv === INSIDE) && op === BooleanOp.SUBTRACT && is_res_polygon) ||
-      (edge_from.bv === BOUNDARY && edge_to.bv === BOUNDARY && edge_from.overlap & Overlap.SAME && is_res_polygon) ||
-      (edge_from.bv === BOUNDARY && edge_to.bv === BOUNDARY && edge_from.overlap & Overlap.OPPOSITE)
+      (edge_from.bv === Inclusion.INSIDE && edge_to.bv === Inclusion.INSIDE && op === BooleanOp.UNION) ||
+      (edge_from.bv === Inclusion.OUTSIDE && edge_to.bv === Inclusion.OUTSIDE && op === BooleanOp.INTERSECT) ||
+      ((edge_from.bv === Inclusion.OUTSIDE || edge_to.bv === Inclusion.OUTSIDE) && op === BooleanOp.SUBTRACT && !is_res_polygon) ||
+      ((edge_from.bv === Inclusion.INSIDE || edge_to.bv === Inclusion.INSIDE) && op === BooleanOp.SUBTRACT && is_res_polygon) ||
+      (edge_from.bv === Inclusion.BOUNDARY && edge_to.bv === Inclusion.BOUNDARY && edge_from.overlap & Overlap.SAME && is_res_polygon) ||
+      (edge_from.bv === Inclusion.BOUNDARY && edge_to.bv === Inclusion.BOUNDARY && edge_from.overlap & Overlap.OPPOSITE)
     ) {
       polygon.removeChain(cur_face, edge_from, edge_to)
 
@@ -697,10 +697,10 @@ function removeNotRelevantNotIntersectedFaces(polygon: Polygon, notIntersectedFa
   for (let face of notIntersectedFaces) {
     let rel = face.first.bv
     if (
-      (op === BooleanOp.UNION && rel === INSIDE) ||
-      (op === BooleanOp.SUBTRACT && rel === INSIDE && is_res_polygon) ||
-      (op === BooleanOp.SUBTRACT && rel === OUTSIDE && !is_res_polygon) ||
-      (op === BooleanOp.INTERSECT && rel === OUTSIDE)
+      (op === BooleanOp.UNION && rel === Inclusion.INSIDE) ||
+      (op === BooleanOp.SUBTRACT && rel === Inclusion.INSIDE && is_res_polygon) ||
+      (op === BooleanOp.SUBTRACT && rel === Inclusion.OUTSIDE && !is_res_polygon) ||
+      (op === BooleanOp.INTERSECT && rel === Inclusion.OUTSIDE)
     ) {
       polygon.deleteFace(face)
     }
