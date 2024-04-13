@@ -1,7 +1,4 @@
-'use strict'
-
 import { expect } from 'chai'
-import Flatten from '../../index'
 import { Inclusion } from '../../index'
 import { Polygon, point, circle } from '../../index'
 import { ray_shoot } from '../../dist/algorithms/ray_shooting'
