@@ -1,6 +1,6 @@
 {
   "name": "2d-geometry",
-  "version": "3.0.0-rc.2",
+  "version": "3.0.0",
   "description": "Performant & ergonomic 2D geometry in typescript",
   "main": "index.js",
   "module": "index.js",
